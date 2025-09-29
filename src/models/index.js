@@ -11,8 +11,12 @@ const sequelize = new Sequelize(
   PASSWORD,
   {
     host: HOST,
+    port: 3307,
     dialect: _dialect,
-    operatorsAliases: 0,
+    dialectOptions: {
+      allowPublicKeyRetrieval: true,
+      ssl: false
+    },
     pool: {
       max: _pool.max,
       min: _pool.min,
@@ -22,10 +26,20 @@ const sequelize = new Sequelize(
   }
 );
 
+
 const db = {};
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
+
+// Probar conexión
+sequelize.authenticate()
+  .then(() => {
+    console.log("✅ Conexión a la base de datos establecida correctamente.");
+  })
+  .catch(err => {
+    console.error("❌ No se pudo conectar a la base de datos:", err);
+  });
 
 
 // Importación de los modelos
@@ -56,18 +70,10 @@ db.rol.belongsToMany(db.usuario, {
   otherKey: "id_usuario"
 });
 
+
 // Exportamos los roles para usarlos fácilmente en la aplicación.
 // Esta es la lista actualizada.
 db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
-
-
-// Exportamos el objeto `db` correctamente
-db.rol.belongsToMany(db.usuario, {
-    through: "UsuarioRoles",
-    foreignKey: "rolId",
-    otherKey: "usuarioId"
-});
-
 
 export default db;
 
