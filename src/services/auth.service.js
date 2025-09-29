@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs";
 
 const Usuario = db.usuario;
 const Rol = db.rol;
-const Op = db.Sequelize.Op;
 
 /**
  * Lógica de negocio para registrar un nuevo usuario.
@@ -23,6 +22,14 @@ const registerUser = async (userData) => {
         telefono,
         roles
     } = userData;
+
+    console.log(id_tipo_documento); // Verifica el valor aquí
+
+    // Verifica si el tipo de documento existe
+    const tipoDocumento = await db.tipoDocumento.findByPk(id_tipo_documento);
+    if (!tipoDocumento) {
+        throw new Error("El tipo de documento especificado no existe.");
+    }
 
     // Crea el usuario en la base de datos
     const usuario = await Usuario.create({
@@ -42,9 +49,8 @@ const registerUser = async (userData) => {
         });
         await usuario.setRoles(foundRoles);
     } else {
-        // Asigna un rol por defecto si no se especifica
-        const defaultRol = await Rol.findOne({ where: { nombre_rol: 'cliente_interno' } });
-        if(defaultRol) {
+        const defaultRol = await Rol.findOne({ where: { nombre_rol: 'referente' } });
+        if (defaultRol) {
             await usuario.setRoles([defaultRol]);
         }
     }

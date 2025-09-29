@@ -27,6 +27,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+
 // Importación de los modelos
 db.usuario = userModel(sequelize, Sequelize);
 db.rol = roleModel(sequelize, Sequelize);
@@ -55,10 +56,22 @@ db.rol.belongsToMany(db.usuario, {
   otherKey: "id_usuario"
 });
 
+// Exportamos los roles para usarlos fácilmente en la aplicación.
+// Esta es la lista actualizada.
+db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
+
+
+// Exportamos el objeto `db` correctamente
+db.rol.belongsToMany(db.usuario, {
+    through: "UsuarioRoles",
+    foreignKey: "rolId",
+    otherKey: "usuarioId"
+});
 
 // Exportamos los roles para usarlos fácilmente en la aplicación.
 // Esta es la lista actualizada.
 db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
+
 
 export default db;
 

@@ -21,6 +21,7 @@ db.sequelize.sync({ force: true }).then(() => {
   console.log('Base de datos sincronizada.');
   // Función para inicializar roles
   initialRoles();
+  initialTipoDocumentos();
 });
 
 function initialRoles() {
@@ -31,11 +32,30 @@ function initialRoles() {
     });
     Role.create({
         id_rol: 2,
-        nombre_rol: 'cliente_interno'
+        nombre_rol: 'referente'
     });
     Role.create({
         id_rol: 3,
-        nombre_rol: 'vendedor_externo'
+        nombre_rol: 'gerente ventas'
+    });
+}
+function initialTipoDocumentos() {
+    const TipoDocumento = db.tipoDocumento;
+    TipoDocumento.create({
+        id_tipo_documento: 1,
+        nombre: 'Cedula de ciudadanía'
+    });
+    TipoDocumento.create({
+        id_tipo_documento: 2,
+        nombre: 'Pasaporte'
+    });
+    TipoDocumento.create({
+        id_tipo_documento: 3,
+        nombre: 'Cedula de Extranjería'
+    });
+    TipoDocumento.create({
+        id_tipo_documento: 4,
+        nombre: 'RUT'
     });
 }
 

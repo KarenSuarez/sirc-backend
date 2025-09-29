@@ -1,5 +1,5 @@
 // Modelo Sequelize para los Referidos
-module.exports = (sequelize, Sequelize) => {
+export default (sequelize, Sequelize) => {
     const Referral = sequelize.define("referrals", {
         id: {
             type: Sequelize.INTEGER,

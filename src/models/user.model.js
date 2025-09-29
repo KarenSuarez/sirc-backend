@@ -39,7 +39,7 @@ export default (sequelize, Sequelize) => {
       createdAt: 'fecha_registro',
       updatedAt: false // Si no tienes una columna para updatedAt
     });
-  
+
     return Usuario;
 };
 

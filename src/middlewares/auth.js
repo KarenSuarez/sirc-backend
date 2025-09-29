@@ -48,7 +48,7 @@ const isReferente = async (req, res, next) => {
         const user = await User.findByPk(req.userId);
         const roles = await user.getRoles();
         for (let i = 0; i < roles.length; i++) {
-            if (roles[i].name === "cliente_interno" || roles[i].name === "vendedor_externo") {
+            if (roles[i].name === "referente") {
                 next();
                 return;
             }
