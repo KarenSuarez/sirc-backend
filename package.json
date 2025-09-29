@@ -1,0 +1,19 @@
+{
+  "name": "sirc-backend",
+  "version": "1.0.0",
+  "description": "backend clarisa",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarenSuarez/sirc-backend.git"
+  },
+  "author": "tc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KarenSuarez/sirc-backend/issues"
+  },
+  "homepage": "https://github.com/KarenSuarez/sirc-backend#readme"
+}
