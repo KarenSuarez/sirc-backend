@@ -62,17 +62,17 @@ db.usuario.belongsTo(db.tipoDocumento, {
 db.usuario.belongsToMany(db.rol, {
   through: db.rolUsuario,
   foreignKey: "id_usuario",
-  otherKey: "id_rol"
+  otherKey: "id_rol",
+  as: "roles"
 });
 db.rol.belongsToMany(db.usuario, {
   through: db.rolUsuario,
   foreignKey: "id_rol",
-  otherKey: "id_usuario"
+  otherKey: "id_usuario", 
+  as: "usuarios"
 });
 
 
-// Exportamos los roles para usarlos fácilmente en la aplicación.
-// Esta es la lista actualizada.
 db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
 
 export default db;

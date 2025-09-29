@@ -37,10 +37,20 @@ const register = async (req, res) => {
   }
 };
 
-// ... Aquí iría el controlador de login
+
+const login = async (req, res) => {
+  try {
+    const { numero_documento_identidad, password } = req.body;
+    const data = await authService.loginUser(numero_documento_identidad, password);
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(401).json({ message: error.message });
+  }
+};
 
 export default {
     register,
-    checkDuplicateEmailOrDocument
+    checkDuplicateEmailOrDocument,
+    login
 };
 

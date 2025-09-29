@@ -16,7 +16,7 @@ export default (sequelize, Sequelize) => {
         }
     }, {
         tableName: 'Tipo_documento',
-        timestamps: false // No hay timestamps en el DDL
+        timestamps: false 
     });
 
     return TipoDocumento;
