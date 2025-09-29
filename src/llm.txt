@@ -1,0 +1,162 @@
+---
+
+# Proyecto: Backend para Sistema de Referidos y Fidelización
+
+## Objetivo General
+
+Construir un **backend robusto, escalable y mantenible** para una aplicación de referidos y fidelización, con una arquitectura modular por capas que permita separar la lógica de negocio, facilitar la extensión futura y garantizar la seguridad de los datos de los usuarios.
+
+## Stack Tecnológico
+
+*   **Backend:** Node.js
+*   **Framework:** Express.js
+*   **ORM:** Sequelize
+*   **Base de Datos:** MariaDB (`clarisadb`)
+*   **Autenticación:** JWT (JSON Web Tokens)
+
+## Arquitectura por Capas
+
+El proyecto está organizado en módulos para garantizar mantenibilidad. Se ha migrado a ES Modules.
+
+```
+/src
+|-- /config
+|   |-- auth.config.js
+|   |-- db.config.js
+|-- /controllers
+|   |-- auth.controller.js
+|   |-- user.controller.js
+|-- /middlewares
+|   |-- auth.js
+|-- /models
+|   |-- documentType.model.js
+|   |-- index.js
+|   |-- referral.model.js
+|   |-- role.model.js
+|   |-- user.model.js
+|   |-- userRole.model.js
+|-- /routes
+|   |-- auth.routes.js
+|   |-- index.routes.js
+|-- /services
+|   |-- auth.service.js
+|   |-- services.js
+|   |-- user.service.js
+|-- index.js
+```
+
+### Requisitos Funcionales (Foco Actual: Autenticación y Autorización)
+
+1.  **Registro de usuarios (`/api/auth/register`)**
+
+    *   Captura datos personales: nombre, apellido, tipo y número de documento, correo electrónico, contraseña en hash, teléfono.
+    *   Validación de unicidad en correo y documento.
+    *   Asignación automática de rol base (ejemplo: "referente").
+
+2.  **Login de usuarios (`/api/auth/login`)**
+
+    *   Autenticación con **JWT**.
+    *   Manejo de sesiones sin estado.
+
+3.  **Autorización basada en roles**
+    Roles iniciales definidos:
+
+    *   **Admin** → gestión global.
+    *   **Referente (cliente interno)** → crea referidos.
+    *   **Asesor de ventas** → valida plan de referidos.
+    *   **Gerente de ventas** → configura porcentaje de recompensa.
+    *   **Contador** → aprueba pagos y retiros.
+
+4.  **Seguridad**
+
+    *   Hash de contraseñas con bcrypt.
+    *   Middleware de validación JWT.
+    *   Restricciones en endpoints según rol.
+
+### Panel del Referente (Futuro)
+
+*   Visualizar referidos (pendiente, activo, convertido).
+*   Consultar recompensas (puntos y dinero).
+*   Reclamar/usar recompensas.
+*   Historial de movimientos.
+
+---
+
+## Diseño de Base de Datos (MariaDB con Sequelize)
+
+### Tabla **Rol**
+
+```sql
+CREATE TABLE Rol (
+    id_rol INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_rol VARCHAR(50) NOT NULL,
+    descripcion TEXT,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+Define los distintos roles dentro del sistema.
+
+### Tabla **Tipo_documento**
+
+```sql
+CREATE TABLE Tipo_documento (
+    id_tipo_documento INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT
+);
+```
+
+Permite flexibilidad en la identificación de usuarios (cédula, pasaporte, etc.).
+
+### Tabla **Usuario**
+
+```sql
+CREATE TABLE Usuario (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    correo_electronico VARCHAR(150) NOT NULL UNIQUE,
+    contrasena_hash VARCHAR(255) NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    numero_documento_identidad VARCHAR(50) NOT NULL UNIQUE,
+    telefono VARCHAR(20),
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_tipo_documento INT NOT NULL,
+    CONSTRAINT fk_usuario_tipo_documento
+        FOREIGN KEY (id_tipo_documento) REFERENCES Tipo_documento(id_tipo_documento)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+);
+```
+
+Garantiza unicidad en correo y documento. Relaciona cada usuario con un tipo de documento.
+
+### Tabla **rol_usuario** (relación N:M Usuario–Rol)
+
+```sql
+CREATE TABLE rol_usuario (
+    id_usuario INT NOT NULL,
+    id_rol INT NOT NULL,
+    fecha_asignacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado ENUM('activo', 'inactivo') DEFAULT 'activo',
+    PRIMARY KEY (id_usuario, id_rol),
+    CONSTRAINT fk_rol_usuario_usuario
+        FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_rol_usuario_rol
+        FOREIGN KEY (id_rol) REFERENCES Rol(id_rol)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+```
+
+Permite asignar múltiples roles a un usuario, con control de estado y fecha de asignación.
+
+---
+
+## Relaciones Clave
+
+*   **Usuario – Rol:** N:M mediante `rol_usuario`.
+*   **Usuario – Tipo_documento:** 1:N (un tipo de documento puede pertenecer a muchos usuarios).
+*   **Usuario – Referral:** 1:N (un referente puede tener varios referidos).
+*   **Usuario – Reward:** 1:N (un usuario puede tener múltiples recompensas).
+
+---
