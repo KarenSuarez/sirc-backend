@@ -68,10 +68,6 @@ db.rol.belongsToMany(db.usuario, {
     otherKey: "usuarioId"
 });
 
-// Exportamos los roles para usarlos fácilmente en la aplicación.
-// Esta es la lista actualizada.
-db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
-
 
 export default db;
 
