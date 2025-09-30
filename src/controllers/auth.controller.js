@@ -2,42 +2,144 @@ import authService from "../services/auth.service.js";
 import db from "../models/index.js";
 const Usuario = db.usuario;
 
-// Middleware para verificar duplicados
-const checkDuplicateEmailOrDocument = async (req, res, next) => {
-    try {
-        // Verificar correo electrónico
-        let user = await Usuario.findOne({ where: { correo_electronico: req.body.correo_electronico } });
-        if (user) {
-            return res.status(400).send({ message: "Error: El correo electrónico ya está en uso." });
-        }
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     RegisterRequest:
+ *       type: object
+ *       required:
+ *         - nombre
+ *         - apellido
+ *         - correo_electronico
+ *         - password
+ *         - numero_documento_identidad
+ *         - id_tipo_documento
+ *       properties:
+ *         nombre:
+ *           type: string
+ *         apellido:
+ *           type: string
+ *         correo_electronico:
+ *           type: string
+ *           format: email
+ *         password:
+ *           type: string
+ *         numero_documento_identidad:
+ *           type: string
+ *         id_tipo_documento:
+ *           type: integer
+ *         telefono:
+ *           type: string
+ *         roles:
+ *           type: array
+ *           items:
+ *             type: string
+ *     LoginRequest:
+ *       type: object
+ *       required:
+ *         - numero_documento_identidad
+ *         - password
+ *       properties:
+ *         numero_documento_identidad:
+ *           type: string
+ *         password:
+ *           type: string
+ *     LoginResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         nombre:
+ *           type: string
+ *         apellido:
+ *           type: string
+ *         numero_documento_identidad:
+ *           type: string
+ *         roles:
+ *           type: array
+ *           items:
+ *             type: string
+ *         accessToken:
+ *           type: string
+ */
 
-        // Verificar número de documento
-        user = await Usuario.findOne({ where: { numero_documento_identidad: req.body.numero_documento_identidad } });
-        if (user) {
-            return res.status(400).send({ message: "Error: El número de documento ya está registrado." });
-        }
-
-        next();
-    } catch (error) {
-        return res.status(500).send({ message: error.message });
-    }
-};
-
-
-// Controlador para registrar un nuevo usuario
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Registra un nuevo usuario
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterRequest'
+ *     responses:
+ *       201:
+ *         description: Usuario registrado exitosamente
+ *       400:
+ *         description: Correo o documento duplicado
+ *       500:
+ *         description: Error del servidor
+ */
 const register = async (req, res) => {
   try {
-    // Llama al servicio para manejar la lógica de negocio
     await authService.registerUser(req.body);
-    
     res.status(201).send({ message: "¡Usuario registrado exitosamente!" });
-
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 };
 
+/**
+ * Middleware para verificar duplicados
+ */
+const checkDuplicateEmailOrDocument = async (req, res, next) => {
+  try {
+    let user = await Usuario.findOne({ where: { correo_electronico: req.body.correo_electronico } });
+    if (user) {
+      return res.status(400).send({ message: "Error: El correo electrónico ya está en uso." });
+    }
 
+    user = await Usuario.findOne({ where: { numero_documento_identidad: req.body.numero_documento_identidad } });
+    if (user) {
+      return res.status(400).send({ message: "Error: El número de documento ya está registrado." });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
+};
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login de usuario
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *     responses:
+ *       200:
+ *         description: Login exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       401:
+ *         description: Usuario o contraseña incorrectos
+ *       500:
+ *         description: Error del servidor
+ */
 const login = async (req, res) => {
   try {
     const { numero_documento_identidad, password } = req.body;
@@ -49,8 +151,7 @@ const login = async (req, res) => {
 };
 
 export default {
-    register,
-    checkDuplicateEmailOrDocument,
-    login
+  register,
+  checkDuplicateEmailOrDocument,
+  login
 };
-

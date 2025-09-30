@@ -1,3 +1,44 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Referral:
+ *       type: object
+ *       description: Representa un referido en el sistema.
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: ID único del referido.
+ *           example: 1
+ *         referredName:
+ *           type: string
+ *           description: Nombre completo del referido.
+ *           example: "Juan Pérez"
+ *         referredEmail:
+ *           type: string
+ *           description: Correo electrónico único del referido.
+ *           example: "juan.perez@example.com"
+ *         status:
+ *           type: string
+ *           description: Estado del referido en el sistema.
+ *           enum:
+ *             - pendiente
+ *             - activo
+ *             - convertido
+ *           example: "pendiente"
+ *         referrerId:
+ *           type: integer
+ *           description: ID del usuario que refiere (relación con Usuario).
+ *           example: 2
+ *       required:
+ *         - referredName
+ *         - referredEmail
+ *         - status
+ */
+
+
+
+
 // Modelo Sequelize para los Referidos
 export default (sequelize, Sequelize) => {
     const Referral = sequelize.define("referrals", {

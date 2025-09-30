@@ -3,6 +3,13 @@ import authController from "../controllers/auth.controller.js";
 
 const router = Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Endpoints de autenticación
+ */
+
 router.use(function(req, res, next) {
   res.header(
     "Access-Control-Allow-Headers",
@@ -11,6 +18,26 @@ router.use(function(req, res, next) {
   next();
 });
 
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Registra un nuevo usuario
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterRequest'
+ *     responses:
+ *       201:
+ *         description: Usuario registrado exitosamente
+ *       400:
+ *         description: Correo o documento duplicado
+ *       500:
+ *         description: Error del servidor
+ */
 router.post(
   "/register",
   [
@@ -19,7 +46,30 @@ router.post(
   authController.register
 );
 
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login de usuario
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *     responses:
+ *       200:
+ *         description: Login exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       401:
+ *         description: Usuario o contraseña incorrectos
+ *       500:
+ *         description: Error del servidor
+ */
 router.post("/login", authController.login);
 
 export default router;
-
