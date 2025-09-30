@@ -43,7 +43,7 @@ const Refered = db.refered;
 
 /**
  * @swagger
- * /api/refereds:
+ * /refereds/referir:
  *   post:
  *     summary: Crea un nuevo referido y lo asocia al usuario referente autenticado.
  *     tags:
