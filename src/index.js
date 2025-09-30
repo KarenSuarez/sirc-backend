@@ -15,10 +15,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // --- Conexión y Sincronización con la Base de Datos ---
-db.sequelize.sync({ force: true }).then(() => {
+db.sequelize.sync().then(() => {
   console.log('Base de datos sincronizada.');
-  initialRoles();
-  initialTipoDocumentos();
+  // initialRoles();
+  // initialTipoDocumentos();
 });
 
 // Inicialización de Roles
