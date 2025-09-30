@@ -94,13 +94,5 @@ export default (sequelize, Sequelize) => {
       updatedAt: false // Si no tienes una columna para updatedAt
     });
 
-    Usuario.associate = (models) => {
-      Usuario.hasOne(models.Referente, {
-        foreignKey: 'id_referente',
-        as: 'referente'
-      });
-    };
-
     return Usuario;
 };
-

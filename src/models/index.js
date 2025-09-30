@@ -5,6 +5,7 @@ import roleModel from './role.model.js';
 import documentTypeModel from './documentType.model.js';
 import userRoleModel from './userRole.model.js';
 import referedModel from './refered.model.js';
+import referenteModel from './referente.model.js';
 
 
 const sequelize = new Sequelize(
@@ -50,6 +51,7 @@ db.rol = roleModel(sequelize, Sequelize);
 db.tipoDocumento = documentTypeModel(sequelize, Sequelize);
 db.rolUsuario = userRoleModel(sequelize, Sequelize);
 db.refered = referedModel(sequelize, Sequelize);
+db.referente = referenteModel(sequelize, Sequelize);
 
 // --- Definición de Asociaciones ---
 
@@ -84,6 +86,10 @@ db.refered.belongsTo(db.usuario, {
   foreignKey: 'referrerId',
   as: 'referrer'
 });
+
+// 4. Usuario <--> Referente (Uno a Uno)
+db.usuario.hasOne(db.referente, { foreignKey: 'id_referente', as: 'referente' });
+db.referente.belongsTo(db.usuario, { foreignKey: 'id_referente', as: 'usuario' });
 
 
 db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
