@@ -6,6 +6,7 @@ import { Op } from "sequelize";
 
 const Usuario = db.usuario;
 const Rol = db.rol;
+const Referente = db.referente;
 
 /**
  * Lógica de negocio para registrar un nuevo usuario.
@@ -40,16 +41,30 @@ const registerUser = async (userData) => {
   });
 
   // ✅ Asignación de roles
+  let isReferente = false;
   if (roles && roles.length > 0) {
     const foundRoles = await Rol.findAll({
       where: { nombre_rol: { [Op.or]: roles } }
     });
-    await usuario.setRoles(foundRoles);  
+    await usuario.setRoles(foundRoles);
+    if (roles.includes('referente')) {
+      isReferente = true;
+    }
   } else {
     const defaultRol = await Rol.findOne({ where: { nombre_rol: "referente" } });
     if (defaultRol) {
       await usuario.setRoles([defaultRol]);
+      isReferente = true;
     }
+  }
+
+  // ✅ Si el usuario es un referente, crea su perfil de referente
+  if (isReferente) {
+    await Referente.create({
+      id_referente: usuario.id_usuario,
+      codigo_referente: usuario.numero_documento_identidad,
+      // Los demás campos usarán sus valores por defecto definidos en el modelo
+    });
   }
 
   return usuario;
