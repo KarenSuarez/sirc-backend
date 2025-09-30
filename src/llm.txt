@@ -31,7 +31,8 @@ El proyecto está organizado en módulos para garantizar mantenibilidad. Se ha m
 |-- /models
 |   |-- documentType.model.js
 |   |-- index.js
-|   |-- referral.model.js
+|   |-- refered.model.js
+|   |-- referente.model.js
 |   |-- role.model.js
 |   |-- user.model.js
 |   |-- userRole.model.js
@@ -52,6 +53,7 @@ El proyecto está organizado en módulos para garantizar mantenibilidad. Se ha m
     *   Captura datos personales: nombre, apellido, tipo y número de documento, correo electrónico, contraseña en hash, teléfono.
     *   Validación de unicidad en correo y documento.
     *   Asignación automática de rol base (ejemplo: "referente").
+    *   **Si el usuario tiene el rol "referente", se crea automáticamente un perfil de `Referente` asociado**, inicializando sus atributos (código, categoría, estado, etc.).
 
 2.  **Login de usuarios (`/api/auth/login`)**
 
@@ -73,12 +75,37 @@ El proyecto está organizado en módulos para garantizar mantenibilidad. Se ha m
     *   Middleware de validación JWT.
     *   Restricciones en endpoints según rol.
 
-### Panel del Referente (Futuro)
+---
 
-*   Visualizar referidos (pendiente, activo, convertido).
-*   Consultar recompensas (puntos y dinero).
-*   Reclamar/usar recompensas.
-*   Historial de movimientos.
+## Matriz de Acceso por Roles (Permisos)
+
+Esta matriz define qué acciones puede realizar cada rol en el sistema. Se enfoca en las funcionalidades actuales y las planificadas a corto plazo.
+
+| Recurso / Acción         | Público (No autenticado) | Admin | Referente | Asesor Ventas | Gerente Ventas | Contador |
+| ------------------------ | :----------------------: | :---: | :-------: | :-----------: | :------------: | :------: |
+| **Autenticación**        |                          |       |           |               |                |          |
+| `POST /auth/register`    |            ✅            |   -   |     -     |       -       |       -        |    -     |
+| `POST /auth/login`       |            ✅            |   -   |     -     |       -       |       -        |    -     |
+|                          |                          |       |           |               |                |          |
+| **Usuarios (Users)**     |                          |       |           |               |                |          |
+| `GET /users` (Listar)    |            ❌            |   R   |     ❌     |       R       |       R        |    R     |
+| `GET /users/:id` (Ver)   |            ❌            |   R   |   Propio  |       R       |       R        |    R     |
+| `PUT /users/:id` (Editar)|            ❌            |  R/W  |   Propio  |       ❌       |       ❌        |    ❌     |
+| `DELETE /users/:id`      |            ❌            |   W   |     ❌     |       ❌       |       ❌        |    ❌     |
+|                          |                          |       |           |               |                |          |
+| **Referidos (Refereds)** |                          |       |           |               |                |          |
+| `POST /refereds` (Crear) |            ❌            |   W   |     W     |       ❌       |       ❌        |    ❌     |
+| `GET /refereds` (Listar) |            ❌            |   R   |   Propios |       R       |       R        |    R     |
+| `PUT /refereds/:id`      |            ❌            |  R/W  |     ❌     |      R/W      |       R        |    R     |
+
+**Leyenda:**
+*   **R/W**: Lectura y Escritura
+*   **R**: Solo Lectura
+*   **W**: Solo Escritura
+*   **Propio**: Solo puede afectar a los recursos que le pertenecen.
+*   **✅**: Acción permitida.
+*   **❌**: Acción denegada.
+*   **-**: No aplica.
 
 ---
 
@@ -130,6 +157,26 @@ CREATE TABLE Usuario (
 
 Garantiza unicidad en correo y documento. Relaciona cada usuario con un tipo de documento.
 
+### Tabla **Referente**
+
+```sql
+CREATE TABLE Referente (
+    id_referente INT PRIMARY KEY,
+    codigo_referente VARCHAR(20) NOT NULL UNIQUE,
+    tipo_referente ENUM('cliente externo', 'cliente interno') DEFAULT 'cliente externo',
+    puntos_acumulados INT DEFAULT 0,
+    categoria_actual ENUM('basico') DEFAULT 'basico',
+    recompensa_monetaria_actual DECIMAL(10, 2),
+    fecha_ultima_categoria DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado_referente ENUM('activo', 'en pausa') DEFAULT 'activo',
+    CONSTRAINT fk_referente_usuario
+        FOREIGN KEY (id_referente) REFERENCES Usuario(id_usuario)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+```
+
+Almacena el perfil de un usuario que actúa como referente. Se vincula 1 a 1 con la tabla Usuario.
+
 ### Tabla **rol_usuario** (relación N:M Usuario–Rol)
 
 ```sql
@@ -156,7 +203,8 @@ Permite asignar múltiples roles a un usuario, con control de estado y fecha de 
 
 *   **Usuario – Rol:** N:M mediante `rol_usuario`.
 *   **Usuario – Tipo_documento:** 1:N (un tipo de documento puede pertenecer a muchos usuarios).
-*   **Usuario – Referral:** 1:N (un referente puede tener varios referidos).
+*   **Usuario – Referente:** 1:1 (un usuario tiene un único perfil de referente).
+*   **Usuario (Referente) – Referido:** 1:N (un referente puede tener varios referidos).
 *   **Usuario – Reward:** 1:N (un usuario puede tener múltiples recompensas).
 
 ---
