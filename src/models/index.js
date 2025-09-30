@@ -1,9 +1,11 @@
-import { DB, USER, PASSWORD, HOST, dialect as _dialect, pool as _pool } from "../config/db.config.js";
+import { DB, USER, PASSWORD, HOST,PORTDB, dialect as _dialect, pool as _pool } from "../config/db.config.js";
 import Sequelize from "sequelize";
 import userModel from './user.model.js';
 import roleModel from './role.model.js';
 import documentTypeModel from './documentType.model.js';
 import userRoleModel from './userRole.model.js';
+import referedModel from './refered.model.js';
+
 
 const sequelize = new Sequelize(
   DB,
@@ -11,7 +13,7 @@ const sequelize = new Sequelize(
   PASSWORD,
   {
     host: HOST,
-    port: 3307,
+    port: PORTDB,
     dialect: _dialect,
     dialectOptions: {
       allowPublicKeyRetrieval: true,
@@ -47,6 +49,7 @@ db.usuario = userModel(sequelize, Sequelize);
 db.rol = roleModel(sequelize, Sequelize);
 db.tipoDocumento = documentTypeModel(sequelize, Sequelize);
 db.rolUsuario = userRoleModel(sequelize, Sequelize);
+db.refered = referedModel(sequelize, Sequelize);
 
 // --- Definición de Asociaciones ---
 
@@ -70,6 +73,16 @@ db.rol.belongsToMany(db.usuario, {
   foreignKey: "id_rol",
   otherKey: "id_usuario", 
   as: "usuarios"
+});
+
+// 3. Usuario (referente) <--> Referido (Uno a Muchos)
+db.usuario.hasMany(db.refered, {
+  foreignKey: 'referrerId',
+  as: 'referrals'
+});
+db.refered.belongsTo(db.usuario, {
+  foreignKey: 'referrerId',
+  as: 'referrer'
 });
 
 

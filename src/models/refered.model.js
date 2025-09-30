@@ -2,7 +2,7 @@
  * @swagger
  * components:
  *   schemas:
- *     Referral:
+ *     Refered:
  *       type: object
  *       description: Representa un referido en el sistema.
  *       properties:
@@ -10,14 +10,18 @@
  *           type: integer
  *           description: ID único del referido.
  *           example: 1
- *         referredName:
+ *         referedName:
  *           type: string
  *           description: Nombre completo del referido.
  *           example: "Juan Pérez"
- *         referredEmail:
+ *         referedEmail:
  *           type: string
  *           description: Correo electrónico único del referido.
  *           example: "juan.perez@example.com"
+ *         referedPhone:
+ *           type: string
+ *           description: Teléfono del referido.
+ *           example: "3101234567"
  *         status:
  *           type: string
  *           description: Estado del referido en el sistema.
@@ -31,8 +35,8 @@
  *           description: ID del usuario que refiere (relación con Usuario).
  *           example: 2
  *       required:
- *         - referredName
- *         - referredEmail
+ *         - referedName
+ *         - referedEmail
  *         - status
  */
 
@@ -47,16 +51,32 @@ export default (sequelize, Sequelize) => {
             primaryKey: true,
             autoIncrement: true
         },
-        referredName: {
+        referedName: {
             type: Sequelize.STRING,
             allowNull: false,
-            field: 'referred_name'
+            field: 'nombre_referido'
         },
-        referredEmail: {
-            type: Sequelize.STRING,
+        referedEmail: {
+        type: Sequelize.STRING,
             allowNull: false,
             unique: true,
-            field: 'referred_email'
+            field: 'correo_electronico_referido'
+        },
+        referedPhone: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            field: 'telefono_referido'
+        },
+        updateDate: {
+            type: Sequelize.DATE,
+            allowNull: true,
+            field: 'fecha_actualizacion'
+        },
+        createDate: {
+            type: Sequelize.DATE,
+            allowNull: false,
+            defaultValue: Sequelize.NOW,
+            field: 'fecha_creacion'
         },
         status: {
             type: Sequelize.ENUM('pendiente', 'activo', 'convertido'),

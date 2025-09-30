@@ -25,6 +25,27 @@ const verifyToken = (req, res, next) => {
 };
 
 /**
+ * Middleware para verificar si el usuario es 'referente'
+ */
+const isReferente = async (req, res, next) => {
+  try {
+    const usuario = await Usuario.findByPk(req.userId);
+    const roles = await usuario.getRoles();
+
+    for (let i = 0; i < roles.length; i++) {
+      if (roles[i].nombre_rol === "referente") {
+        next();
+        return;
+      }
+    }
+
+    res.status(403).send({ message: "Requiere rol de Referente." });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+/**
  * Middleware genérico para validar si el usuario tiene un rol específico
  * @param {string} roleName - Nombre del rol a verificar
  */
@@ -54,5 +75,6 @@ const hasRole = (roleName) => {
 
 export default {
   verifyToken,
+  isReferente,
   hasRole
 };
