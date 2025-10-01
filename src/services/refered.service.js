@@ -5,6 +5,11 @@ const getAllReferidos = async () => {
   return await Referido.findAll();
 };
 
+const getReferidosByReferrer = async (referrerId) => {
+  return await Referido.findAll({ where: { referrerId } });
+};
+
+
 const getReferidosNuevos = async () => {
   return await Referido.findAll({ where: { estado: "nuevo" } });
 };
@@ -28,6 +33,7 @@ const updateEstadoReferido = async (id, nuevoEstado) => {
 
 export default {
   getAllReferidos,
+  getReferidosByReferrer,
   getReferidosNuevos,
   updateEstadoReferido
 };

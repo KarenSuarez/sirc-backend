@@ -121,6 +121,30 @@ const getAll = async (req, res) => {
 
 /**
  * @swagger
+ * /referidos/mis-referidos:
+ *   get:
+ *     summary: Listado de todos los referidos del referente autenticado
+ *     tags: [Referidos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de referidos
+ */
+
+const getByReferrer = async (req, res) => {
+  try {
+    const referrerId = req.userId;
+    const referidos = await referidoService.getReferidosByReferrer(referrerId);
+    res.status(200).json(referidos);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+/**
+ * @swagger
  * /referidos/nuevos:
  *   get:
  *     summary: Listado de referidos con estado = 'nuevo'
@@ -174,6 +198,7 @@ export default {
     createRefered,
     checkDuplicateReferedEmail,
     getAll,
+    getByReferrer,
     getNuevos,
     updateEstado
 
