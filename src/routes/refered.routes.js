@@ -12,6 +12,13 @@ router.use((req, res, next) => {
     next();
 });
 
+/**
+ * @swagger
+ * tags:
+ *   name: Referidos
+ *   description: Endpoints relacionados con los referidos
+ */
+
 router.post(
     "/referir",
     [
@@ -21,5 +28,9 @@ router.post(
     ],
     referedController.createRefered
 );
+
+router.get("/", referedController.getAll);
+router.get("/nuevos", referedController.getNuevos);
+router.patch("/:id/estado", referedController.updateEstado);
 
 export default router;
