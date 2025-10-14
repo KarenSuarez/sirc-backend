@@ -6,10 +6,10 @@
  *       type: object
  *       description: Representa el perfil de un referente en el sistema.
  *       properties:
- *         id_referente:
- *           type: integer
- *           description: ID único del referente, corresponde al ID del usuario.
- *           example: 1
+ *         numero_documento_identidad:
+ *           type: string
+ *           description: Número de documento del usuario que actúa como referente.
+ *           example: "123456789"
  *         codigo_referente:
  *           type: string
  *           description: Código de referente, usualmente el número de documento de identidad del usuario.
@@ -43,22 +43,19 @@
  *           enum: [activo, en pausa]
  *           description: Estado actual del referente.
  *           example: "activo"
+ *         required:
+ *         - numero_documento
  */
 
 export default (sequelize, Sequelize) => {
     const Referente = sequelize.define("Referente", {
-        id_referente: {
-            type: Sequelize.INTEGER,
+        numero_documento_identidad: {
+            type: Sequelize.STRING(20),
             primaryKey: true,
             references: {
                 model: 'Usuario',
-                key: 'id_usuario'
+                key: 'numero_documento_identidad'
             }
-        },
-        codigo_referente: {
-            type: Sequelize.STRING(20),
-            allowNull: false,
-            unique: true
         },
         tipo_referente: {
             type: Sequelize.ENUM('cliente externo', 'cliente interno'),
@@ -74,7 +71,8 @@ export default (sequelize, Sequelize) => {
         },
         recompensa_monetaria_actual: {
             type: Sequelize.DECIMAL(10, 2),
-            allowNull: true
+            allowNull: true,
+            defaultValue: 0.00
         },
         fecha_ultima_categoria: {
             type: Sequelize.DATE,

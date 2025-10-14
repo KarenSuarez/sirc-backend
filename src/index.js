@@ -15,11 +15,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // --- Conexión y Sincronización con la Base de Datos ---
-db.sequelize.sync().then(() => {
-  console.log('Base de datos sincronizada.');
-  // initialRoles();
-  // initialTipoDocumentos();
+db.sequelize.sync({ alter: true }).then(async () => {
+  console.log('✅ Base de datos sincronizada.');
+
+  // Inserta datos iniciales solo si las tablas están vacías
+  const countDocs = await db.tipoDocumento.count();
+  const countRoles = await db.rol.count();
+
+  if (countDocs === 0) {
+    console.log('🟡 Insertando tipos de documento iniciales...');
+    await initialTipoDocumentos();
+  } else {
+    console.log('✅ Tipos de documento ya existen, no se insertan nuevamente.');
+  }
+
+  if (countRoles === 0) {
+    console.log('🟢 Insertando roles iniciales...');
+    await initialRoles();
+  } else {
+    console.log('✅ Roles ya existen, no se insertan nuevamente.');
+  }
 });
+
 
 // Inicialización de Roles
 function initialRoles() {

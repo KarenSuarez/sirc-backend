@@ -4,8 +4,10 @@ import userModel from './user.model.js';
 import roleModel from './role.model.js';
 import documentTypeModel from './documentType.model.js';
 import userRoleModel from './userRole.model.js';
-import referedModel from './refered.model.js';
 import referenteModel from './referente.model.js';
+import planModel from './plan.model.js';
+import referedModel from './refered.model.js';
+
 
 
 const sequelize = new Sequelize(
@@ -50,8 +52,10 @@ db.usuario = userModel(sequelize, Sequelize);
 db.rol = roleModel(sequelize, Sequelize);
 db.tipoDocumento = documentTypeModel(sequelize, Sequelize);
 db.rolUsuario = userRoleModel(sequelize, Sequelize);
-db.refered = referedModel(sequelize, Sequelize);
 db.referente = referenteModel(sequelize, Sequelize);
+db.plan = planModel(sequelize, Sequelize); 
+db.refered = referedModel(sequelize, Sequelize);
+
 
 // --- Definición de Asociaciones ---
 
@@ -63,34 +67,47 @@ db.usuario.belongsTo(db.tipoDocumento, {
   foreignKey: 'id_tipo_documento'
 });
 
+db.tipoDocumento.hasMany(db.refered, {
+  foreignKey: 'id_tipo_documento'
+});
+db.refered.belongsTo(db.tipoDocumento, {
+  foreignKey: 'id_tipo_documento'
+});
+
 // 2. Usuario <--> Rol (Muchos a Muchos a través de rol_usuario)
 db.usuario.belongsToMany(db.rol, {
   through: db.rolUsuario,
-  foreignKey: "id_usuario",
+  foreignKey: "numero_documento_identidad",
   otherKey: "id_rol",
   as: "roles"
 });
 db.rol.belongsToMany(db.usuario, {
   through: db.rolUsuario,
   foreignKey: "id_rol",
-  otherKey: "id_usuario", 
+  otherKey: "numero_documento_identidad",
   as: "usuarios"
 });
 
 // 3. Usuario (referente) <--> Referido (Uno a Muchos)
 db.usuario.hasMany(db.refered, {
-  foreignKey: 'referrerId',
-  as: 'referrals'
+  foreignKey: 'documento_referente',
+  as: 'referidos'
 });
+
 db.refered.belongsTo(db.usuario, {
-  foreignKey: 'referrerId',
-  as: 'referrer'
+  foreignKey: 'documento_referente',
+  as: 'referente'
 });
 
 // 4. Usuario <--> Referente (Uno a Uno)
-db.usuario.hasOne(db.referente, { foreignKey: 'id_referente', as: 'referente' });
-db.referente.belongsTo(db.usuario, { foreignKey: 'id_referente', as: 'usuario' });
-
+db.usuario.hasOne(db.referente, {
+  foreignKey: 'numero_documento_identidad', 
+  as: 'referente'
+});
+db.referente.belongsTo(db.usuario, {
+  foreignKey: 'numero_documento_identidad', 
+  as: 'usuario'
+});
 
 db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
 
