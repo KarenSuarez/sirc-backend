@@ -61,9 +61,7 @@ const registerUser = async (userData) => {
   // ✅ Si el usuario es un referente, crea su perfil de referente
   if (isReferente) {
     await Referente.create({
-      id_referente: usuario.id_usuario,
-      codigo_referente: usuario.numero_documento_identidad,
-      // Los demás campos usarán sus valores por defecto definidos en el modelo
+      numero_documento_identidad: usuario.numero_documento_identidad,
     });
   }
 
@@ -91,7 +89,7 @@ const loginUser = async (numero_documento_identidad, password) => {
 
   // ✅ Generar token JWT
   const token = jwt.sign(
-    { id: usuario.id_usuario },
+    { documento_identidad: usuario.numero_documento_identidad },
     config.secret,
     { expiresIn: 86400 } // 24h
   );

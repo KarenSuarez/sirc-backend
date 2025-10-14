@@ -30,8 +30,8 @@ router.post(
 );
 
 router.get("/", referedController.getAll);
-router.get("/mis-referidos",[authJwt.verifyToken, authJwt.isReferente],referedController.getByReferrer);
-router.get("/nuevos", referedController.getNuevos);
+router.get("/mis-referidos",[authJwt.verifyToken, authJwt.isReferente],referedController.getByReferente);
+router.get("/pendientes", referedController.getEstadoPendiente);
 router.patch("/:id/estado", referedController.updateEstado);
 
 export default router;

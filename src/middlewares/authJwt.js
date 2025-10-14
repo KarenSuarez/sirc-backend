@@ -19,7 +19,7 @@ const verifyToken = (req, res, next) => {
     if (err) {
       return res.status(401).send({ message: "No autorizado. Token inválido." });
     }
-    req.userId = decoded.id; // Guardamos el id del usuario en la request
+    req.numero_documento_identidad = decoded.documento_identidad;
     next();
   });
 };
@@ -29,7 +29,7 @@ const verifyToken = (req, res, next) => {
  */
 const isReferente = async (req, res, next) => {
   try {
-    const usuario = await Usuario.findByPk(req.userId);
+    const usuario = await Usuario.findByPk(req.numero_documento_identidad);
     const roles = await usuario.getRoles();
 
     for (let i = 0; i < roles.length; i++) {

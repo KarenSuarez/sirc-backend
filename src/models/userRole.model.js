@@ -6,29 +6,28 @@
  *       type: object
  *       description: Relación muchos a muchos entre Usuario y Rol.
  *       properties:
- *         id_usuario:
- *           type: integer
- *           description: ID del usuario.
- *           example: 1
+ *         numero_documento_identidad:
+ *           type: string
+ *           description: Número de documento de identidad del usuario (clave primaria y foránea).
+ *           example: "123456789"
  *         id_rol:
  *           type: integer
- *           description: ID del rol.
+ *           description: ID del rol asignado al usuario.
  *           example: 2
  *       required:
- *         - id_usuario
+ *         - numero_documento_identidad
  *         - id_rol
  */
 
 
-
 export default (sequelize, DataTypes) => {
   const RolUsuario = sequelize.define("RolUsuario", {
-    id_usuario: {
-      type: DataTypes.INTEGER,
+    numero_documento_identidad: {
+      type: DataTypes.STRING(50),
       allowNull: false,
       references: {
-        model: "Usuario", 
-        key: "id_usuario"
+        model: "Usuario",
+        key: "numero_documento_identidad"
       }
     },
     id_rol: {

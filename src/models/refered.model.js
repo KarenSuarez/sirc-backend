@@ -2,89 +2,166 @@
  * @swagger
  * components:
  *   schemas:
- *     Refered:
+ *     Referido:
  *       type: object
  *       description: Representa un referido en el sistema.
  *       properties:
- *         id:
+ *         documento_identidad_referido:
+ *           type: string
+ *           description: Número de documento de identidad del referido (clave primaria).
+ *           example: "1234567890"
+ *         id_tipo_documento:
  *           type: integer
- *           description: ID único del referido.
+ *           description: ID del tipo de documento asociado.
  *           example: 1
- *         referedName:
+ *         nombre_referido:
  *           type: string
  *           description: Nombre completo del referido.
  *           example: "Juan Pérez"
- *         referedEmail:
+ *         correo_referido:
  *           type: string
  *           description: Correo electrónico único del referido.
  *           example: "juan.perez@example.com"
- *         referedPhone:
+ *         telefono_referido:
  *           type: string
- *           description: Teléfono del referido.
+ *           description: Teléfono de contacto del referido.
  *           example: "3101234567"
- *         status:
+ *         empresa_referido:
  *           type: string
- *           description: Estado del referido en el sistema.
- *           enum:
- *             - pendiente
- *             - activo
- *             - convertido
+ *           description: Empresa asociada al referido.
+ *           example: "Tech Solutions S.A."
+ *         estado_referido:
+ *           type: string
+ *           enum: [pendiente, contactado, activo, inactivo]
+ *           description: Estado actual del referido en el sistema.
  *           example: "pendiente"
- *         referrerId:
+ *         id_plan_adquirido:
  *           type: integer
- *           description: ID del usuario que refiere (relación con Usuario).
+ *           description: ID del plan adquirido (si aplica).
  *           example: 2
+ *         fecha_referencia:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha en que fue registrado el referido.
+ *           example: "2025-09-29T20:00:00Z"
+ *         fecha_primer_contacto:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha del primer contacto con el referido.
+ *           example: "2025-10-02T18:00:00Z"
+ *         fecha_conversion:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha en que el referido se convirtió en cliente.
+ *           example: "2025-10-05T20:00:00Z"
+ *         recompensa_generada:
+ *           type: number
+ *           format: float
+ *           description: Valor monetario de la recompensa generada.
+ *           example: 15000.00
+ *         puntos_generados:
+ *           type: integer
+ *           description: Puntos obtenidos por el referido.
+ *           example: 50
+ *         documento_referente:
+ *           type: string
+ *           description: Documento del referente (relación con la tabla Referente o Usuario).
+ *           example: "987654321"
+ *         creado_en:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de creación del registro.
+ *           example: "2025-09-29T20:00:00Z"
+ *         actualizado_en:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de última actualización.
+ *           example: "2025-09-30T20:00:00Z"
  *       required:
- *         - referedName
- *         - referedEmail
- *         - status
+ *         - documento_identidad_referido
+ *         - id_tipo_documento
+ *         - nombre_referido
+ *         - correo_referido
+ *         - telefono_referido
+ *         - documento_referente
  */
 
-
-
-
-// Modelo Sequelize para los Referidos
 export default (sequelize, Sequelize) => {
-    const Referral = sequelize.define("referrals", {
-        id: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        referedName: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            field: 'nombre_referido'
-        },
-        referedEmail: {
-        type: Sequelize.STRING,
-            allowNull: false,
-            unique: true,
-            field: 'correo_electronico_referido'
-        },
-        referedPhone: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            field: 'telefono_referido'
-        },
-        updateDate: {
-            type: Sequelize.DATE,
-            allowNull: true,
-            field: 'fecha_actualizacion'
-        },
-        createDate: {
-            type: Sequelize.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW,
-            field: 'fecha_creacion'
-        },
-        status: {
-            type: Sequelize.ENUM('pendiente', 'activo', 'convertido'),
-            defaultValue: 'pendiente',
-            allowNull: false
-        }
-        // El `referrerId` (ID del referente) se agregará a través de las asociaciones
-    });
+  const Referido = sequelize.define("Referido", {
+    documento_identidad_referido: {
+      type: Sequelize.STRING(20),
+      primaryKey: true,
+      allowNull: false
+    },
+    nombre_referido: {
+      type: Sequelize.STRING(100),
+      allowNull: false
+    },
+    correo_referido: {
+      type: Sequelize.STRING(100),
+      allowNull: false,
+      unique: true
+    },
+    telefono_referido: {
+      type: Sequelize.STRING(20),
+      allowNull: false
+    },
+    empresa_referido: {
+      type: Sequelize.STRING(100),
+      allowNull: true
+    },
+    estado_referido: {
+      type: Sequelize.ENUM('pendiente', 'contactado', 'activo', 'inactivo'),
+      defaultValue: 'pendiente'
+    },
+    id_plan_adquirido: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Plan',
+        key: 'id_plan'
+      }
+    },
+    fecha_referencia: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW
+    },
+    fecha_primer_contacto: {
+      type: Sequelize.DATE,
+      allowNull: true
+    },
+    fecha_conversion: {
+      type: Sequelize.DATE,
+      allowNull: true
+    },
+    recompensa_generada: {
+      type: Sequelize.DECIMAL(10, 2),
+      defaultValue: 0.00
+    },
+    puntos_generados: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0
+    },
+    documento_referente: {
+      type: Sequelize.STRING(20),
+      allowNull: false,
+      references: {
+        model: 'Referente',
+        key: 'numero_documento_identidad'
+      }
+    },
+    creado_en: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW
+    },
+    actualizado_en: {
+      type: Sequelize.DATE,
+      allowNull: true
+    }
+  }, {
+    tableName: 'Referido',
+    timestamps: false
+  });
 
-    return Referral;
+  return Referido;
 };
