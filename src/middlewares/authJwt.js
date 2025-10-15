@@ -52,7 +52,7 @@ const isReferente = async (req, res, next) => {
 const hasRole = (roleName) => {
   return async (req, res, next) => {
     try {
-      const usuario = await Usuario.findByPk(req.userId, {
+      const usuario = await Usuario.findByPk(req.numero_documento_identidad, {
         include: [{ model: Rol, as: "roles" }]
       });
 

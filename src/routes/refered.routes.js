@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import referedController from '../controllers/refered.controller.js';
-import authJwt  from '../middlewares/authJwt.js';
+import authJwt from '../middlewares/authJwt.js';
 
 const router = Router();
 
@@ -30,8 +30,8 @@ router.post(
 );
 
 router.get("/", referedController.getAll);
-router.get("/mis-referidos",[authJwt.verifyToken, authJwt.isReferente],referedController.getByReferente);
+router.get("/mis-referidos", [authJwt.verifyToken, authJwt.isReferente], referedController.getByReferente);
 router.get("/pendientes", referedController.getEstadoPendiente);
-router.patch("/:id/estado", referedController.updateEstado);
+router.patch("/:documento_identidad_referido/estado", [authJwt.verifyToken, authJwt.hasRole("asesor")], referedController.updateEstado);
 
 export default router;

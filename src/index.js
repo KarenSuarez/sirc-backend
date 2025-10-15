@@ -5,6 +5,8 @@ import db from './models/index.js';
 import mainRouter from './routes/index.routes.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
+import "./tasks/inactivarReferidos.task.js";
+
 
 // --- Inicialización de Express ---
 const app = express();
@@ -44,6 +46,7 @@ function initialRoles() {
   Role.create({ id_rol: 1, nombre_rol: 'admin' });
   Role.create({ id_rol: 2, nombre_rol: 'referente' });
   Role.create({ id_rol: 3, nombre_rol: 'gerente ventas' });
+  Role.create({ id_rol: 4, nombre_rol: 'asesor' });
 }
 
 // Inicialización de Tipos de Documento
