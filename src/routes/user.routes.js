@@ -20,7 +20,7 @@ router.get(
  */
 router.get(
   "/admin",
-  [authJwt.verifyToken, authJwt.hasRole("administrador")],
+  [authJwt.verifyToken, authJwt.hasRole("admin")],
   userController.adminBoard
 );
 

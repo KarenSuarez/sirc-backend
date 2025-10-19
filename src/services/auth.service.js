@@ -7,6 +7,7 @@ import { Op } from "sequelize";
 const Usuario = db.usuario;
 const Rol = db.rol;
 const Referente = db.referente;
+const HistorialSesion = db.historialSesion;
 
 /**
  * Registra un nuevo usuario en el sistema.
@@ -93,7 +94,7 @@ const registerUser = async (userData) => {
  * @property {string} accessToken - Token JWT para la sesión.
  * @throws {Error} Si el usuario no se encuentra o la contraseña es incorrecta.
  */
-const loginUser = async (numero_documento_identidad, password) => {
+const loginUser = async (numero_documento_identidad, password, datosLogin) => {
   const usuario = await Usuario.findOne({
     where: { numero_documento_identidad },
     include: [{ model: Rol, as: "roles" }]
@@ -111,7 +112,7 @@ const loginUser = async (numero_documento_identidad, password) => {
 
   // ✅ Generar token JWT
   const token = jwt.sign(
-    { documento_identidad: usuario.numero_documento_identidad },
+    { documento_identidad: usuario.numero_documento_identidad,  roles: usuario.roles.map(r => r.nombre_rol) },
     config.secret,
     { expiresIn: 86400 } // 24h
   );
@@ -120,6 +121,12 @@ const loginUser = async (numero_documento_identidad, password) => {
   const authorities = usuario.roles.map(
     rol => "ROLE_" + rol.nombre_rol.toUpperCase()
   );
+  await HistorialSesion.create({
+    usuario_id: usuario.numero_documento_identidad,
+    fecha_hora_inicio: new Date(),
+    ip_address: datosLogin.ipAddress,
+    dispositivo: datosLogin.deviceInfo
+  });
 
   return {
     id: usuario.id_usuario,

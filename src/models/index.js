@@ -7,6 +7,7 @@ import userRoleModel from './userRole.model.js';
 import referenteModel from './referente.model.js';
 import planModel from './plan.model.js';
 import referedModel from './refered.model.js';
+import sessionHistoryModel from './sessionHistory.model.js';
 
 
 
@@ -55,7 +56,7 @@ db.rolUsuario = userRoleModel(sequelize, Sequelize);
 db.referente = referenteModel(sequelize, Sequelize);
 db.plan = planModel(sequelize, Sequelize); 
 db.refered = referedModel(sequelize, Sequelize);
-
+db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
 
 // --- Definición de Asociaciones ---
 
@@ -109,7 +110,13 @@ db.referente.belongsTo(db.usuario, {
   as: 'usuario'
 });
 
-db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
+db.historialSesion.belongsTo(db.usuario, {
+  foreignKey: 'usuario_id'
+});
+db.usuario.hasMany(db.historialSesion, {
+  foreignKey: 'usuario_id'
+});
+db.ROLES = ["admin", "referente", "asesor ventas", "gerente ventas", "contador"];
 
 export default db;
 

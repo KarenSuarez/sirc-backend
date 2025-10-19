@@ -143,7 +143,17 @@ const checkDuplicateEmailOrDocument = async (req, res, next) => {
 const login = async (req, res) => {
   try {
     const { numero_documento_identidad, password } = req.body;
-    const data = await authService.loginUser(numero_documento_identidad, password);
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    const deviceInfo = req.headers['user-agent'] || 'Unknown device';
+    //print all headers
+    console.log('Request Headers:', req.headers);
+    console.log('IP Address:', ipAddress);
+    console.log('Device Info:', deviceInfo);
+    const datosLogin = {
+      ipAddress,
+      deviceInfo
+    };
+    const data = await authService.loginUser(numero_documento_identidad, password, datosLogin);
     res.status(200).json(data);
   } catch (error) {
     res.status(401).json({ message: error.message });
