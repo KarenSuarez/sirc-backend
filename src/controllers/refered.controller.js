@@ -1,4 +1,3 @@
-import referedService from "../services/refered.service.js";
 import referidoService from "../services/refered.service.js";
 
 
@@ -82,7 +81,7 @@ const createRefered = async (req, res) => {
       telefono_referido
     }
     const documentoReferente = req.numero_documento_identidad;
-    const newRefered = await referedService.createRefered(datosReferido, documentoReferente);
+    const newRefered = await referidoService.createRefered(datosReferido, documentoReferente);
     res.status(201).json(newRefered);
   } catch (error) {
     res.status(500).send({ message: error.message });
