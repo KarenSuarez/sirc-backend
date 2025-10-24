@@ -10,7 +10,7 @@ const router = Router();
  */
 router.get(
   "/profile",
-  [authJwt.verifyToken],
+  [authJwt.verifyToken, authJwt.isAliveToken], 
   userController.getProfile
 );
 
@@ -23,7 +23,11 @@ router.get(
   [authJwt.verifyToken, authJwt.hasRole("admin")],
   userController.adminBoard
 );
-
+router.get(
+  "/admin/showSessions",
+  [authJwt.verifyToken, authJwt.hasRole("admin")],
+  userController.showSessions
+)
 /**
  * Ruta solo para REFERENTE
  */

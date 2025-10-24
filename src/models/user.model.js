@@ -59,7 +59,10 @@ export default (sequelize, Sequelize) => {
     correo_electronico: {
       type: Sequelize.STRING(150),
       allowNull: false,
-      unique: true
+      unique: {
+        name: 'unique_email', 
+        msg: 'Email already exists'
+      }
     },
     contrasena_hash: {
       type: Sequelize.STRING(255),

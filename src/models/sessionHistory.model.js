@@ -23,6 +23,11 @@ export default (sequelize, Sequelize) => {
                 key: 'numero_documento_identidad'
             }
         },
+        token:{
+            type: Sequelize.TEXT,
+            allowNull: false
+        },
+
         fecha_inicio: {
             type: Sequelize.DATE,
             defaultValue: Sequelize.NOW,

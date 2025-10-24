@@ -1,5 +1,7 @@
+import jwt from "jsonwebtoken";
 import authService from "../services/auth.service.js";
 import db from "../models/index.js";
+import config from "../config/auth.config.js";
 const Usuario = db.usuario;
 
 /**
@@ -62,6 +64,8 @@ const Usuario = db.usuario;
  *             type: string
  *         accessToken:
  *           type: string
+ *           description: Token JWT para autenticación
+ *           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1X2lkIjoiMTIzNDU2IiwicmxzX2lkIjpbMSwyXSwiaWF0IjoxNjY2NjY2NjY2LCJleHAiOjE2NjY2NzAyNjZ9.abc123def456ghi789jkl"
  */
 
 /**
@@ -159,9 +163,28 @@ const login = async (req, res) => {
     res.status(401).json({ message: error.message });
   }
 };
-
+/**
+ * 
+ * @swagger
+ * /auth/logout:
+ */
+const logout = async (req, res) => {
+  console.log(req.headers['x-access-token']);
+  const token = req.headers['x-access-token'];
+  const tokenDecoded = jwt.decode(token);
+  const numero_documento_identidad = tokenDecoded.documento_identidad;
+  console.log("token decoded in logout: ", tokenDecoded);
+  
+  try {
+    await authService.logoutSession(numero_documento_identidad, token);
+    res.status(200).json({ message: "Logout exitoso" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 export default {
   register,
   checkDuplicateEmailOrDocument,
-  login
+  login,
+  logout
 };

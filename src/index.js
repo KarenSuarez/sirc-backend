@@ -37,6 +37,9 @@ db.sequelize.sync({ alter: true }).then(async () => {
   }
 });
 
+function empty(){
+  
+};
 
 // Inicialización de Roles
 function initialRoles() {
@@ -66,6 +69,20 @@ const swaggerOptions = {
     },
     servers: [
       { url: "http://localhost:5000/api" },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
     ],
   },
   apis: [

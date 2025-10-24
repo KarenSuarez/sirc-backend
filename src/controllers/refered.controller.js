@@ -2,6 +2,28 @@ import db from "../models/index.js";
 import referidoService from "../services/refered.service.js";
 const Referido = db.refered;
 
+
+/**
+ * @swagger
+ * /referidos:
+ *   post:
+ *     summary: Crea un nuevo referido y lo asocia a un referente.
+ *     tags:
+ *       - Referidos
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateReferidoRequest'
+ *     responses:
+ *       201:
+ *         description: Referido creado exitosamente.
+ *       400:
+ *         description: Datos inválidos o duplicados.
+ *       500:
+ *         description: Error del servidor.
+ */
 /**
  * @swagger
  * components:
@@ -44,28 +66,6 @@ const Referido = db.refered;
  *           type: string
  *           description: Documento del referente que lo registró.
  *           example: "1234567890"
- */
-
-/**
- * @swagger
- * /referidos:
- *   post:
- *     summary: Crea un nuevo referido y lo asocia a un referente.
- *     tags:
- *       - Referidos
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreateReferidoRequest'
- *     responses:
- *       201:
- *         description: Referido creado exitosamente.
- *       400:
- *         description: Datos inválidos o duplicados.
- *       500:
- *         description: Error del servidor.
  */
 
 const createRefered = async (req, res) => {

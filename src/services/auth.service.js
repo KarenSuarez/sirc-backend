@@ -109,23 +109,29 @@ const loginUser = async (numero_documento_identidad, password, datosLogin) => {
   if (!passwordIsValid) {
     throw new Error("Contraseña incorrecta");
   }
-
+  console.log("User logged in: ", usuario);
+  
   // ✅ Generar token JWT
   const token = jwt.sign(
-    { documento_identidad: usuario.numero_documento_identidad,  roles: usuario.roles.map(r => r.nombre_rol) },
+    { documento_id: usuario.numero_documento_identidad,
+    rls_id: usuario.roles.map(r => r.id_rol) },
     config.secret,
     { expiresIn: 86400 } // 24h
   );
+
+  
 
   // ✅ Mapear roles a formato legible
   const authorities = usuario.roles.map(
     rol => "ROLE_" + rol.nombre_rol.toUpperCase()
   );
+  
+  // Registrar historial de sesión
   await HistorialSesion.create({
     usuario_id: usuario.numero_documento_identidad,
-    fecha_hora_inicio: new Date(),
     ip_address: datosLogin.ipAddress,
-    dispositivo: datosLogin.deviceInfo
+    dispositivo: datosLogin.deviceInfo,
+    token: lastValueToken(token)
   });
 
   return {
@@ -137,8 +143,44 @@ const loginUser = async (numero_documento_identidad, password, datosLogin) => {
     accessToken: token
   };
 };
+/**
+ * 
+ * @param {String} token 
+ * @returns {String} sub string del token, especificamente la última parte con la que se identifica la sesión
+ */
+function lastValueToken(token) {
+    let tempSplitedToken = token.split(".")
+    return tempSplitedToken[tempSplitedToken.length-1]
+}
+/**
+ * Dado un id de usuario y un token JWT, cierra la sesión activa correspondiente
+ * @param {int} numero_documento_identidad id del usuario
+ * @param {string} tokenIn token JWT completo
+ */
+
+const logoutSession = async (numero_documento_identidad, tokenIn) => {
+  const sessionUnqInformation = lastValueToken(tokenIn);
+  const allSesions = await HistorialSesion.findAll({
+    where: { usuario_id: numero_documento_identidad }
+  })
+  console.log("All sessions for user: ", allSesions);
+  const ultimaSesion = await HistorialSesion.findOne({
+    where: { usuario_id: numero_documento_identidad ,
+       token: {
+            [Op.like]: sessionUnqInformation
+          } },
+    order: [['fecha_inicio', 'DESC']]
+  });
+
+  if (ultimaSesion && !ultimaSesion.fecha_fin) {
+    ultimaSesion.fecha_fin = new Date();
+    await ultimaSesion.save();
+  }
+}
 
 export default {
   registerUser,
-  loginUser
+  loginUser,
+  logoutSession,
+  lastValueToken
 };

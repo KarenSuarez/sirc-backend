@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import authController from "../controllers/auth.controller.js";
+import authJwt from '../middlewares/authJwt.js';
 
 const router = Router();
 
@@ -45,6 +46,24 @@ router.post(
   ],
   authController.register
 );
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout de usuario
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout exitoso
+ *       500:
+ *         description: Error del servidor
+ */
+router.post("/logout",
+  [authJwt.verifyToken]
+  , authController.logout);
 
 /**
  * @swagger
