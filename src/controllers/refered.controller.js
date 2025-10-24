@@ -144,14 +144,14 @@ const getByReferente = async (req, res) => {
 
 /**
  * @swagger
- * /referidos/nuevos:
+ * /referidos/pendientes:
  *   get:
  *     summary: Listado de referidos con estado = 'pendiente'
  *     tags: [Referidos]
  */
 const getEstadoPendiente = async (req, res) => {
   try {
-    const referidos = await referidoService.getReferidosNuevos();
+    const referidos = await referidoService.getReferidosEstadoPendiente();
     res.status(200).json(referidos);
   } catch (error) {
     res.status(500).json({ message: error.message });
