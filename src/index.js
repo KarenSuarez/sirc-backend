@@ -21,6 +21,7 @@ db.sequelize.sync({ alter: true }).then(async () => {
   // Inserta datos iniciales solo si las tablas están vacías
   const countDocs = await db.tipoDocumento.count();
   const countRoles = await db.rol.count();
+  const countCategorias = await db.categoriaGam.count();
 
   if (countDocs === 0) {
     console.log('🟡 Insertando tipos de documento iniciales...');
@@ -35,11 +36,21 @@ db.sequelize.sync({ alter: true }).then(async () => {
   } else {
     console.log('✅ Roles ya existen, no se insertan nuevamente.');
   }
+  if (countCategorias === 0) {
+    console.log('🟢 Insertando categorias iniciales...');
+    await initialCategories();
+  } else {
+    console.log('✅ Roles ya inicializados, no se insertan nuevamente.');
+  }
 });
 
-function empty(){
-  
-};
+function initialCategories(){
+  const Categoria_gamificacion = db.categoriaGam;
+  Categoria_gamificacion.create({nombre_categoria:"Bronce"})
+  Categoria_gamificacion.create({nombre_categoria:"Plata"})
+  Categoria_gamificacion.create({nombre_categoria:"Oro"})
+  Categoria_gamificacion.create({nombre_categoria:"Platino"})
+}
 
 // Inicialización de Roles
 function initialRoles() {

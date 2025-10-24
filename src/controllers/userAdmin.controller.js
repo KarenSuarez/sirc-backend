@@ -1,7 +1,6 @@
-import db from "../models/index.js";
-const SessionHistory = db.historialSesion;
-
+import userServices from "../services/user.services.js"
 const getProfile = (req, res) => {
+  
   res.status(200).send({
     message: " Perfil de usuario autenticado.",
     userId: req.userId
@@ -53,24 +52,13 @@ const adminBoard = (req, res) => {
  *         description: Error interno del servidor.
  */
 const showSessions = async (req, res) => {
-  console.log(req.body);
-  
+  console.log("get sessions body: "+req.body);
   try {
-    const sessions = await SessionHistory.findAll({
-      where: {
-        fecha_fin: null
-      }
-    });
+    const sessions = await userServices.getAllSessions();
     res.status(200).send(sessions);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
-};
-
-const referenteBoard = (req, res) => {
-  res.status(200).send({
-    message: " Contenido solo para Referentes."
-  });
 };
 
 const asesorBoard = (req, res) => {
@@ -88,7 +76,6 @@ const gerenteBoard = (req, res) => {
 export default {
   getProfile,
   adminBoard,
-  referenteBoard,
   asesorBoard,
   gerenteBoard,
   showSessions

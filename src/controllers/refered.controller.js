@@ -1,6 +1,5 @@
-import db from "../models/index.js";
+import referedService from "../services/refered.service.js";
 import referidoService from "../services/refered.service.js";
-const Referido = db.refered;
 
 
 /**
@@ -24,6 +23,7 @@ const Referido = db.refered;
  *       500:
  *         description: Error del servidor.
  */
+
 /**
  * @swagger
  * components:
@@ -74,31 +74,18 @@ const createRefered = async (req, res) => {
       nombre_referido,
       correo_referido,
       telefono_referido } = req.body;
-    const documentoReferente = req.numero_documento_identidad;
-
-    const newRefered = await Referido.create({
+    
+      const datosReferido = {
       documento_identidad_referido,
       nombre_referido,
       correo_referido,
-      telefono_referido,
-      documento_referente: documentoReferente,
-    });
-
+      telefono_referido
+    }
+    const documentoReferente = req.numero_documento_identidad;
+    const newRefered = await referedService.createRefered(datosReferido, documentoReferente);
     res.status(201).json(newRefered);
   } catch (error) {
     res.status(500).send({ message: error.message });
-  }
-};
-
-const checkDuplicateReferedEmail = async (req, res, next) => {
-  try {
-    const refered = await Referido.findOne({ where: { correo_referido: req.body.correo_referido } });
-    if (refered) {
-      return res.status(400).send({ message: "Error: El correo electrónico del referido ya está en uso." });
-    }
-    next();
-  } catch (error) {
-    return res.status(500).send({ message: error.message });
   }
 };
 
@@ -195,10 +182,8 @@ const updateEstado = async (req, res) => {
 
 export default {
   createRefered,
-  checkDuplicateReferedEmail,
   getAll,
   getByReferente,
   getEstadoPendiente,
   updateEstado
-
 };

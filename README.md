@@ -6,9 +6,13 @@ Sistemas de Fidelizacion y Referidos Clarisa CLOUD
 
 1.  Clona el repositorio.
 2.  Instala las dependencias:
-    ```bash
-    npm install
-    ```
+```bash
+npm install
+```
+o tambien con
+```
+npm i
+```
 
 ## Uso
 
@@ -17,8 +21,10 @@ Para iniciar el servidor en modo de desarrollo, ejecuta:
 ```bash
 npm run dev
 ```
-
-El servidor se iniciará en el puerto 8080.
+Con el comando dev, aplicaremos el los env files para manejar el puerto de la base de datos, el --watch indica ejecutar el programa y reiniciarse en cada actualización al guardarse
+```json
+  "dev": "node --env-file=.env.dev --watch src/index.js"
+```
 
 ## Endpoints
 

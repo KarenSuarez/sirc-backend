@@ -36,24 +36,24 @@ const registerUser = async (userData) => {
     roles
   } = userData;
 
-  // ✅ Verifica si el tipo de documento existe
+  // Verifica si el tipo de documento existe
   const tipoDocumento = await db.tipoDocumento.findByPk(id_tipo_documento);
   if (!tipoDocumento) {
     throw new Error("El tipo de documento especificado no existe.");
   }
 
-  // ✅ Crea el usuario
+  // Crea el usuario
   const usuario = await Usuario.create({
     nombre,
     apellido,
     correo_electronico,
-    contrasena_hash: bcrypt.hashSync(password, 8),
+    contrasena_hash: bcrypt.hashSync(password, 8), //
     numero_documento_identidad,
     id_tipo_documento,
     telefono
   });
 
-  // ✅ Asignación de roles
+  // Asignación de roles
   let isReferente = false;
   if (roles && roles.length > 0) {
     const foundRoles = await Rol.findAll({
@@ -71,7 +71,7 @@ const registerUser = async (userData) => {
     }
   }
 
-  // ✅ Si el usuario es un referente, crea su perfil de referente
+  // Si el usuario es un referente, crea su perfil de referente
   if (isReferente) {
     await Referente.create({
       numero_documento_identidad: usuario.numero_documento_identidad,
@@ -86,12 +86,12 @@ const registerUser = async (userData) => {
  * @param {string} numero_documento_identidad - Número de documento de identidad del usuario.
  * @param {string} password - Contraseña del usuario.
  * @returns {Promise<object>} Un objeto con los datos del usuario y el token de acceso.
- * @property {number} id - ID del usuario.
+ * @returns {string} El token tiene una estructura   {documento_id: numero_documento_identidad,  rls_id: [1,2,...]}
+ * @property {string} numero_documento_identidad - Número de documento del usuario.
  * @property {string} nombre - Nombre del usuario.
  * @property {string} apellido - Apellido del usuario.
- * @property {string} numero_documento_identidad - Número de documento del usuario.
  * @property {string[]} roles - Roles del usuario en formato 'ROLE_NOMBRE'.
- * @property {string} accessToken - Token JWT para la sesión.
+ * @property {string} accessToken - Token JWT para la sesión. 
  * @throws {Error} Si el usuario no se encuentra o la contraseña es incorrecta.
  */
 const loginUser = async (numero_documento_identidad, password, datosLogin) => {
@@ -104,54 +104,46 @@ const loginUser = async (numero_documento_identidad, password, datosLogin) => {
     throw new Error("Usuario no encontrado");
   }
 
-  // ✅ Validar contraseña
+  // Validar contraseña
   const passwordIsValid = bcrypt.compareSync(password, usuario.contrasena_hash);
   if (!passwordIsValid) {
     throw new Error("Contraseña incorrecta");
   }
-  console.log("User logged in: ", usuario);
-  
-  // ✅ Generar token JWT
+  //Generar token JWT
   const token = jwt.sign(
-    { documento_id: usuario.numero_documento_identidad,
-    rls_id: usuario.roles.map(r => r.id_rol) },
+    {
+      documento_id: usuario.numero_documento_identidad,
+      rls_id: usuario.roles.map(r => r.id_rol)
+    },
     config.secret,
-    { expiresIn: 86400 } // 24h
+    { 
+      expiresIn: 86400 // 24 horas
+    } 
   );
 
-  
-
-  // ✅ Mapear roles a formato legible
+  // Mapear roles a formato legible
   const authorities = usuario.roles.map(
     rol => "ROLE_" + rol.nombre_rol.toUpperCase()
   );
-  
+
   // Registrar historial de sesión
   await HistorialSesion.create({
     usuario_id: usuario.numero_documento_identidad,
     ip_address: datosLogin.ipAddress,
     dispositivo: datosLogin.deviceInfo,
+    //guardamos el ultimo segmento del token
     token: lastValueToken(token)
   });
 
   return {
-    id: usuario.id_usuario,
+    numero_documento_identidad: usuario.numero_documento_identidad,
     nombre: usuario.nombre,
     apellido: usuario.apellido,
-    numero_documento_identidad: usuario.numero_documento_identidad,
     roles: authorities,
     accessToken: token
   };
 };
-/**
- * 
- * @param {String} token 
- * @returns {String} sub string del token, especificamente la última parte con la que se identifica la sesión
- */
-function lastValueToken(token) {
-    let tempSplitedToken = token.split(".")
-    return tempSplitedToken[tempSplitedToken.length-1]
-}
+
 /**
  * Dado un id de usuario y un token JWT, cierra la sesión activa correspondiente
  * @param {int} numero_documento_identidad id del usuario
@@ -165,10 +157,12 @@ const logoutSession = async (numero_documento_identidad, tokenIn) => {
   })
   console.log("All sessions for user: ", allSesions);
   const ultimaSesion = await HistorialSesion.findOne({
-    where: { usuario_id: numero_documento_identidad ,
-       token: {
-            [Op.like]: sessionUnqInformation
-          } },
+    where: {
+      usuario_id: numero_documento_identidad,
+      token: {
+        [Op.like]: sessionUnqInformation
+      }
+    },
     order: [['fecha_inicio', 'DESC']]
   });
 
@@ -177,10 +171,46 @@ const logoutSession = async (numero_documento_identidad, tokenIn) => {
     await ultimaSesion.save();
   }
 }
+/**
+ * busca en la tabla Usuario segun el correo
+ * @param {string} correoElectronico 
+ * @returns 
+ */
+const findByCorreo = (correoElectronico) => {
+  return Usuario.findOne({
+      where: {
+        correo_electronico: correoElectronico
+      }
+  })
+};
 
+/**
+ * busca en la tabla Usuario segun el correo
+ * @param {string} numeroDocumentoIdentidad 
+ * @returns 
+ */
+const findByDocumento = (numeroDocumentoIdentidad) => {
+  return Usuario.findOne({ 
+      where: {
+         numero_documento_identidad: numeroDocumentoIdentidad 
+        } 
+  })
+}
+
+/**
+ * 
+ * @param {String} token 
+ * @returns {String} sub string del token, especificamente la última parte con la que se identifica la sesión
+ */
+function lastValueToken(token) {
+  let tempSplitedToken = token.split(".")
+  return tempSplitedToken[tempSplitedToken.length - 1]
+}
 export default {
   registerUser,
   loginUser,
   logoutSession,
-  lastValueToken
+  lastValueToken,
+  findByCorreo,
+  findByDocumento
 };

@@ -8,8 +8,7 @@ import referenteModel from './referente.model.js';
 import planModel from './plan.model.js';
 import referedModel from './refered.model.js';
 import sessionHistoryModel from './sessionHistory.model.js';
-
-
+import categoriaModel from "./categoria.model.js";
 
 const sequelize = new Sequelize(
   DB,
@@ -57,6 +56,7 @@ db.referente = referenteModel(sequelize, Sequelize);
 db.plan = planModel(sequelize, Sequelize); 
 db.refered = referedModel(sequelize, Sequelize);
 db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
+db.categoriaGam = categoriaModel(sequelize, Sequelize);
 
 // --- Definición de Asociaciones ---
 

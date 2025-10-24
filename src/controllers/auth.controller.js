@@ -1,8 +1,5 @@
 import jwt from "jsonwebtoken";
 import authService from "../services/auth.service.js";
-import db from "../models/index.js";
-import config from "../config/auth.config.js";
-const Usuario = db.usuario;
 
 /**
  * @swagger
@@ -102,17 +99,16 @@ const register = async (req, res) => {
  * Middleware para verificar duplicados
  */
 const checkDuplicateEmailOrDocument = async (req, res, next) => {
+  const {correo_electronico, numero_documento_identidad} = req.body;
   try {
-    let user = await Usuario.findOne({ where: { correo_electronico: req.body.correo_electronico } });
+    let user = await authService.findByCorreo(correo_electronico);
     if (user) {
       return res.status(400).send({ message: "Error: El correo electrónico ya está en uso." });
     }
-
-    user = await Usuario.findOne({ where: { numero_documento_identidad: req.body.numero_documento_identidad } });
+    user = await authService.findByDocumento(numero_documento_identidad);
     if (user) {
       return res.status(400).send({ message: "Error: El número de documento ya está registrado." });
     }
-
     next();
   } catch (error) {
     return res.status(500).send({ message: error.message });
@@ -144,15 +140,12 @@ const checkDuplicateEmailOrDocument = async (req, res, next) => {
  *       500:
  *         description: Error del servidor
  */
+
 const login = async (req, res) => {
   try {
     const { numero_documento_identidad, password } = req.body;
     const ipAddress = req.ip || req.connection.remoteAddress;
     const deviceInfo = req.headers['user-agent'] || 'Unknown device';
-    //print all headers
-    console.log('Request Headers:', req.headers);
-    console.log('IP Address:', ipAddress);
-    console.log('Device Info:', deviceInfo);
     const datosLogin = {
       ipAddress,
       deviceInfo
