@@ -38,7 +38,8 @@ router.get(
      referedController.getEstadoPendiente
 );
 router.patch("/:id/estado",
-     referedController.updateEstado
+    [authJwt.hasRole("asesor")],
+    referedController.updateEstado
 );
 
 export default router;

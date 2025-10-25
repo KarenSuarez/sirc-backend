@@ -16,31 +16,31 @@ app.use(express.urlencoded({ extended: true }));
 
 // --- Conexión y Sincronización con la Base de Datos ---
 db.sequelize.sync({ alter: true }).then(async () => {
-  console.log('✅ Base de datos sincronizada.');
-
+  console.log('OK_SYNC Base de datos sincronizada.');
+  
   // Inserta datos iniciales solo si las tablas están vacías
   const countDocs = await db.tipoDocumento.count();
   const countRoles = await db.rol.count();
   const countCategorias = await db.categoriaGam.count();
-
+  
   if (countDocs === 0) {
-    console.log('🟡 Insertando tipos de documento iniciales...');
+    console.log('LOADING Insertando tipos de documento iniciales...');
     await initialTipoDocumentos();
   } else {
-    console.log('✅ Tipos de documento ya existen, no se insertan nuevamente.');
+    console.log('OK. Tipos de documento ya existen, no se insertan nuevamente.');
   }
 
   if (countRoles === 0) {
-    console.log('🟢 Insertando roles iniciales...');
+    console.log('.LOADING Insertando roles iniciales...');
     await initialRoles();
   } else {
-    console.log('✅ Roles ya existen, no se insertan nuevamente.');
+    console.log('OK. Roles ya existen, no se insertan nuevamente.');
   }
   if (countCategorias === 0) {
-    console.log('🟢 Insertando categorias iniciales...');
+    console.log('DONE Insertando categorias iniciales...');
     await initialCategories();
   } else {
-    console.log('✅ Roles ya inicializados, no se insertan nuevamente.');
+    console.log('OK. Roles ya inicializados, no se insertan nuevamente.');
   }
 });
 
@@ -58,6 +58,9 @@ function initialRoles() {
   Role.create({ id_rol: 1, nombre_rol: 'admin' });
   Role.create({ id_rol: 2, nombre_rol: 'referente' });
   Role.create({ id_rol: 3, nombre_rol: 'gerente ventas' });
+  Role.create({ id_rol: 4, nombre_rol: 'asesor' });
+  
+  
 }
 
 // Inicialización de Tipos de Documento
@@ -107,11 +110,12 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 // Ruta para Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// --- Rutas Principales ---
+//ruta de prueba conexión exitosa
 app.get('/', (req, res) => {
   res.json({ message: 'Bienvenido al API de Referidos y Fidelización.' });
 });
 
+//ruta principal para gestión de los servicios
 app.use('/api', mainRouter);
 
 // --- Iniciar Servidor ---

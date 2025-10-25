@@ -100,7 +100,10 @@ export default (sequelize, Sequelize) => {
     correo_referido: {
       type: Sequelize.STRING(100),
       allowNull: false,
-      unique: true
+      unique: {
+        name: 'unique_email_referido', 
+        msg: 'Email already exists'
+      }
     },
     telefono_referido: {
       type: Sequelize.STRING(20),
