@@ -7,6 +7,7 @@ import userRoleModel from './userRole.model.js';
 import referenteModel from './referente.model.js';
 import planModel from './plan.model.js';
 import referedModel from './refered.model.js';
+import solicitudRecompensaModel from './solicitudRecompensa.model.js';
 
 
 
@@ -55,6 +56,8 @@ db.rolUsuario = userRoleModel(sequelize, Sequelize);
 db.referente = referenteModel(sequelize, Sequelize);
 db.plan = planModel(sequelize, Sequelize); 
 db.refered = referedModel(sequelize, Sequelize);
+db.solicitudRecompensa = solicitudRecompensaModel(sequelize, Sequelize);
+
 
 
 // --- Definición de Asociaciones ---
@@ -108,6 +111,32 @@ db.referente.belongsTo(db.usuario, {
   foreignKey: 'numero_documento_identidad', 
   as: 'usuario'
 });
+
+
+// 5. Solicitud_Recompensa <--> Referente (Muchos a Uno)
+db.referente.hasMany(db.solicitudRecompensa, {
+  foreignKey: "documento_referente",
+  sourceKey: "numero_documento_identidad",
+  as: "solicitudes"
+});
+
+db.solicitudRecompensa.belongsTo(db.referente, {
+  foreignKey: "documento_referente",
+  targetKey: "numero_documento_identidad",
+  as: "referente"
+});
+
+// 6. Solicitud_Recompensa <--> Usuario (Contador que procesa la solicitud)
+db.usuario.hasMany(db.solicitudRecompensa, {
+  foreignKey: "numero_documento_identidad",
+  as: "solicitudes_procesadas"
+});
+
+db.solicitudRecompensa.belongsTo(db.usuario, {
+  foreignKey: "numero_documento_identidad",
+  as: "procesado_por"
+});
+
 
 db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
 

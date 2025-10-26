@@ -47,6 +47,7 @@ function initialRoles() {
   Role.create({ id_rol: 2, nombre_rol: 'referente' });
   Role.create({ id_rol: 3, nombre_rol: 'gerente ventas' });
   Role.create({ id_rol: 4, nombre_rol: 'asesor' });
+  Role.create({ id_rol: 5, nombre_rol: 'contador' });
 }
 
 // Inicialización de Tipos de Documento
