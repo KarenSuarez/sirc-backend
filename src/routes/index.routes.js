@@ -8,6 +8,7 @@ import beneficiosRoutes from "./beneficios.routes.js";
 import configPointsPlanRoutes from "./configPointsPlan.routes.js";
 import rankingRoutes from "./ranking.routes.js";
 import kpiRoutes from "./routes/kpi.routes.js";
+import solicitudRoutes from "./solicitud.routes.js";
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use("/beneficios", beneficiosRoutes);
 router.use("/config-puntos-plan", configPointsPlanRoutes);
 router.use("/ranking", rankingRoutes);
 router.use("/kpis", kpiRoutes);
+router.use("/solicitudes", solicitudRoutes);
 
 export default router;
