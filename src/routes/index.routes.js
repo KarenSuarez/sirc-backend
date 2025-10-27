@@ -6,6 +6,7 @@ import pointsRoutes from './points.routes.js';
 import nivelesRoutes from "./niveles.routes.js";
 import beneficiosRoutes from "./beneficios.routes.js";
 import configPointsPlanRoutes from "./configPointsPlan.routes.js";
+import rankingRoutes from "./ranking.routes.js";
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use('/points', pointsRoutes);
 router.use("/niveles", nivelesRoutes);
 router.use("/beneficios", beneficiosRoutes);
 router.use("/config-puntos-plan", configPointsPlanRoutes);
+router.use("/ranking", rankingRoutes);
 
 export default router;
