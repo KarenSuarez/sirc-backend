@@ -16,6 +16,7 @@
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.2",
     "mariadb": "^3.4.5",
     "node-cron": "^4.2.1",
