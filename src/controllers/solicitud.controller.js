@@ -8,7 +8,7 @@ export const generarCuentaCobro = async (req, res) => {
     const { id } = req.params;
 
     // Buscar la solicitud
-    const solicitud = await db.Historial_Solicitudes.findByPk(id, {
+    const solicitud = await db.SolicitudRecompensa.findByPk(id, {
       include: [
         {
           model: db.Referente,
@@ -48,7 +48,6 @@ export const generarCuentaCobro = async (req, res) => {
       .text("CLARISA CLOUD S.A.S", 150, 50)
       .fontSize(12)
       .fillColor("gray")
-      .text("NIT: 901.XXXX.XXX", 150, 70)
       .text("clarisacloud.com", 150, 85);
 
     doc.moveDown(2);
