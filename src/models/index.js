@@ -9,6 +9,7 @@ import planModel from './plan.model.js';
 import referedModel from './refered.model.js';
 import solicitudRecompensaModel from './solicitudRecompensa.model.js';
 import movimientoModel from "./movimiento.model.js";
+import historialRecompensaModel from './historialRecompensa.model.js';
 
 
 
@@ -59,6 +60,7 @@ db.plan = planModel(sequelize, Sequelize);
 db.refered = referedModel(sequelize, Sequelize);
 db.solicitudRecompensa = solicitudRecompensaModel(sequelize, Sequelize);
 db.movimiento = movimientoModel(sequelize, Sequelize);
+db.historialRecompensa = historialRecompensaModel(sequelize, Sequelize);
 
 
 
@@ -138,6 +140,20 @@ db.solicitudRecompensa.belongsTo(db.usuario, {
   foreignKey: "numero_documento_identidad",
   as: "procesado_por"
 });
+
+// 7. Historial_Recompensa <--> Referente (Muchos a Uno)
+db.referente.hasMany(db.historialRecompensa, {
+  foreignKey: "numero_documento_identidad",
+  sourceKey: "numero_documento_identidad",
+  as: "historial_recompensas"
+});
+
+db.historialRecompensa.belongsTo(db.referente, {
+  foreignKey: "numero_documento_identidad",
+  targetKey: "numero_documento_identidad",
+  as: "referente"
+});
+
 
 
 db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
