@@ -48,44 +48,48 @@
  */
 
 export default (sequelize, Sequelize) => {
-    const Referente = sequelize.define("Referente", {
-        numero_documento_identidad: {
-            type: Sequelize.STRING(20),
-            primaryKey: true,
-            references: {
-                model: 'Usuario',
-                key: 'numero_documento_identidad'
-            }
+  const Referente = sequelize.define(
+    "Referente",
+    {
+      numero_documento_identidad: {
+        type: Sequelize.STRING(20),
+        primaryKey: true,
+        references: {
+          model: "Usuario",
+          key: "numero_documento_identidad",
         },
-        tipo_referente: {
-            type: Sequelize.ENUM('cliente externo', 'cliente interno'),
-            defaultValue: 'cliente externo'
-        },
-        puntos_acumulados: {
-            type: Sequelize.INTEGER,
-            defaultValue: 0
-        },
-        categoria_actual: {
-            type: Sequelize.ENUM('basico'),
-            defaultValue: 'basico'
-        },
-        recompensa_monetaria_actual: {
-            type: Sequelize.DECIMAL(10, 2),
-            allowNull: true,
-            defaultValue: 0.00
-        },
-        fecha_ultima_categoria: {
-            type: Sequelize.DATE,
-            defaultValue: Sequelize.NOW
-        },
-        estado_referente: {
-            type: Sequelize.ENUM('activo', 'en pausa'),
-            defaultValue: 'activo'
-        }
-    }, {
-        tableName: 'Referente',
-        timestamps: false
-    });
+      },
+      tipo_referente: {
+        type: Sequelize.ENUM("cliente externo", "cliente interno"),
+        defaultValue: "cliente externo",
+      },
+      puntos_acumulados: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
+      categoria_actual: {
+        type: Sequelize.ENUM("basico"),
+        defaultValue: "basico",
+      },
+      recompensa_monetaria_actual: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+        defaultValue: 0.0,
+      },
+      fecha_ultima_categoria: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      estado_referente: {
+        type: Sequelize.ENUM("activo", "en pausa"),
+        defaultValue: "activo",
+      },
+    },
+    {
+      tableName: "Referente",
+      timestamps: false,
+    },
+  );
 
-    return Referente;
+  return Referente;
 };

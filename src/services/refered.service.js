@@ -11,33 +11,37 @@ const getReferidosByReferrer = async (documento_referente) => {
 const createRefered = async (datosReferido, documentoReferente) => {
   const newRefered = {};
   try {
-    const { documento_identidad_referido,
-          nombre_referido,
-          correo_referido,
-          telefono_referido } = datosReferido;
+    const {
+      documento_identidad_referido,
+      nombre_referido,
+      correo_referido,
+      telefono_referido,
+    } = datosReferido;
     newRefered = await Referido.create({
       documento_identidad_referido,
       nombre_referido,
       correo_referido,
       telefono_referido,
       documento_referente: documentoReferente,
-      });
+    });
   } catch (error) {
-    throw new Error("Error al crear referido\n"+ error); 
+    throw new Error("Error al crear referido\n" + error);
   }
   return newRefered;
-}
-
-const getReferidosEstadoPendiente = async () => {
-  return await Referido.findAll(
-    { 
-      where: {
-         estado_referido: "pendiente" 
-        } 
-    });
 };
 
-const updateEstadoReferido = async (documento_identidad_referido, nuevoEstado) => {
+const getReferidosEstadoPendiente = async () => {
+  return await Referido.findAll({
+    where: {
+      estado_referido: "pendiente",
+    },
+  });
+};
+
+const updateEstadoReferido = async (
+  documento_identidad_referido,
+  nuevoEstado,
+) => {
   const estadosValidos = ["pendiente", "contactado", "activo", "inactivo"];
   if (!estadosValidos.includes(nuevoEstado)) {
     throw new Error("Estado inválido");
@@ -59,5 +63,5 @@ export default {
   getAllReferidos,
   getReferidosByReferrer,
   getReferidosEstadoPendiente,
-  updateEstadoReferido
+  updateEstadoReferido,
 };

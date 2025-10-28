@@ -5,7 +5,7 @@ node_modules
 npm-debug.log
 
 # Archivos de entorno
-.env*
+#.env*
 
 # Git
 .git

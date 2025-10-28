@@ -1,5 +1,5 @@
 // src/cache/drivers/redis.cache.js
-import { createClient } from 'redis';
+import { createClient } from "redis";
 
 export default class RedisCache {
   constructor(config) {
@@ -7,10 +7,10 @@ export default class RedisCache {
       password: config.password,
       socket: {
         host: config.host,
-        port: config.port
-      }
+        port: config.port,
+      },
     });
-    this.client.on('error', (err) => console.error('Redis Client Error', err));
+    this.client.on("error", (err) => console.error("Redis Client Error", err));
     this.connect();
   }
 
@@ -28,7 +28,7 @@ export default class RedisCache {
   async set(key, value, ttl_seconds) {
     const stringValue = JSON.stringify(value);
     if (ttl_seconds) {
-      await this.client.set(key, stringValue, { 'EX': ttl_seconds });
+      await this.client.set(key, stringValue, { EX: ttl_seconds });
     } else {
       await this.client.set(key, stringValue);
     }

@@ -19,29 +19,32 @@
  *         - id_rol
  */
 
-
 export default (sequelize, DataTypes) => {
-  const RolUsuario = sequelize.define("RolUsuario", {
-    numero_documento_identidad: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      references: {
-        model: "Usuario",
-        key: "numero_documento_identidad"
-      }
+  const RolUsuario = sequelize.define(
+    "RolUsuario",
+    {
+      numero_documento_identidad: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        references: {
+          model: "Usuario",
+          key: "numero_documento_identidad",
+        },
+      },
+      id_rol: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "Rol",
+          key: "id_rol",
+        },
+      },
     },
-    id_rol: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "Rol",
-        key: "id_rol"
-      }
-    }
-  }, {
-    tableName: "RolUsuario",
-    timestamps: false
-  });
+    {
+      tableName: "RolUsuario",
+      timestamps: false,
+    },
+  );
 
   return RolUsuario;
 };

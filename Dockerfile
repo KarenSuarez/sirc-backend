@@ -26,4 +26,4 @@ USER appuser
 EXPOSE 5000
 
 # Comando para iniciar la aplicación cuando el contenedor se inicie
-CMD [ "node", "src/index.js" ]
+CMD [ "npm", "run", "dev" ]

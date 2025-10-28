@@ -7,9 +7,7 @@ const Usuario = db.usuario;
 const Rol = db.rol;
 const HistorialSesion = db.historialSesion;
 
-/**
- * Middleware para verificar el token JWT
- */
+/** Middleware para verificar el token JWT */
 const verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
 
@@ -19,16 +17,16 @@ const verifyToken = (req, res, next) => {
 
   jwt.verify(token, config.secret, (err, decoded) => {
     if (err) {
-      return res.status(401).send({ message: "No autorizado. Token inválido." });
+      return res
+        .status(401)
+        .send({ message: "No autorizado. Token inválido." });
     }
     req.numero_documento_identidad = decoded.documento_id;
     next();
   });
 };
 
-/**
- * Middleware para verificar si el usuario es 'referente'
- */
+/** Middleware para verificar si el usuario es 'referente' */
 const isReferente = async (req, res, next) => {
   try {
     const usuario = await Usuario.findByPk(req.numero_documento_identidad);
@@ -49,6 +47,7 @@ const isReferente = async (req, res, next) => {
 
 /**
  * Middleware genérico para validar si el usuario tiene un rol específico
+ *
  * @param {string} roleName - Nombre del rol a verificar
  */
 const hasRole = (roleName) => {
@@ -67,7 +66,7 @@ const hasRole = (roleName) => {
       // Buscar el usuario en la base de datos
       const usuario = await Usuario.findOne({
         where: { numero_documento_identidad: documentoIdentidad },
-        include: [{ model: Rol, as: "roles" }]
+        include: [{ model: Rol, as: "roles" }],
       });
 
       if (!usuario) {
@@ -75,7 +74,7 @@ const hasRole = (roleName) => {
       }
 
       // Verificar si el usuario tiene el rol requerido
-      const roles = usuario.roles.map(r => r.nombre_rol.toLowerCase());
+      const roles = usuario.roles.map((r) => r.nombre_rol.toLowerCase());
       if (roles.includes(roleName.toLowerCase())) {
         return next();
       }
@@ -113,14 +112,17 @@ const isAliveToken = async (req, res, next) => {
     const lastSegment = authService.lastValueToken(token);
 
     const sessionsOfUser = await HistorialSesion.findAll({
-      where: { 
+      where: {
         usuario_id: documentoIdentidad,
         fecha_fin: null,
-        token: lastSegment  
-      }
+        token: lastSegment,
+      },
     });
 
-    console.log("Sesiones activas del usuario:", sessionsOfUser.map(session => session.toJSON()));
+    console.log(
+      "Sesiones activas del usuario:",
+      sessionsOfUser.map((session) => session.toJSON()),
+    );
     if (!sessionsOfUser || sessionsOfUser.length === 0) {
       return res.status(401).send({ message: "Token de sesión no activo." });
     }
@@ -129,11 +131,10 @@ const isAliveToken = async (req, res, next) => {
     return res.status(500).send({ message: error.message });
   }
 };
-  
 
 export default {
   verifyToken,
   isReferente,
-  hasRole, 
-  isAliveToken
+  hasRole,
+  isAliveToken,
 };

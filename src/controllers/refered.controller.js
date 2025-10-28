@@ -1,6 +1,5 @@
 import referidoService from "../services/refered.service.js";
 
-
 /**
  * @swagger
  * /referidos:
@@ -69,19 +68,24 @@ import referidoService from "../services/refered.service.js";
 
 const createRefered = async (req, res) => {
   try {
-    const { documento_identidad_referido,
-      nombre_referido,
-      correo_referido,
-      telefono_referido } = req.body;
-    
-      const datosReferido = {
+    const {
       documento_identidad_referido,
       nombre_referido,
       correo_referido,
-      telefono_referido
-    }
+      telefono_referido,
+    } = req.body;
+
+    const datosReferido = {
+      documento_identidad_referido,
+      nombre_referido,
+      correo_referido,
+      telefono_referido,
+    };
     const documentoReferente = req.numero_documento_identidad;
-    const newRefered = await referidoService.createRefered(datosReferido, documentoReferente);
+    const newRefered = await referidoService.createRefered(
+      datosReferido,
+      documentoReferente,
+    );
     res.status(201).json(newRefered);
   } catch (error) {
     res.status(500).send({ message: error.message });
@@ -127,7 +131,6 @@ const getByReferente = async (req, res) => {
   }
 };
 
-
 /**
  * @swagger
  * /referidos/pendientes:
@@ -169,20 +172,22 @@ const getEstadoPendiente = async (req, res) => {
  */
 const updateEstado = async (req, res) => {
   try {
-    const { documento_identidad_referido  } = req.params;
-    const { estado_referido} = req.body;
-    const referido = await referidoService.updateEstadoReferido(documento_identidad_referido, estado_referido);
+    const { documento_identidad_referido } = req.params;
+    const { estado_referido } = req.body;
+    const referido = await referidoService.updateEstadoReferido(
+      documento_identidad_referido,
+      estado_referido,
+    );
     res.status(200).json(referido);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-
 export default {
   createRefered,
   getAll,
   getByReferente,
   getEstadoPendiente,
-  updateEstado
+  updateEstado,
 };

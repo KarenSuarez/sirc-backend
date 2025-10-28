@@ -47,46 +47,49 @@
  *         - numero_documento_identidad
  */
 
-
 // Modelo Sequelize para la tabla Usuario
 export default (sequelize, Sequelize) => {
-  const Usuario = sequelize.define("Usuario", {
-    numero_documento_identidad: {
-      type: Sequelize.STRING(20),
-      primaryKey: true,
-      allowNull: false
+  const Usuario = sequelize.define(
+    "Usuario",
+    {
+      numero_documento_identidad: {
+        type: Sequelize.STRING(20),
+        primaryKey: true,
+        allowNull: false,
+      },
+      correo_electronico: {
+        type: Sequelize.STRING(150),
+        allowNull: false,
+        unique: {
+          name: "unique_email",
+          msg: "Email already exists",
+        },
+      },
+      contrasena_hash: {
+        type: Sequelize.STRING(255),
+        allowNull: false,
+      },
+      nombre: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+      },
+      apellido: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+      },
+      telefono: {
+        type: Sequelize.STRING(20),
+        allowNull: true,
+      },
+      // id_tipo_documento es generado por la asociación
     },
-    correo_electronico: {
-      type: Sequelize.STRING(150),
-      allowNull: false,
-      unique: {
-        name: 'unique_email', 
-        msg: 'Email already exists'
-      }
+    {
+      tableName: "Usuario",
+      timestamps: true,
+      createdAt: "fecha_registro",
+      updatedAt: false,
     },
-    contrasena_hash: {
-      type: Sequelize.STRING(255),
-      allowNull: false
-    },
-    nombre: {
-      type: Sequelize.STRING(100),
-      allowNull: false
-    },
-    apellido: {
-      type: Sequelize.STRING(100),
-      allowNull: false
-    },
-    telefono: {
-      type: Sequelize.STRING(20),
-      allowNull: true
-    },
-    // id_tipo_documento es generado por la asociación
-  }, {
-    tableName: 'Usuario',
-    timestamps: true,
-    createdAt: 'fecha_registro',
-    updatedAt: false 
-  });
+  );
 
   return Usuario;
 };

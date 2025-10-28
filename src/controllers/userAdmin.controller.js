@@ -1,15 +1,14 @@
-import userServices from "../services/user.services.js"
+import userServices from "../services/user.services.js";
 const getProfile = (req, res) => {
-  
   res.status(200).send({
     message: " Perfil de usuario autenticado.",
-    userId: req.userId
+    userId: req.userId,
   });
 };
 
 const adminBoard = (req, res) => {
   res.status(200).send({
-    message: " Contenido solo para Administradores."
+    message: " Contenido solo para Administradores.",
   });
 };
 
@@ -52,7 +51,7 @@ const adminBoard = (req, res) => {
  *         description: Error interno del servidor.
  */
 const showSessions = async (req, res) => {
-  console.log("get sessions body: "+req.body);
+  console.log("get sessions body: " + req.body);
   try {
     const sessions = await userServices.getAllSessions();
     res.status(200).send(sessions);
@@ -63,13 +62,13 @@ const showSessions = async (req, res) => {
 
 const asesorBoard = (req, res) => {
   res.status(200).send({
-    message: " Contenido solo para Asesores Internos."
+    message: " Contenido solo para Asesores Internos.",
   });
 };
 
 const gerenteBoard = (req, res) => {
   res.status(200).send({
-    message: " Contenido solo para Gerentes de Ventas."
+    message: " Contenido solo para Gerentes de Ventas.",
   });
 };
 
@@ -78,5 +77,5 @@ export default {
   adminBoard,
   asesorBoard,
   gerenteBoard,
-  showSessions
+  showSessions,
 };

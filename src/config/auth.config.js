@@ -1,3 +1,3 @@
 export default {
-  secret: "clarisa-secret-key"
+  secret: "clarisa-secret-key",
 };
