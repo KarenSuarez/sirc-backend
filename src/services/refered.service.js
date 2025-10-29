@@ -14,7 +14,7 @@ const getReferidosByReferrer = async (documento_referente) => {
     });
 };
 const createRefered = async (datosReferido, documentoReferente) => {
-  const newRefered = {};
+  let newRefered = {};
   try {
     const {
       documento_identidad_referido,
@@ -30,7 +30,7 @@ const createRefered = async (datosReferido, documentoReferente) => {
       documento_referente: documentoReferente,
     });
   } catch (error) {
-    throw new Error("Error al crear referido\n" + error);
+    throw new Error("Error al crear referido " + error);
   }
   return newRefered;
 };
