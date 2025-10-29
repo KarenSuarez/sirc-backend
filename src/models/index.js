@@ -10,6 +10,7 @@ import referedModel from './refered.model.js';
 import solicitudRecompensaModel from './solicitudRecompensa.model.js';
 import movimientoModel from "./movimiento.model.js";
 import historialRecompensaModel from './historialRecompensa.model.js';
+import historialCategoriaModel from './historialCategoria.model.js';
 
 
 
@@ -61,6 +62,7 @@ db.refered = referedModel(sequelize, Sequelize);
 db.solicitudRecompensa = solicitudRecompensaModel(sequelize, Sequelize);
 db.movimiento = movimientoModel(sequelize, Sequelize);
 db.historialRecompensa = historialRecompensaModel(sequelize, Sequelize);
+db.historialCategoria = historialCategoriaModel(sequelize, Sequelize);
 
 
 
@@ -153,6 +155,17 @@ db.historialRecompensa.belongsTo(db.referente, {
   targetKey: "numero_documento_identidad",
   as: "referente"
 });
+
+db.referente.hasMany(db.historialCategoria, {
+  foreignKey: "id_referente",
+  as: "historialCategorias"
+});
+
+db.historialCategoria.belongsTo(db.referente, {
+  foreignKey: "id_referente",
+  as: "referente"
+});
+
 
 
 

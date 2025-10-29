@@ -10,6 +10,7 @@ import rankingRoutes from "./ranking.routes.js";
 import kpiRoutes from "./routes/kpi.routes.js";
 import solicitudRoutes from "./solicitud.routes.js";
 import historialRecompensaRoutes from "./routes/historialRecompensa.routes.js";
+import historialCategoriaRoutes from "./routes/historialCategoria.routes.js";
 
 const router = Router();
 
@@ -24,4 +25,6 @@ router.use("/ranking", rankingRoutes);
 router.use("/kpis", kpiRoutes);
 router.use("/solicitudes", solicitudRoutes);
 router.use("/historial-recompensas", historialRecompensaRoutes);
+router.use("/historial-categorias", historialCategoriaRoutes);
+
 export default router;
