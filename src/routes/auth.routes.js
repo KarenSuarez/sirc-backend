@@ -1,5 +1,6 @@
-import { Router } from 'express';
+import { Router } from "express";
 import authController from "../controllers/auth.controller.js";
+import authJwt from "../middlewares/authJwt.js";
 
 const router = Router();
 
@@ -10,10 +11,10 @@ const router = Router();
  *   description: Endpoints de autenticación
  */
 
-router.use(function(req, res, next) {
+router.use(function (req, res, next) {
   res.header(
     "Access-Control-Allow-Headers",
-    "x-access-token, Origin, Content-Type, Accept"
+    "x-access-token, Origin, Content-Type, Accept",
   );
   next();
 });
@@ -40,11 +41,25 @@ router.use(function(req, res, next) {
  */
 router.post(
   "/register",
-  [
-    authController.checkDuplicateEmailOrDocument
-  ],
-  authController.register
+  [authController.checkDuplicateEmailOrDocument],
+  authController.register,
 );
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout de usuario
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout exitoso
+ *       500:
+ *         description: Error del servidor
+ */
+router.post("/logout", [authJwt.verifyToken], authController.logout);
 
 /**
  * @swagger
@@ -71,5 +86,7 @@ router.post(
  *         description: Error del servidor
  */
 router.post("/login", authController.login);
+
+router.post("/logoutbyid", authController.logoutByID);
 
 export default router;

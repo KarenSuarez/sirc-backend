@@ -1,0 +1,17 @@
+# Dependencias locales
+node_modules
+
+# Logs
+npm-debug.log
+
+# Archivos de entorno
+#.env*
+
+# Git
+.git
+.gitignore
+
+# Documentación y otros
+README.md
+llm.txt
+Dockerfile

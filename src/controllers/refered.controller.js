@@ -1,6 +1,26 @@
-import db from "../models/index.js";
 import referidoService from "../services/refered.service.js";
-const Referido = db.refered;
+
+/**
+ * @swagger
+ * /referidos:
+ *   post:
+ *     summary: Crea un nuevo referido y lo asocia a un referente.
+ *     tags:
+ *       - Referidos
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateReferidoRequest'
+ *     responses:
+ *       201:
+ *         description: Referido creado exitosamente.
+ *       400:
+ *         description: Datos inválidos o duplicados.
+ *       500:
+ *         description: Error del servidor.
+ */
 
 /**
  * @swagger
@@ -46,59 +66,29 @@ const Referido = db.refered;
  *           example: "1234567890"
  */
 
-/**
- * @swagger
- * /referidos:
- *   post:
- *     summary: Crea un nuevo referido y lo asocia a un referente.
- *     tags:
- *       - Referidos
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreateReferidoRequest'
- *     responses:
- *       201:
- *         description: Referido creado exitosamente.
- *       400:
- *         description: Datos inválidos o duplicados.
- *       500:
- *         description: Error del servidor.
- */
-
 const createRefered = async (req, res) => {
   try {
-    const { documento_identidad_referido,
-      nombre_referido,
-      correo_referido,
-      telefono_referido } = req.body;
-    const documentoReferente = req.numero_documento_identidad;
-
-    const newRefered = await Referido.create({
+    const {
       documento_identidad_referido,
       nombre_referido,
       correo_referido,
       telefono_referido,
-      documento_referente: documentoReferente,
-    });
+    } = req.body;
 
+    const datosReferido = {
+      documento_identidad_referido,
+      nombre_referido,
+      correo_referido,
+      telefono_referido,
+    };
+    const documentoReferente = req.numero_documento_identidad;
+    const newRefered = await referidoService.createRefered(
+      datosReferido,
+      documentoReferente,
+    );
     res.status(201).json(newRefered);
   } catch (error) {
     res.status(500).send({ message: error.message });
-  }
-};
-
-const checkDuplicateReferedEmail = async (req, res, next) => {
-  try {
-    const refered = await Referido.findOne({ where: { correo_referido: req.body.correo_referido } });
-    if (refered) {
-      return res.status(400).send({ message: "Error: El correo electrónico del referido ya está en uso." });
-    }
-    next();
-  } catch (error) {
-    return res.status(500).send({ message: error.message });
   }
 };
 
@@ -141,17 +131,16 @@ const getByReferente = async (req, res) => {
   }
 };
 
-
 /**
  * @swagger
- * /referidos/nuevos:
+ * /referidos/pendientes:
  *   get:
  *     summary: Listado de referidos con estado = 'pendiente'
  *     tags: [Referidos]
  */
 const getEstadoPendiente = async (req, res) => {
   try {
-    const referidos = await referidoService.getReferidosNuevos();
+    const referidos = await referidoService.getReferidosEstadoPendiente();
     res.status(200).json(referidos);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -183,22 +172,22 @@ const getEstadoPendiente = async (req, res) => {
  */
 const updateEstado = async (req, res) => {
   try {
-    const { documento_identidad_referido  } = req.params;
-    const { estado_referido} = req.body;
-    const referido = await referidoService.updateEstadoReferido(documento_identidad_referido, estado_referido);
+    const { documento_identidad_referido } = req.params;
+    const { estado_referido } = req.body;
+    const referido = await referidoService.updateEstadoReferido(
+      documento_identidad_referido,
+      estado_referido,
+    );
     res.status(200).json(referido);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-
 export default {
   createRefered,
-  checkDuplicateReferedEmail,
   getAll,
   getByReferente,
   getEstadoPendiente,
-  updateEstado
-
+  updateEstado,
 };

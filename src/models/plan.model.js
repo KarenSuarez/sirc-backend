@@ -63,7 +63,7 @@
  *         estado: "activo"
  *         creado_en: "2025-10-14T10:30:00.000Z"
  *         actualizado_en: "2025-10-14T10:30:00.000Z"
- *     
+ *
  *     PlanInput:
  *       type: object
  *       required:
@@ -99,51 +99,55 @@
  */
 
 export default (sequelize, Sequelize) => {
-  const Plan = sequelize.define("Plan", {
-    id_plan: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
+  const Plan = sequelize.define(
+    "Plan",
+    {
+      id_plan: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      nombre_plan: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+      },
+      precio_actual: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      porcentaje_recompensa: {
+        type: Sequelize.DECIMAL(5, 2),
+        allowNull: false,
+      },
+      puntos_otorgados: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      descripcion: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      estado: {
+        type: Sequelize.ENUM("activo", "inactivo", "descontinuado"),
+        defaultValue: "activo",
+      },
+      creado_en: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+        allowNull: false,
+      },
+      actualizado_en: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+        allowNull: false,
+      },
     },
-    nombre_plan: {
-      type: Sequelize.STRING(50),
-      allowNull: false
+    {
+      tableName: "Plan",
+      timestamps: false,
     },
-    precio_actual: {
-      type: Sequelize.DECIMAL(10, 2),
-      allowNull: false
-    },
-    porcentaje_recompensa: {
-      type: Sequelize.DECIMAL(5, 2),
-      allowNull: false
-    },
-    puntos_otorgados: {
-      type: Sequelize.INTEGER,
-      allowNull: false
-    },
-    descripcion: {
-      type: Sequelize.TEXT,
-      allowNull: true
-    },
-    estado: {
-      type: Sequelize.ENUM('activo', 'inactivo', 'descontinuado'),
-      defaultValue: 'activo'
-    },
-    creado_en: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-      allowNull: false
-    },
-    actualizado_en: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-      allowNull: false
-    }
-  }, {
-    tableName: 'Plan',
-    timestamps: false
-  });
+  );
 
   return Plan;
 };
