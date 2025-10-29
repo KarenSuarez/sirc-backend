@@ -1,6 +1,10 @@
-/** @swagger */
+/** @swagger 
+components:
+schemas:
+CategoriaGamificacion
+*/
 export default (sequelize, Sequelize) => {
-  const Categoria_gamificacion = sequelize.define("Categoria_gamificacion", {
+  const CategoriaGamificacion = sequelize.define("Categoria_gamificacion", {
     id_categoria: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -23,10 +27,18 @@ export default (sequelize, Sequelize) => {
     descripcion: {
       type: Sequelize.TEXT,
     },
+    orden:{
+      type: Sequelize.INTEGER,
+      allowNull:false,
+      unique: {
+          name: "unique_order_catg",
+          msg: "Orden de la categoria",
+        }
+    },
     creado_en: {
       type: Sequelize.DATE,
       defaultValue: Sequelize.NOW,
     },
   });
-  return Categoria_gamificacion;
+  return CategoriaGamificacion;
 };

@@ -118,7 +118,6 @@ const isAliveToken = async (req, res, next) => {
         token: lastSegment,
       },
     });
-
     console.log(
       "Sesiones activas del usuario:",
       sessionsOfUser.map((session) => session.toJSON()),

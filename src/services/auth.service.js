@@ -58,6 +58,7 @@ const registerUser = async (userData) => {
 
   // Asignación de roles
   let isReferente = false;
+  
   if (roles && roles.length > 0) {
     const foundRoles = await Rol.findAll({
       where: { nombre_rol: { [Op.or]: roles } },

@@ -43,10 +43,10 @@ db.sequelize = sequelize;
 sequelize
   .authenticate()
   .then(() => {
-    console.log("✅ Conexión a la base de datos establecida correctamente.");
+    console.log("[OK] Conexión a la base de datos establecida correctamente.");
   })
   .catch((err) => {
-    console.error("❌ No se pudo conectar a la base de datos:", err);
+    console.error("[ERROR] No se pudo conectar a la base de datos:", err);
   });
 
 // Importación de los modelos
@@ -118,6 +118,7 @@ db.historialSesion.belongsTo(db.usuario, {
 db.usuario.hasMany(db.historialSesion, {
   foreignKey: "usuario_id",
 });
+
 db.ROLES = [
   "admin",
   "referente",
