@@ -50,8 +50,15 @@ const adminBoard = (req, res) => {
  *       500:
  *         description: Error interno del servidor.
  */
-const showSessions = async (req, res) => {
-  console.log("get sessions body: " + req.body);
+const showLiveSessions = async (req, res) => {
+  try {
+    const sessions = await userServices.getLiveSessions();
+    res.status(200).send(sessions);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+const showAllSessions = async (req, res) => {
   try {
     const sessions = await userServices.getAllSessions();
     res.status(200).send(sessions);
@@ -59,7 +66,6 @@ const showSessions = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
-
 const asesorBoard = (req, res) => {
   res.status(200).send({
     message: " Contenido solo para Asesores Internos.",
@@ -77,5 +83,6 @@ export default {
   adminBoard,
   asesorBoard,
   gerenteBoard,
-  showSessions,
+  showLiveSessions,
+  showAllSessions
 };

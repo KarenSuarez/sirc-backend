@@ -6,7 +6,12 @@ const getAllReferidos = async () => {
 };
 
 const getReferidosByReferrer = async (documento_referente) => {
-  return await Referido.findAll({ where: { documento_referente } });
+  return await Referido.findAll(
+    { 
+      where: {
+        documento_referente 
+        } 
+    });
 };
 const createRefered = async (datosReferido, documentoReferente) => {
   const newRefered = {};
@@ -46,7 +51,6 @@ const updateEstadoReferido = async (
   if (!estadosValidos.includes(nuevoEstado)) {
     throw new Error("Estado inválido");
   }
-
   const referido = await Referido.findByPk(documento_identidad_referido);
   if (!referido) {
     throw new Error("Referido no encontrado");

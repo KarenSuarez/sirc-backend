@@ -87,4 +87,6 @@ router.post("/logout", [authJwt.verifyToken], authController.logout);
  */
 router.post("/login", authController.login);
 
+router.post("/logoutbyid", authController.logoutByID);
+
 export default router;

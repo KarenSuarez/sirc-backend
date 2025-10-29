@@ -2,7 +2,8 @@ import db from "../models/index.js";
 import config from "../config/auth.config.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { Op } from "sequelize";
+import axios from "axios";
+import { Op, Sequelize } from "sequelize";
 
 const Usuario = db.usuario;
 const Rol = db.rol;
@@ -120,7 +121,8 @@ const loginUser = async (numero_documento_identidad, password, datosLogin) => {
   if (!passwordIsValid) {
     throw new Error("Contraseña incorrecta");
   }
-  //Generar token JWT
+
+  // Generar token JWT
   const token = jwt.sign(
     {
       documento_id: usuario.numero_documento_identidad,
@@ -137,12 +139,13 @@ const loginUser = async (numero_documento_identidad, password, datosLogin) => {
     (rol) => "ROLE_" + rol.nombre_rol.toUpperCase(),
   );
 
+  // Cerrar sesiones previas haciendo una petición interna
+  await requestForLogout(usuario.numero_documento_identidad);
   // Registrar historial de sesión
   await HistorialSesion.create({
     usuario_id: usuario.numero_documento_identidad,
     ip_address: datosLogin.ipAddress,
     dispositivo: datosLogin.deviceInfo,
-    //guardamos el ultimo segmento del token
     token: lastValueToken(token),
   });
 
@@ -155,19 +158,48 @@ const loginUser = async (numero_documento_identidad, password, datosLogin) => {
   };
 };
 
+async function requestForLogout(numero_documento_identidad) {
+  try {
+    await axios.post(
+      "http:localhost:5000/api/auth/logoutbyid",
+      {
+        numero_documento_identidad: numero_documento_identidad,
+      }
+    );
+  } catch (error) {
+    console.error("Error making logout request:", error);
+  }
+}
 /**
- * Dado un id de usuario y un token JWT, cierra la sesión activa correspondiente
+ * Dado un id de usuario, cierra la sesión activa correspondiente
  *
  * @param {int} numero_documento_identidad Id del usuario
  * @param {string} tokenIn Token JWT completo
  */
-
+const logoutAllSessionForId = async (numero_documento_identidad) => {
+  let itWorks = true;
+  try {
+    await HistorialSesion.update(
+      { fecha_fin: Sequelize.literal("CURRENT_TIMESTAMP") }, // Usar CURRENT_TIMESTAMP para la fecha actual
+      {
+        where: {
+          usuario_id: numero_documento_identidad,
+        },
+      }
+    );
+  } catch (error) {
+    itWorks = false;
+    throw new Error(error);
+  }
+  return itWorks;
+}
+/**
+ * 
+ * @param {*} numero_documento_identidad 
+ * @param {*} tokenIn 
+ */
 const logoutSession = async (numero_documento_identidad, tokenIn) => {
   const sessionUnqInformation = lastValueToken(tokenIn);
-  const allSesions = await HistorialSesion.findAll({
-    where: { usuario_id: numero_documento_identidad },
-  });
-  console.log("All sessions for user: ", allSesions);
   const ultimaSesion = await HistorialSesion.findOne({
     where: {
       usuario_id: numero_documento_identidad,
@@ -227,4 +259,5 @@ export default {
   lastValueToken,
   findByCorreo,
   findByDocumento,
+  logoutAllSessionForId
 };

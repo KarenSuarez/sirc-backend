@@ -19,9 +19,15 @@ router.get(
   userAdminController.adminBoard,
 );
 router.get(
-  "/admin/showSessions",
+  "/admin/showLiveSessions",
   [authJwt.verifyToken, authJwt.hasRole("admin")],
-  userAdminController.showSessions,
+  userAdminController.showLiveSessions,
+);
+
+router.get(
+  "/admin/showAllSessions",
+  [authJwt.verifyToken, authJwt.hasRole("admin")],
+  userAdminController.showAllSessions,
 );
 /** Ruta solo para REFERENTE */
 router.get(
