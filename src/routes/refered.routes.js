@@ -31,7 +31,7 @@ router.post(
 );
 
 router.get("/", 
-[authJwt.hasRole("admin")],
+[authJwt.hasRole("asesor")],
  referedController.getAll
 );
 router.get(
