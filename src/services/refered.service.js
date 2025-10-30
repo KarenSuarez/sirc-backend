@@ -43,10 +43,7 @@ const getReferidosEstadoPendiente = async () => {
   });
 };
 
-const updateEstadoReferido = async (
-  documento_identidad_referido,
-  nuevoEstado,
-) => {
+const updateEstadoReferido = async (documento_identidad_referido, nuevoEstado) => {
   const estadosValidos = ["pendiente", "contactado", "activo", "inactivo"];
   if (!estadosValidos.includes(nuevoEstado)) {
     throw new Error("Estado inválido");

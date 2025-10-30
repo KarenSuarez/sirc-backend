@@ -30,16 +30,22 @@ router.post(
   referedController.createRefered,
 );
 
-router.get("/", [authJwt.hasRole("admin")], referedController.getAll);
+router.get("/", 
+[authJwt.hasRole("admin")],
+ referedController.getAll
+);
 router.get(
   "/mis-referidos",
   [authJwt.verifyToken, authJwt.isReferente],
   referedController.getByReferente,
 );
-router.get("/pendientes", referedController.getEstadoPendiente);
+router.get(
+  "/pendientes", 
+  referedController.getEstadoPendiente
+);
 router.patch(
-  "/:id/estado",
-  [authJwt.hasRole("asesor")],
+  "/:documento_identidad_referido/estado",
+  [authJwt.verifyToken, authJwt.hasRole("asesor")],
   referedController.updateEstado,
 );
 

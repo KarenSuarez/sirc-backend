@@ -168,7 +168,7 @@ const getEstadoPendiente = async (req, res) => {
  *             properties:
  *               estado:
  *                 type: string
- *                 enum: [nuevo, proceso, convertido]
+ *                 enum: ["pendiente", "contactado", "activo", "inactivo"]
  */
 const updateEstado = async (req, res) => {
   try {
