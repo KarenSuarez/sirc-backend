@@ -1,4 +1,4 @@
-import userServices from "../services/user.services.js";
+import userServices from "../services/user.service.js";
 const getProfile = (req, res) => {
   res.status(200).send({
     message: " Perfil de usuario autenticado.",
