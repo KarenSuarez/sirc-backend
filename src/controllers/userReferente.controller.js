@@ -8,8 +8,6 @@ const referenteBoard = (req, res) => {
 const infoPerfilReferente = async (req, res) => {
   const token = req.headers["x-access-token"];
   const tokenDecoded = jwt.decode(token);
-  console.log("token decoded in infoPerfilReferente: ", tokenDecoded);
-  
   try {
     const referenteInfo = await referenteService.getReferenteByDocumento(tokenDecoded.documento_id);
     const categoriaActual = await referenteService.getCategoriaActualByDocumento(tokenDecoded.documento_id);
