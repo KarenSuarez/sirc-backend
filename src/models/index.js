@@ -1,24 +1,20 @@
-import {
+import { DB, USER, PASSWORD, HOST,PORTDB, dialect as _dialect, pool as _pool } from "../config/db.config.js";
+import Sequelize from "sequelize";
+import userModel from './user.model.js';
+import roleModel from './role.model.js';
+import documentTypeModel from './documentType.model.js';
+import userRoleModel from './userRole.model.js';
+import referenteModel from './referente.model.js';
+import planModel from './plan.model.js';
+import referedModel from './refered.model.js';
+
+
+
+const sequelize = new Sequelize(
   DB,
   USER,
   PASSWORD,
-  HOST,
-  PORTDB,
-  dialect as _dialect,
-  pool as _pool,
-} from "../config/db.config.js";
-import Sequelize from "sequelize";
-import userModel from "./user.model.js";
-import roleModel from "./role.model.js";
-import documentTypeModel from "./documentType.model.js";
-import userRoleModel from "./userRole.model.js";
-import referenteModel from "./referente.model.js";
-import planModel from "./plan.model.js";
-import referedModel from "./referido.model.js";
-import sessionHistoryModel from "./sessionHistory.model.js";
-import categoriaModel from "./categoria.model.js";
-
-const sequelize = new Sequelize(DB, USER, PASSWORD, {
+  {
   host: HOST,
   port: PORTDB,
   dialect: _dialect,
@@ -64,17 +60,17 @@ db.categoriaGam = categoriaModel(sequelize, Sequelize);
 
 // 1. Usuario <--> Tipo_documento (Uno a Muchos)
 db.tipoDocumento.hasMany(db.usuario, {
-  foreignKey: "id_tipo_documento",
+  foreignKey: 'id_tipo_documento'
 });
 db.usuario.belongsTo(db.tipoDocumento, {
-  foreignKey: "id_tipo_documento",
+  foreignKey: 'id_tipo_documento'
 });
 
 db.tipoDocumento.hasMany(db.refered, {
-  foreignKey: "id_tipo_documento",
+  foreignKey: 'id_tipo_documento'
 });
 db.refered.belongsTo(db.tipoDocumento, {
-  foreignKey: "id_tipo_documento",
+  foreignKey: 'id_tipo_documento'
 });
 
 // 2. Usuario <--> Rol (Muchos a Muchos a través de rol_usuario)
