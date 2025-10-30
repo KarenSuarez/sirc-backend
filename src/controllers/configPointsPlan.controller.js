@@ -1,4 +1,4 @@
-import ConfigPointsPlan from "../models/configPointsPlan.model.js";
+import ConfigPointsPlan from "../models/configPuntosPlan.model.js";
 import { recalcularPuntosReferentes } from "../services/recalculoPuntos.service.js";
 
 // GET /api/config-puntos-plan
