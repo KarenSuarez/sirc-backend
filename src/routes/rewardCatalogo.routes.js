@@ -13,7 +13,12 @@ router.use((req, res, next) => {
   next();
 });
 
-router.get('/listaPuntos/:nombreCatalogo', 
-            [authJwt.isReferente],
-            rewardCatalogoController.getCatalogoPuntosPorCategoria
-)
+router.get('/listarCatalogo', 
+  [authJwt.verifyToken, authJwt.hasRole("gerente")],
+  rewardCatalogoController.getCatalogo    
+);
+
+router.patch('/categoria'
+  [authJwt.verifyToken, authJwt.hasRole("gerente")],
+  rewardCatalogoController.actualizarCategoria
+);

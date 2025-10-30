@@ -44,14 +44,14 @@ router.get(
 /** Ruta solo para ASESOR INTERNO */
 router.get(
   "/asesor",
-  [authJwt.verifyToken, authJwt.hasRole("asesor interno")],
+  [authJwt.verifyToken, authJwt.hasRole("asesor")],
   userAdminController.asesorBoard,
 );
 
 /** Ruta solo para GERENTE DE VENTAS */
 router.get(
   "/gerente",
-  [authJwt.verifyToken, authJwt.hasRole("gerente de ventas")],
+  [authJwt.verifyToken, authJwt.hasRole("gerente")],
   userAdminController.gerenteBoard,
 );
 

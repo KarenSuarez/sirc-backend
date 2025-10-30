@@ -21,11 +21,22 @@ const getCategoriaActualByDocumento = async (numero_documento_identidad) => {
 
   return historial;
 };
+
 const getInformacionCategoriaById = async (id_categoria) => {
   return await CategoriaGamificacion.findByPk(id_categoria);
-}
+};
+
+const getInformationCategoriasTodas = async () => {
+  CategoriaGamificacion.findAll({
+    order:[
+      ['orden', 'DESC']
+    ]
+  })
+};
+
 export default {
   getReferenteByDocumento,
-  getCategoriaActualByDocumento, // Agrega la nueva función aquí
-  getInformacionCategoriaById
+  getCategoriaActualByDocumento, 
+  getInformacionCategoriaById,
+  getInformationCategoriasTodas
 };

@@ -12,10 +12,12 @@ const infoPerfilReferente = async (req, res) => {
     const referenteInfo = await referenteService.getReferenteByDocumento(tokenDecoded.documento_id);
     const categoriaActual = await referenteService.getCategoriaActualByDocumento(tokenDecoded.documento_id);
     const informacionCategoriaActualReferente = await referenteService.getInformacionCategoriaById(categoriaActual.categoria_nueva);
+    const categoriasTodas = await referenteService.getInformationCategoriasTodas();
     res.status(200).send({
       referente: referenteInfo,
       historialActualReferente: categoriaActual,
-      informacionCategoriaActualReferente: informacionCategoriaActualReferente
+      informacionCategoriaActualReferente: informacionCategoriaActualReferente,
+      todasLasCategorias: categoriasTodas
     });
   } catch (error) {
     res.status(500).send({ message: error.message });

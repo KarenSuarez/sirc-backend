@@ -1,8 +1,41 @@
-/** @swagger 
-components:
-schemas:
-CategoriaGamificacion
-*/
+import { DataTypes } from '@sequelize/core';
+/** 
+ * @swagger 
+ * components:
+ *   schemas:
+ *     CategoriaGamificacion:
+ *       type: object
+ *       properties:
+ *         id_categoria:
+ *           type: integer
+ *           example: 1
+ *         nombre_categoria:
+ *           type: string
+ *           example: "Oro"
+ *         puntos_maximos:
+ *           type: integer
+ *           example: 200
+ *         puntos_minimos:
+ *           type: integer
+ *           example: 100
+ *         porcentaje_beneficio_adicional:
+ *           type: number
+ *           format: float
+ *           example: 5.5
+ *         descripcion:
+ *           type: string
+ *           example: "Nivel oro para usuarios destacados"
+ *         orden:
+ *           type: integer
+ *           example: 2
+ *         esta_activa:
+ *           type: boolean
+ *           example: true
+ *         creado_en:
+ *           type: string
+ *           format: date-time
+ *           example: "2024-06-01T12:00:00Z"
+ */
 export default (sequelize, Sequelize) => {
   const CategoriaGamificacion = sequelize.define("Categoria_gamificacion", {
     id_categoria: {
@@ -27,6 +60,7 @@ export default (sequelize, Sequelize) => {
     },
     porcentaje_beneficio_adicional: {
       type: Sequelize.DECIMAL(5, 2),
+      defaultValue: 0.0
     },
     descripcion: {
       type: Sequelize.TEXT,
@@ -38,6 +72,10 @@ export default (sequelize, Sequelize) => {
           name: "unique_order_catg",
           msg: "Orden de la categoria",
         }
+    },
+    esta_activa:{
+      type: DataTypes.BOOLEAN,
+      defaultValue:true
     },
     creado_en: {
       type: Sequelize.DATE,
