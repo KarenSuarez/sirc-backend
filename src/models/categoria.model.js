@@ -21,8 +21,8 @@ export default (sequelize, Sequelize) => {
     puntos_minimos: {
       type: Sequelize.INTEGER,
     },
-    beneficio_adicional_perc: {
-      type: Sequelize.DECIMAL(10, 2),
+    porcentaje_beneficio_adicional: {
+      type: Sequelize.DECIMAL(5, 2),
     },
     descripcion: {
       type: Sequelize.TEXT,
@@ -39,6 +39,10 @@ export default (sequelize, Sequelize) => {
       type: Sequelize.DATE,
       defaultValue: Sequelize.NOW,
     },
-  });
+  },
+  {
+    tableName: 'categoria_gamificacion', // Cambia el nombre de la tabla aquí
+  }
+  );
   return CategoriaGamificacion;
 };

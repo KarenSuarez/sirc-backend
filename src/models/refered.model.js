@@ -77,6 +77,11 @@
  *           format: date-time
  *           description: Fecha de última actualización.
  *           example: "2025-09-30T20:00:00Z"
+ *         observaciones:
+ *           type: string
+ *           description: Observaciones adicionales sobre el referido.
+ *           example: "El referido mostró interés en el plan premium."
+ * 
  *       required:
  *         - documento_identidad_referido
  *         - id_tipo_documento
@@ -112,6 +117,10 @@ export default (sequelize, Sequelize) => {
         allowNull: false,
       },
       empresa_referido: {
+        type: Sequelize.STRING(100),
+        allowNull: true,
+      },
+      cargo_referido: {
         type: Sequelize.STRING(100),
         allowNull: true,
       },
@@ -163,6 +172,10 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.DATE,
         allowNull: true,
       },
+      observaciones: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      }
     },
     {
       tableName: "Referido",
