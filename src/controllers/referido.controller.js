@@ -1,4 +1,4 @@
-import referidoService from "../services/refered.service.js";
+import referidoService from "../services/referido.service.js";
 
 /**
  * @swagger

@@ -14,7 +14,7 @@ import documentTypeModel from "./documentType.model.js";
 import userRoleModel from "./userRole.model.js";
 import referenteModel from "./referente.model.js";
 import planModel from "./plan.model.js";
-import referedModel from "./refered.model.js";
+import referedModel from "./referido.model.js";
 import sessionHistoryModel from "./sessionHistory.model.js";
 import categoriaModel from "./categoria.model.js";
 

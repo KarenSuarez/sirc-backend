@@ -1,5 +1,5 @@
 import { Router } from "express";
-import referedController from "../controllers/refered.controller.js";
+import referedController from "../controllers/referido.controller.js";
 import authJwt from "../middlewares/authJwt.js";
 import referedChecks from "../middlewares/referedChecks.js";
 
