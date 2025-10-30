@@ -6,9 +6,12 @@ import documentTypeModel from './documentType.model.js';
 import userRoleModel from './userRole.model.js';
 import referenteModel from './referente.model.js';
 import planModel from './plan.model.js';
-import referedModel from './refered.model.js';
+import referedModel from './referido.model.js';
 import solicitudRecompensaModel from './solicitudRecompensa.model.js';
 import movimientoModel from "./movimiento.model.js";
+import historialCategoriaModel from "./historialCategoria.model.js";
+import sessionHistoryModel from './sessionHistory.model.js'
+import categoriaModel from "./categoria.model.js";
 
 
 
@@ -60,7 +63,7 @@ db.solicitudRecompensa = solicitudRecompensaModel(sequelize, Sequelize);
 db.movimiento = movimientoModel(sequelize, Sequelize);
 db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
 db.categoriaGam = categoriaModel(sequelize, Sequelize);
-
+db.historialCateogoria = historialCategoriaModel(sequelize,Sequelize);
 // --- Definición de Asociaciones ---
 
 // 1. Usuario <--> Tipo_documento (Uno a Muchos)
@@ -148,6 +151,30 @@ db.usuario.hasMany(db.historialSesion, {
   foreignKey: "usuario_id",
 });
 
+db.historialCateogoria.belongsTo(db.categoriaGam, {
+  foreignKey: 'categoria_anterior',
+  targetKey: 'id_categoria',
+  as: 'categoriaAnterior' // alias único
+});
+
+db.historialCateogoria.belongsTo(db.categoriaGam, {
+  foreignKey: 'categoria_nueva',
+  targetKey: 'id_categoria',
+  as: 'categoriaNueva' // alias único
+});
+
+// Relación inversa (opcional, pero recomendable)
+db.categoriaGam.hasMany(db.historialCateogoria, {
+  foreignKey: 'categoria_anterior',
+  sourceKey: 'id_categoria',
+  as: 'historialComoAnterior'
+});
+
+db.categoriaGam.hasMany(db.historialCateogoria, {
+  foreignKey: 'categoria_nueva',
+  sourceKey: 'id_categoria',
+  as: 'historialComoNueva'
+});
 
 
 export default db;

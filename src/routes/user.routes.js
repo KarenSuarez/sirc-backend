@@ -11,6 +11,11 @@ router.get(
   [authJwt.verifyToken, authJwt.isAliveToken],
   userAdminController.getProfile,
 );
+router.get(
+  "/referente/info",
+  [authJwt.verifyToken, authJwt.hasRole("referente")],
+  userReferenteController.infoPerfilReferente,
+);
 
 /** Ruta solo para ADMINISTRADOR Se revisa el token y luego el rol */
 router.get(

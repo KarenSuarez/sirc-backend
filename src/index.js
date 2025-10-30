@@ -38,8 +38,21 @@ db.sequelize.sync({ alter: true }).then(async () => {
   } else {
     console.log("OK. Roles ya existen, no se insertan nuevamente.");
   }
+  if (countCategorias === 0) {
+    console.log("DONE Insertando categorias iniciales...");
+    await initialCategories();
+  } else {
+    console.log("OK. Roles ya inicializados, no se insertan nuevamente.");
+  }
 });
 
+function initialCategories() {
+  const Categoria_gamificacion = db.categoriaGam;
+  Categoria_gamificacion.create({ nombre_categoria: "Bronce", orden: 1 });
+  Categoria_gamificacion.create({ nombre_categoria: "Plata", orden: 2 });
+  Categoria_gamificacion.create({ nombre_categoria: "Oro", orden: 3 });
+  Categoria_gamificacion.create({ nombre_categoria: "Platino", orden: 4 });
+}
 
 // Inicialización de Roles
 function initialRoles() {

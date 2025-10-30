@@ -14,6 +14,10 @@ export default (sequelize, Sequelize) => {
     nombre_categoria: {
       type: Sequelize.STRING(30),
       allowNull: false,
+      unique: {
+        name: "unique_name_catg",
+        msg: "Nombre de la categoria ya existe",
+      }
     },
     puntos_maximos: {
       type: Sequelize.INTEGER,

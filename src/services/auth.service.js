@@ -9,6 +9,8 @@ const Usuario = db.usuario;
 const Rol = db.rol;
 const Referente = db.referente;
 const HistorialSesion = db.historialSesion;
+const HistorialCategoria = db.historialCateogoria;
+const CategoriaGamificacion = db.categoriaGam;
 
 /**
  * Registra un nuevo usuario en el sistema. Si el usuario tiene el rol
@@ -80,14 +82,27 @@ const registerUser = async (userData) => {
 
   // Si el usuario es un referente, crea su perfil de referente
   if (isReferente) {
-    await Referente.create({
-      numero_documento_identidad: usuario.numero_documento_identidad,
-    });
+    await crearReferente(usuario.numero_documento_identidad)
   }
 
   return usuario;
 };
 
+async function crearReferente(numero_documento_identidad) {
+    await Referente.create({
+      numero_documento_identidad: numero_documento_identidad,
+    });
+    const categoriaInicial = await CategoriaGamificacion.findOne({
+      where: { orden: 1 },
+    });
+    await HistorialCategoria.create({
+      id_referente: numero_documento_identidad,
+      categoria_anterior: null,
+      categoria_nueva: categoriaInicial.id_categoria,
+      puntos_al_momento: 0,
+      actualizado_en: new Date()
+    });
+}
 /**
  * Autentica a un usuario y devuelve sus datos junto con un token JWT.
  *

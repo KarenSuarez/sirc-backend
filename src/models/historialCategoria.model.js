@@ -44,23 +44,21 @@ export default (sequelize, Sequelize) => {
       type: Sequelize.STRING(20),
       allowNull: false,
       references: {
-        model: "Referente",
+        model: "Referente", // Asegúrate de que este nombre coincida con el nombre de la tabla
         key: "numero_documento_identidad",
       },
     },
     categoria_anterior: {
       type: Sequelize.INTEGER,
-      allowNull: false,
       references: {
-        model: "Categoria_gamificacion",
+        model: "categoria_gamificacion",
         key: "id_categoria",
       },
     },
     categoria_nueva: {
       type: Sequelize.INTEGER,
-      allowNull: false,
       references: {
-        model: "Categoria_gamificacion",
+        model: "categoria_gamificacion",
         key: "id_categoria",
       },
     },
