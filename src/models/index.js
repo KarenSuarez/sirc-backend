@@ -26,9 +26,11 @@ const sequelize = new Sequelize(
     max: _pool.max,
     min: _pool.min,
     acquire: _pool.acquire,
-    idle: _pool.idle,
-  },
-});
+      idle: _pool.idle
+    }
+  }
+);
+
 
 const db = {};
 
@@ -36,8 +38,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 // Probar conexión
-sequelize
-  .authenticate()
+sequelize.authenticate()
   .then(() => {
     console.log("[OK] Conexión a la base de datos establecida correctamente.");
   })
@@ -53,6 +54,7 @@ db.rolUsuario = userRoleModel(sequelize, Sequelize);
 db.referente = referenteModel(sequelize, Sequelize);
 db.plan = planModel(sequelize, Sequelize);
 db.refered = referedModel(sequelize, Sequelize);
+db.solicitudRecompensa = solicitudRecompensaModel(sequelize, Sequelize);
 db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
 db.categoriaGam = categoriaModel(sequelize, Sequelize);
 
@@ -78,35 +80,63 @@ db.usuario.belongsToMany(db.rol, {
   through: db.rolUsuario,
   foreignKey: "numero_documento_identidad",
   otherKey: "id_rol",
-  as: "roles",
+  as: "roles"
 });
 db.rol.belongsToMany(db.usuario, {
   through: db.rolUsuario,
   foreignKey: "id_rol",
   otherKey: "numero_documento_identidad",
-  as: "usuarios",
+  as: "usuarios"
 });
 
 // 3. Usuario (referente) <--> Referido (Uno a Muchos)
 db.usuario.hasMany(db.refered, {
-  foreignKey: "documento_referente",
-  as: "referidos",
+  foreignKey: 'documento_referente',
+  as: 'referidos'
 });
 
 db.refered.belongsTo(db.usuario, {
-  foreignKey: "documento_referente",
-  as: "referente",
+  foreignKey: 'documento_referente',
+  as: 'referente'
 });
 
 // 4. Usuario <--> Referente (Uno a Uno)
 db.usuario.hasOne(db.referente, {
-  foreignKey: "numero_documento_identidad",
-  as: "referente",
+  foreignKey: 'numero_documento_identidad', 
+  as: 'referente'
 });
 db.referente.belongsTo(db.usuario, {
-  foreignKey: "numero_documento_identidad",
-  as: "usuario",
+  foreignKey: 'numero_documento_identidad', 
+  as: 'usuario'
 });
+
+
+// 5. Solicitud_Recompensa <--> Referente (Muchos a Uno)
+db.referente.hasMany(db.solicitudRecompensa, {
+  foreignKey: "documento_referente",
+  sourceKey: "numero_documento_identidad",
+  as: "solicitudes"
+});
+
+db.solicitudRecompensa.belongsTo(db.referente, {
+  foreignKey: "documento_referente",
+  targetKey: "numero_documento_identidad",
+  as: "referente"
+});
+
+// 6. Solicitud_Recompensa <--> Usuario (Contador que procesa la solicitud)
+db.usuario.hasMany(db.solicitudRecompensa, {
+  foreignKey: "numero_documento_identidad",
+  as: "solicitudes_procesadas"
+});
+
+db.solicitudRecompensa.belongsTo(db.usuario, {
+  foreignKey: "numero_documento_identidad",
+  as: "procesado_por"
+});
+
+
+db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
 
 db.historialSesion.belongsTo(db.usuario, {
   foreignKey: "usuario_id",
@@ -115,12 +145,6 @@ db.usuario.hasMany(db.historialSesion, {
   foreignKey: "usuario_id",
 });
 
-db.ROLES = [
-  "admin",
-  "referente",
-  "asesor ventas",
-  "gerente ventas",
-  "contador",
-];
+
 
 export default db;
