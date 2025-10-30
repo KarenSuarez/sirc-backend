@@ -58,7 +58,7 @@ export default (sequelize, Sequelize) => {
         defaultValue: Sequelize.NOW,
         allowNull: false,
       },
-      numero_documento_identidad_referente: {
+    numero_documento_identidad: {
         type: Sequelize.STRING(20),
         allowNull: false,
         references: {
@@ -66,12 +66,14 @@ export default (sequelize, Sequelize) => {
           key: "numero_documento_identidad",
         },
       },
-    },
-    {
+    tipo_movimiento: Sequelize.STRING(50),
+    cantidad_puntos: Sequelize.INTEGER,
+    monto: Sequelize.DECIMAL(10, 2),
+    fecha_movimiento: Sequelize.DATE    
+    }, {
       tableName: "Movimiento",
-      timestamps: false,
-    },
-  );
+      timestamps: false
+    });
 
   return Movimiento;
 };

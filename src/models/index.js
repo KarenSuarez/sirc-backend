@@ -7,6 +7,8 @@ import userRoleModel from './userRole.model.js';
 import referenteModel from './referente.model.js';
 import planModel from './plan.model.js';
 import referedModel from './refered.model.js';
+import solicitudRecompensaModel from './solicitudRecompensa.model.js';
+import movimientoModel from "./movimiento.model.js";
 
 
 
@@ -20,7 +22,7 @@ const sequelize = new Sequelize(
   dialect: _dialect,
   dialectOptions: {
     allowPublicKeyRetrieval: true,
-    ssl: false,
+    ssl: false
   },
   pool: {
     max: _pool.max,
@@ -55,6 +57,7 @@ db.referente = referenteModel(sequelize, Sequelize);
 db.plan = planModel(sequelize, Sequelize);
 db.refered = referedModel(sequelize, Sequelize);
 db.solicitudRecompensa = solicitudRecompensaModel(sequelize, Sequelize);
+db.movimiento = movimientoModel(sequelize, Sequelize);
 db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
 db.categoriaGam = categoriaModel(sequelize, Sequelize);
 
