@@ -1,4 +1,4 @@
-import { DataTypes } from '@sequelize/core';
+import Sequelize from "@sequelize/core/";
 /** 
  * @swagger 
  * components:
@@ -74,7 +74,7 @@ export default (sequelize, Sequelize) => {
         }
     },
     esta_activa:{
-      type: DataTypes.BOOLEAN,
+      type: Sequelize.BOOLEAN,
       defaultValue:true
     },
     creado_en: {
