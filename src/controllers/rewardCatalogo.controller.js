@@ -1,9 +1,9 @@
-import referenteService from "../services/referente.service";
-import catalogoService from "../services/catalogo.service";
+import referenteService from "../services/referente.service.js";
+import catalogoService from "../services/catalogo.service.js";
 
 /**
  * @swagger
- * /api/catalogo/categoria:
+ * /api/catalogo/nivel:
  *   put:
  *     summary: Actualiza una categoría de gamificación
  *     tags:
@@ -13,14 +13,14 @@ import catalogoService from "../services/catalogo.service";
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CategoriaGamificacionUpdate'
+ *             $ref: '#/components/schemas/NivelesUpdate'
  *     responses:
  *       200:
  *         description: Categoría actualizada correctamente
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CategoriaGamificacion'
+ *               $ref: '#/components/schemas/nivel'
  *       400:
  *         description: Datos inválidos
  *       404:
@@ -31,14 +31,14 @@ import catalogoService from "../services/catalogo.service";
 
 const getCatalogo = async (req, res) => {
     try {
-        const categorias = await referenteService.getInformationCategoriasTodas()
+        const niveles = await referenteService.getInformationNivelesTodos()
         const planes = await catalogoService.getTodosLosPlanes()
         //insignias
-        if (!categorias) {
-            return res.status(404).json({ message: "Categorias vacias" });
+        if (!niveles) {
+            return res.status(404).json({ message: "niveles vacios" });
         }
         res.status(200).send({
-            todasLasCategorias:categorias,
+            todasLosniveles:niveles,
             todosLosPlanes:planes
         });
     } catch (error) {
@@ -46,66 +46,15 @@ const getCatalogo = async (req, res) => {
     }
 };
 
-const actualizarCategoria = async (req, res) => {
-    try {
-        const {
-            id_categoria,
-            nombre_nivel,
-            orden,
-            puntos_minimos,
-            porcentaje_beneficio_adicional,
-            puntos_maximos,
-            descripcion,
-            esta_activa
-        } = req.body;
-
-        if (!id_categoria) {
-            return res.status(400).json({ message: "id_categoria es requerido" });
-        }
-
-        // Construir objeto de actualización
-        const datosCategoria = {
-            nombre_categoria: nombre_nivel,
-            orden,
-            puntos_minimos,
-            porcentaje_beneficio_adicional,
-            puntos_maximos,
-            descripcion,
-            esta_activa,
-            updateAt: new Date()
-        };
-
-        // Elimina campos undefined
-        Object.keys(datosCategoria).forEach(
-            key => datosCategoria[key] === undefined && delete datosCategoria[key]
-        );
-
-        // Actualizar usando el servicio correspondiente
-        const updated = await catalogoService.actualizarCategoria(id_categoria, datosCategoria);
-
-        if (!updated) {
-            return res.status(404).json({ message: "Categoría no encontrada" });
-        }
-
-        res.status(200).json(updated);
-    } catch (error) {
-        res.status(500).send({ message: error.message });
-    }
-};
-
-export default {
-    getCatalogo,
-    actualizarCategoria
-};
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     CategoriaGamificacionUpdate:
+ *     NivelesUpdate:
  *       type: object
  *       properties:
- *         id_categoria:
+ *         id_nivel:
  *           type: integer
  *           description: ID de la categoría a actualizar
  *           example: 1
@@ -139,3 +88,56 @@ export default {
  *           description: Si la categoría está activa
  *           example: true
  */
+const actualizarNivel = async (req, res) => {
+    try {
+        const {
+            id_nivel,
+            nombre_nivel,
+            orden,
+            puntos_minimos,
+            porcentaje_beneficio_adicional,
+            puntos_maximos,
+            descripcion,
+            esta_activa
+        } = req.body;
+
+        if (!id_nivel) {
+            return res.status(400).json({ message: "id_nivel es requerido" });
+        }
+
+        // Construir objeto de actualización
+        const datosNivel = {
+            nombre_nivel,
+            orden,
+            puntos_minimos,
+            porcentaje_beneficio_adicional,
+            puntos_maximos,
+            descripcion,
+            esta_activa,
+            updateAt: new Date()
+        };
+
+        // Elimina campos undefined
+        Object.keys(datosNivel).forEach(
+            key => datosNivel[key] === undefined && delete datosNivel[key]
+        );
+
+        // Actualizar usando el servicio correspondiente
+        const updated = await catalogoService.actualizarNivel(id_nivel, datosNivel);
+
+        if (!updated) {
+            return res.status(404).json({ message: "Categoría no encontrada" });
+        }
+
+        res.status(200).json(updated);
+    } catch (error) {
+        console.log(req.body);
+        res.status(500).send({ message: error.message });
+    }
+};
+
+export default {
+    getCatalogo,
+    actualizarNivel
+};
+

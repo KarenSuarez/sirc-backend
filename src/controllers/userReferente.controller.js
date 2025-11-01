@@ -10,14 +10,14 @@ const infoPerfilReferente = async (req, res) => {
   const tokenDecoded = jwt.decode(token);
   try {
     const referenteInfo = await referenteService.getReferenteByDocumento(tokenDecoded.documento_id);
-    const categoriaActual = await referenteService.getCategoriaActualByDocumento(tokenDecoded.documento_id);
-    const informacionCategoriaActualReferente = await referenteService.getInformacionCategoriaById(categoriaActual.categoria_nueva);
-    const categoriasTodas = await referenteService.getInformationCategoriasTodas();
+    const nivelActual = await referenteService.getNivelActualByDocumento(tokenDecoded.documento_id);
+    const informacionNivelActualReferente = await referenteService.getInformacionNivelById(nivelActual.nivel_nuevo);
+    const nivelesTodos = await referenteService.getInformationNivelesTodos();
     res.status(200).send({
       referente: referenteInfo,
-      historialActualReferente: categoriaActual,
-      informacionCategoriaActualReferente: informacionCategoriaActualReferente,
-      todasLasCategorias: categoriasTodas
+      historialActualReferente: nivelActual,
+      informacionNivelActualReferente: informacionNivelActualReferente,
+      todasLosNiveles: nivelesTodos
     });
   } catch (error) {
     res.status(500).send({ message: error.message });

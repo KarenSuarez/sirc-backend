@@ -9,10 +9,11 @@ import planModel from './plan.model.js';
 import referedModel from './referido.model.js';
 import solicitudRecompensaModel from './solicitudRecompensa.model.js';
 import movimientoModel from "./movimiento.model.js";
-import historialCategoriaModel from "./historialCategoria.model.js";
+import historialNivelModel from "./historialNivel.model.js";
 import sessionHistoryModel from './sessionHistory.model.js'
-import categoriaModel from "./categoria.model.js";
-
+import nivelModel from "./nivel.model.js";
+import configPuntosPlanModel from "./configPuntosPlan.model.js";
+import beneficioModel from "./beneficio.model.js";
 
 
 const sequelize = new Sequelize(
@@ -62,8 +63,10 @@ db.refered = referedModel(sequelize, Sequelize);
 db.solicitudRecompensa = solicitudRecompensaModel(sequelize, Sequelize);
 db.movimiento = movimientoModel(sequelize, Sequelize);
 db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
-db.categoriaGam = categoriaModel(sequelize, Sequelize);
-db.historialCateogoria = historialCategoriaModel(sequelize,Sequelize);
+db.nivel = nivelModel(sequelize, Sequelize);
+db.historialNivel = historialNivelModel(sequelize,Sequelize);
+db.configPuntosPlan = configPuntosPlanModel(sequelize, Sequelize);
+db.Beneficio = beneficioModel(sequelize, Sequelize);
 // --- Definición de Asociaciones ---
 
 // 1. Usuario <--> Tipo_documento (Uno a Muchos)
@@ -141,9 +144,6 @@ db.solicitudRecompensa.belongsTo(db.usuario, {
   as: "procesado_por"
 });
 
-
-db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
-
 db.historialSesion.belongsTo(db.usuario, {
   foreignKey: "usuario_id",
 });
@@ -151,30 +151,32 @@ db.usuario.hasMany(db.historialSesion, {
   foreignKey: "usuario_id",
 });
 
-db.historialCateogoria.belongsTo(db.categoriaGam, {
-  foreignKey: 'categoria_anterior',
-  targetKey: 'id_categoria',
-  as: 'categoriaAnterior' // alias único
+db.historialNivel.belongsTo(db.nivel, {
+  foreignKey: 'nivel_anterior',
+  targetKey: 'id_nivel',
+  as: 'nivelAnterior' // alias único
 });
 
-db.historialCateogoria.belongsTo(db.categoriaGam, {
-  foreignKey: 'categoria_nueva',
-  targetKey: 'id_categoria',
-  as: 'categoriaNueva' // alias único
+db.historialNivel.belongsTo(db.nivel, {
+  foreignKey: 'nivel_nuevo',
+  targetKey: 'id_nivel',
+  as: 'nivelNuevo' // alias único
 });
 
 // Relación inversa (opcional, pero recomendable)
-db.categoriaGam.hasMany(db.historialCateogoria, {
-  foreignKey: 'categoria_anterior',
-  sourceKey: 'id_categoria',
+db.nivel.hasMany(db.historialNivel, {
+  foreignKey: 'nivel_anterior',
+  sourceKey: 'id_nivel',
   as: 'historialComoAnterior'
 });
 
-db.categoriaGam.hasMany(db.historialCateogoria, {
-  foreignKey: 'categoria_nueva',
-  sourceKey: 'id_categoria',
-  as: 'historialComoNueva'
+db.nivel.hasMany(db.historialNivel, {
+  foreignKey: 'nivel_nuevo',
+  sourceKey: 'id_nivel',
+  as: 'historialComoNuevo'
 });
 
+nivel.hasOne(Beneficio, { foreignKey: "id_nivel" });
+Beneficio.belongsTo(nivel, { foreignKey: "id_nivel" });
 
 export default db;

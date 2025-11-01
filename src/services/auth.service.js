@@ -9,8 +9,8 @@ const Usuario = db.usuario;
 const Rol = db.rol;
 const Referente = db.referente;
 const HistorialSesion = db.historialSesion;
-const HistorialCategoria = db.historialCateogoria;
-const CategoriaGamificacion = db.categoriaGam;
+const historialNivel = db.historialNivel;
+const nivel = db.nivel;
 
 /**
  * Registra un nuevo usuario en el sistema. Si el usuario tiene el rol
@@ -92,13 +92,13 @@ async function crearReferente(numero_documento_identidad) {
     await Referente.create({
       numero_documento_identidad: numero_documento_identidad,
     });
-    const categoriaInicial = await CategoriaGamificacion.findOne({
+    const nivelInicial = await nivel.findOne({
       where: { orden: 1 },
     });
-    await HistorialCategoria.create({
+    await historialNivel.create({
       id_referente: numero_documento_identidad,
-      categoria_anterior: null,
-      categoria_nueva: categoriaInicial.id_categoria,
+      nivel_anterior: null,
+      nivel_nuevo: nivelInicial.id_nivel,
       puntos_al_momento: 0,
       actualizado_en: new Date()
     });

@@ -1,6 +1,6 @@
 import {Router} from 'express'
-import rewardCatalogoController from "../controllers/rewardCatalogo.controller";
-import authJwt from '../middlewares/authJwt';
+import rewardCatalogoController from "../controllers/rewardCatalogo.controller.js";
+import authJwt from '../middlewares/authJwt.js';
 
 
 const router = Router();
@@ -17,8 +17,8 @@ router.get('/listarCatalogo',
   [authJwt.verifyToken, authJwt.hasRole("gerente")],
   rewardCatalogoController.getCatalogo    
 );
-
-router.patch('/categoria'
+router.patch('/nivel',
   [authJwt.verifyToken, authJwt.hasRole("gerente")],
-  rewardCatalogoController.actualizarCategoria
+  rewardCatalogoController.actualizarNivel
 );
+export default router;

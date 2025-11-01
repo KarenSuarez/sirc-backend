@@ -2,35 +2,35 @@
 
 // 1. Exportaciones con Nombre (Named Exports) para las constantes de datos
 // Usamos 'export const' para hacer estos arrays disponibles a otros módulos.
-export const categorias = [
+export const niveles = [
   {
-    id_categoria: 1,
-    nombre_categoria: "Bronce",
-    porcentaje_benficio_adicional: 0.0,
+    id_nivel: 1,
+    nombre_nivel: "Bronce",
+    porcentaje_beneficio_adicional: 0.0,
     puntos_minimos:20,
     puntos_maximos:0,
     orden: 1,
   },
   {
-    id_categoria: 2,
-    nombre_categoria: "Plata",
-    porcentaje_benficio_adicional: 5.0,
+    id_nivel: 2,
+    nombre_nivel: "Plata",
+    porcentaje_beneficio_adicional: 5.0,
     puntos_minimos:21,
     puntos_maximos:50,
     orden: 2,
   },
   {
-    id_categoria: 3,
-    nombre_categoria: "Oro",
-    porcentaje_benficio_adicional: 10.0,
+    id_nivel: 3,
+    nombre_nivel: "Oro",
+    porcentaje_beneficio_adicional: 10.0,
     puntos_minimos:51,
     puntos_maximos:100,
     orden: 3,
   },
   {
-    id_categoria: 4,
-    nombre_categoria: "Platino",
-    porcentaje_benficio_adicional: 15.0,
+    id_nivel: 4,
+    nombre_nivel: "Platino",
+    porcentaje_beneficio_adicional: 15.0,
     puntos_minimos:101,
     puntos_maximos:200,
     orden: 4,
@@ -83,7 +83,7 @@ export const planes = [
 ];
 
 // Funciones internas para insertar la data (No necesitan ser exportadas)
-const initialCategories = (db) => db.categoriaGam.bulkCreate(categorias);
+const initialNiveles = (db) => db.nivel.bulkCreate(niveles);
 const initialTipoDocumentos = (db) => db.tipoDocumento.bulkCreate(tipoDocumento);
 const initialRoles = (db) => db.rol.bulkCreate(roles);
 const initialPlanes = (db) => db.plan.bulkCreate(planes);
@@ -98,14 +98,14 @@ const green = "\x1b[32m";
  *   Mongoose).
  * @param {number} countDocs - Conteo de documentos de tipoDocumento.
  * @param {number} countRoles - Conteo de roles.
- * @param {number} countCategorias - Conteo de categorias.
+ * @param {number} countNiveles - Conteo de niveles.
  * @param {number} countPlan - Conteo de planes.
  */
 async function checkInitialCounts(
   db,
   countDocs,
   countRoles,
-  countCategorias,
+  countNiveles,
   countPlan,
 ) {
   if (countDocs === 0) {
@@ -122,9 +122,9 @@ async function checkInitialCounts(
   } else {
     console.log(green + "OK. Roles ya existen, no se insertan nuevamente.");
   }
-  if (countCategorias === 0) {
-    console.log("DONE Insertando categorias iniciales...");
-    await initialCategories(db); // Llamada directa a la función interna
+  if (countNiveles === 0) {
+    console.log("DONE Insertando niveles iniciales...");
+    await initialNiveles(db); // Llamada directa a la función interna
   } else {
     console.log(
       green + "OK. Categorías ya inicializadas, no se insertan nuevamente.",
@@ -151,17 +151,17 @@ const initializeData = async (db) => {
     // si son llamadas a la base de datos que pueden ejecutarse en paralelo.
     const countDocs = await db.tipoDocumento.count();
     const countRoles = await db.rol.count();
-    const countCategorias = await db.categoriaGam.count();
+    const countNiveles = await db.nivel.count();
     const countPlan = await db.plan.count();
 
     await checkInitialCounts(
       db,
       countDocs,
       countRoles,
-      countCategorias,
+      countNiveles,
       countPlan,
     );
-    console.log("--- Inicialización de data completa ---" + green);
+    console.log("--- Inicialización de data completa ---" );
   } catch (error) {
     // Lanza el error para que pueda ser manejado por quien llama a initializeData
     throw new Error(`Error al inicializar la data: ${error.message}`);

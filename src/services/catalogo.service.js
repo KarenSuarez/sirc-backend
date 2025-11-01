@@ -1,5 +1,5 @@
 import db from "../models/index.js";
-const categoria_gamificacion = db.categoria_gamificacion;
+const nivelModelo = db.nivel;
 const planModelo = db.plan;
 
 const getTodosLosPlanes = () => {
@@ -7,19 +7,19 @@ const getTodosLosPlanes = () => {
   return planes;
 };
 
-const actualizarCategoria = async (id_categoria, datosCategoria) => {
+const actualizarNivel = async (id_nivel, datosNivel) => {
   // Busca la categoría por ID
-  const categoria = await categoria_gamificacion.findByPk(id_categoria);
-  if (!categoria) {
+  const nivelEncontrado = await nivelModelo.findByPk(id_nivel);
+  if (!nivelEncontrado) {
     return null;
   }
   // Actualiza los campos
-  await categoria.update(datosCategoria);
+  await nivelEncontrado.update(datosNivel);
   // Devuelve la categoría actualizada
-  return categoria;
+  return nivelEncontrado;
 };
 
 export default {
   getTodosLosPlanes,
-  actualizarCategoria
+  actualizarNivel
 };

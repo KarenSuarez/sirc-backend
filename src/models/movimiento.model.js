@@ -65,11 +65,7 @@ export default (sequelize, Sequelize) => {
           model: "Referente",
           key: "numero_documento_identidad",
         },
-      },
-    tipo_movimiento: Sequelize.STRING(50),
-    cantidad_puntos: Sequelize.INTEGER,
-    monto: Sequelize.DECIMAL(10, 2),
-    fecha_movimiento: Sequelize.DATE    
+      }
     }, {
       tableName: "Movimiento",
       timestamps: false
