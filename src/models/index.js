@@ -9,6 +9,7 @@ import planModel from './plan.model.js';
 import referedModel from './referido.model.js';
 import solicitudRecompensaModel from './solicitudRecompensa.model.js';
 import movimientoModel from "./movimiento.model.js";
+import historialRecompensaModel from './historialRecompensa.model.js';
 import historialNivelModel from "./historialNivel.model.js";
 import sessionHistoryModel from './sessionHistory.model.js'
 import nivelModel from "./nivel.model.js";
@@ -21,17 +22,17 @@ const sequelize = new Sequelize(
   USER,
   PASSWORD,
   {
-  host: HOST,
-  port: PORTDB,
-  dialect: _dialect,
-  dialectOptions: {
-    allowPublicKeyRetrieval: true,
-    ssl: false
-  },
-  pool: {
-    max: _pool.max,
-    min: _pool.min,
-    acquire: _pool.acquire,
+    host: HOST,
+    port: PORTDB,
+    dialect: _dialect,
+    dialectOptions: {
+      allowPublicKeyRetrieval: true,
+      ssl: false
+    },
+    pool: {
+      max: _pool.max,
+      min: _pool.min,
+      acquire: _pool.acquire,
       idle: _pool.idle
     }
   }
@@ -62,6 +63,7 @@ db.plan = planModel(sequelize, Sequelize);
 db.refered = referedModel(sequelize, Sequelize);
 db.solicitudRecompensa = solicitudRecompensaModel(sequelize, Sequelize);
 db.movimiento = movimientoModel(sequelize, Sequelize);
+db.historialRecompensa = historialRecompensaModel(sequelize, Sequelize);
 db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
 db.nivel = nivelModel(sequelize, Sequelize);
 db.historialNivel = historialNivelModel(sequelize,Sequelize);
@@ -145,6 +147,18 @@ db.solicitudRecompensa.belongsTo(db.usuario, {
   as: "procesado_por"
 });
 
+// 7. Historial_Recompensa <--> Referente (Muchos a Uno)
+db.referente.hasMany(db.historialRecompensa, {
+  foreignKey: "numero_documento_identidad",
+  sourceKey: "numero_documento_identidad",
+  as: "historial_recompensas"
+});
+
+db.historialRecompensa.belongsTo(db.referente, {
+  foreignKey: "numero_documento_identidad",
+  targetKey: "numero_documento_identidad",
+  as: "referente"
+});
 db.historialSesion.belongsTo(db.usuario, {
   foreignKey: "usuario_id",
 });
@@ -189,3 +203,4 @@ db.Beneficio.belongsTo(db.nivel, {
   });
 
 export default db;
+
