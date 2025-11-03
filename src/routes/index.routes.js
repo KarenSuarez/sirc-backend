@@ -7,10 +7,10 @@ import nivelesRoutes from "./niveles.routes.js";
 import beneficiosRoutes from "./beneficios.routes.js";
 import configPointsPlanRoutes from "./configPointsPlan.routes.js";
 import rankingRoutes from "./ranking.routes.js";
-import kpiRoutes from "./routes/kpi.routes.js";
+import kpiRoutes from "./kpi.routes.js";
 import solicitudRoutes from "./solicitud.routes.js";
-import historialRecompensaRoutes from "./routes/historialRecompensa.routes.js";
-import historialCategoriaRoutes from "./routes/historialCategoria.routes.js";
+import historialRecompensaRoutes from "./historialRecompensa.routes.js";
+import historialCategoriaRoutes from "./historialCategorias.routes.js";
 import userRoutes from "./user.routes.js";
 import rewardCatalogoRoutes from './rewardCatalogo.routes.js';
 
