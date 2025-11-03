@@ -19,7 +19,10 @@ app.use(express.urlencoded({ extended: true }));
 db.sequelize.sync({ alter: true }).then(async () => {
   console.log("OK_SYNC Base de datos sincronizada.");
   
-  // Inserta datos iniciales solo si las tablas están vacías, 
+  /**
+   * Inserta datos iniciales solo si las tablas están vacías, datos 
+   * [Niveles:4, roles:4, tipoDocumento:3, planes:3] Bulk storage
+   */
   await initializeData(db);
 });
 

@@ -1,31 +1,29 @@
-import { DataTypes } from "sequelize";
-import db from "../models/index.js";
-const Nivel = db.nivel;
 export default (sequelize, Sequelize) => {
+
   const Beneficio = sequelize.define(
     "Beneficio",
     {
       id_beneficio: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
       id_nivel: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: Nivel,
+          model: "niveles",
           key: "id_nivel",
         },
       },
       porcentaje_beneficio: {
-        type: DataTypes.FLOAT,
+        type: Sequelize.FLOAT,
         allowNull: false,
         comment:
           "Porcentaje de beneficio aplicado a la recompensa (ej. 10 = 10%)",
       },
       descripcion: {
-        type: DataTypes.STRING(255),
+        type: Sequelize.STRING(255),
         allowNull: true,
       },
     },
@@ -34,4 +32,5 @@ export default (sequelize, Sequelize) => {
       timestamps: false,
     },
   );
+  return Beneficio;
 };

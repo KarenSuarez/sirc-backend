@@ -14,11 +14,11 @@ router.use((req, res, next) => {
 });
 
 router.get('/listarCatalogo', 
-  [authJwt.verifyToken, authJwt.hasRole("gerente")],
+  [authJwt.verifyToken, authJwt.hasRole("gerente"), authJwt.isAliveToken],
   rewardCatalogoController.getCatalogo    
 );
 router.patch('/nivel',
-  [authJwt.verifyToken, authJwt.hasRole("gerente")],
+  [authJwt.verifyToken, authJwt.hasRole("gerente"), authJwt.isAliveToken],
   rewardCatalogoController.actualizarNivel
 );
 export default router;

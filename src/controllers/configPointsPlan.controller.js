@@ -1,4 +1,4 @@
-import ConfigPointsPlan from "../models/configPointsPlan.model.js";
+import ConfigPointsPlan from "../models/configPuntosPlan.model.js";
 
 // GET /api/config-puntos-plan
 export const listarConfigPlanes = async (req, res) => {

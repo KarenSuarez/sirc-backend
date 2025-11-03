@@ -1,7 +1,8 @@
-import Nivel from "../models/nivel.model.js";
+import db from "../models/index.js";
+const Nivel = db.nivel;
 
 // GET /api/niveles
-export const listarNiveles = async (req, res) => {
+const listarNiveles = async (req, res) => {
   try {
     const niveles = await Nivel.findAll();
     res.json(niveles);
@@ -11,7 +12,7 @@ export const listarNiveles = async (req, res) => {
 };
 
 // POST /api/niveles
-export const crearNivel = async (req, res) => {
+const crearNivel = async (req, res) => {
   try {
     const { nombre, descripcion, puntos_minimos, puntos_maximos } = req.body;
     const nuevoNivel = await Nivel.create({ nombre, descripcion, puntos_minimos, puntos_maximos });
@@ -22,7 +23,7 @@ export const crearNivel = async (req, res) => {
 };
 
 // PUT /api/niveles/:id_nivel
-export const actualizarNivel = async (req, res) => {
+const actualizarNivel = async (req, res) => {
   try {
     const { id_nivel } = req.params;
     const { nombre, descripcion, puntos_minimos, puntos_maximos } = req.body;
@@ -36,3 +37,4 @@ export const actualizarNivel = async (req, res) => {
     res.status(500).json({ message: "Error al actualizar nivel", error: error.message });
   }
 };
+export default {listarNiveles, crearNivel, actualizarNivel};

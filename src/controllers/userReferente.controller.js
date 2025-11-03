@@ -13,16 +13,19 @@ const infoPerfilReferente = async (req, res) => {
     const nivelActual = await referenteService.getNivelActualByDocumento(tokenDecoded.documento_id);
     const informacionNivelActualReferente = await referenteService.getInformacionNivelById(nivelActual.nivel_nuevo);
     const nivelesTodos = await referenteService.getInformationNivelesTodos();
+    const referidos = await referenteService.getMisReferidos(tokenDecoded.documento_id);
     res.status(200).send({
       referente: referenteInfo,
       historialActualReferente: nivelActual,
       informacionNivelActualReferente: informacionNivelActualReferente,
-      todasLosNiveles: nivelesTodos
+      todasLosNiveles: nivelesTodos,
+      misReferidos : referidos
     });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 }
+
 export default { 
   referenteBoard,
   infoPerfilReferente  

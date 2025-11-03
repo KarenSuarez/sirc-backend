@@ -37,7 +37,7 @@
  */
 export default (sequelize, Sequelize) => {
   const Nivel = sequelize.define(
-    "Nivel",
+    "niveles",
     {
       id_nivel: {
         type: Sequelize.INTEGER,

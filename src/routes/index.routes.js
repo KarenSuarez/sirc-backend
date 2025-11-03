@@ -19,5 +19,5 @@ router.use('/points', pointsRoutes);
 router.use("/niveles", nivelesRoutes);
 router.use("/beneficios", beneficiosRoutes);
 router.use("/config-puntos-plan", configPointsPlanRoutes);
-router.use('/catalogo', rewardCatalogoRoutes)
+router.use('/catalogo', rewardCatalogoRoutes);
 export default router;

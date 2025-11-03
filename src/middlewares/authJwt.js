@@ -130,10 +130,9 @@ const isAliveToken = async (req, res, next) => {
     return res.status(500).send({ message: error.message });
   }
 };
-
 export default {
   verifyToken,
   isReferente,
   hasRole,
-  isAliveToken,
+  isAliveToken
 };

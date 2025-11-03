@@ -87,6 +87,30 @@ router.post("/logout", [authJwt.verifyToken], authController.logout);
  */
 router.post("/login", authController.login);
 
+/**
+ * @swagger
+ * /auth/logoutById:
+ *   post:
+ *     summary: Login de usuario
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LogoutByIDRequest'
+ *     responses:
+ *       200:
+ *         description: Login exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       401:
+ *         description: Usuario o contraseña incorrectos
+ *       500:
+ *         description: Error del servidor
+ */
 router.post("/logoutbyid", authController.logoutByID);
 
 export default router;

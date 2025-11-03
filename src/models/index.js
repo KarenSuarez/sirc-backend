@@ -71,7 +71,8 @@ db.Beneficio = beneficioModel(sequelize, Sequelize);
 
 // 1. Usuario <--> Tipo_documento (Uno a Muchos)
 db.tipoDocumento.hasMany(db.usuario, {
-  foreignKey: 'id_tipo_documento'
+  foreignKey: 'id_tipo_documento',
+  as: 'tipoDocumentoUsuario'
 });
 db.usuario.belongsTo(db.tipoDocumento, {
   foreignKey: 'id_tipo_documento'
@@ -176,7 +177,15 @@ db.nivel.hasMany(db.historialNivel, {
   as: 'historialComoNuevo'
 });
 
-nivel.hasOne(Beneficio, { foreignKey: "id_nivel" });
-Beneficio.belongsTo(nivel, { foreignKey: "id_nivel" });
+db.nivel.hasOne(db.Beneficio, { 
+  foreignKey: 'id_nivel',
+   sourceKey : 'id_nivel',
+   as: 'beneficioANivel'
+});
+db.Beneficio.belongsTo(db.nivel, { 
+  foreignKey: 'id_nivel',
+  sourceKey : 'id_nivel',
+  as: 'nivelAbeneficio'
+  });
 
 export default db;

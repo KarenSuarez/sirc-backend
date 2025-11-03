@@ -2,6 +2,7 @@ import db from "../models/index.js";
 const Referente = db.referente;
 const Historial_nivel = db.historialNivel;
 const nivel = db.nivel;
+const referidos = db.refered;
 
 const getReferenteByDocumento = async (numero_documento_identidad) => {
   return await Referente.findByPk(numero_documento_identidad);
@@ -34,10 +35,16 @@ const getInformationNivelesTodos = async () => {
   })
   return nivelesTodos;
 };
-
+const getMisReferidos =async (numero_documento_identidad)=>{
+  const referidosByReferente = await referidos.findAll({
+    where: { documento_referente: numero_documento_identidad },
+  });
+  return referidosByReferente;
+}
 export default {
   getReferenteByDocumento,
   getNivelActualByDocumento, 
   getInformacionNivelById,
-  getInformationNivelesTodos
+  getInformationNivelesTodos,
+  getMisReferidos
 };

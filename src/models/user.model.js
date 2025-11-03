@@ -9,7 +9,7 @@
  *         numero_documento_identidad:
  *           type: string
  *           description: Número de documento de identidad del usuario.
- *           example: "123456789"
+ *           example: "12"
  *         correo_electronico:
  *           type: string
  *           description: Correo electrónico del usuario.
