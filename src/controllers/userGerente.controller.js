@@ -1,0 +1,63 @@
+import userGerenteService from '../services/userGerente.service.js'
+
+/**
+ * @swagger
+ * /user/gerente/boardAllStats:
+ *   get:
+ *     summary: Obtiene estadísticas para el gerente de ventas
+ *     description: Proporciona estadísticas clave como el número de referentes activos, total de referidos, planes activos y comisiones pagadas.
+ *     tags:
+ *       - Gerente de Ventas
+ *     responses:
+ *       200:
+ *         description: Estadísticas del gerente de ventas.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Contenido solo para Gerentes de Ventas.
+ *                 referentesActivos:
+ *                   type: integer
+ *                   description: Número de referentes activos.
+ *                 totalReferidos:
+ *                   type: integer
+ *                   description: Total de referidos.
+ *                 planesActivos:
+ *                   type: integer
+ *                   description: Número de planes activos.
+ *                 comisionesPagadas:
+ *                   type: number
+ *                   description: Total de comisiones pagadas.
+ *       500:
+ *         description: Error interno del servidor. 
+ */
+const gerenteBoardAllStats = async (req, res) => {
+  const data = await userGerenteService.getInfo();
+  try {
+  res.status(200).send({
+    message: " Contenido solo para Gerentes de Ventas.",
+    referentesActivos: data.referentesActivos,
+    totalReferidos: data.totalReferidos,
+    planesActivos: data.planesActivos,
+    comisionesPagadas: data.comisionesPagadas
+  });  
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+const getTotalAnaliticas = async (req, res) => {
+  try {
+    const statsReferidosPorMes = await userGerenteService.getReferidosPorMes();
+    const statsReferidosPorEstado = await userGerenteService.getReferidosPorEstado();
+    res.status(200).send({statsReferidosPorMes, statsReferidosPorEstado});
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+export default {
+    gerenteBoardAllStats,
+    getTotalAnaliticas
+}

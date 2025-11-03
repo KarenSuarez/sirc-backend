@@ -2,6 +2,7 @@ import { Router } from "express";
 import authJwt from "../middlewares/authJwt.js";
 import userAdminController from "../controllers/userAdmin.controller.js";
 import userReferenteController from "../controllers/userReferente.controller.js";
+import userGerenteController from "../controllers/userGerente.controller.js";
 
 const router = Router();
 
@@ -11,6 +12,7 @@ router.get(
   [authJwt.verifyToken, authJwt.isAliveToken],
   userAdminController.getProfile,
 );
+/** Ruta solo para REFERENTE */
 router.get(
   "/referente/info",
   [authJwt.verifyToken, authJwt.hasRole("referente")],
@@ -34,12 +36,6 @@ router.get(
   [authJwt.verifyToken, authJwt.hasRole("admin")],
   userAdminController.showAllSessions,
 );
-/** Ruta solo para REFERENTE */
-router.get(
-  "/referente",
-  [authJwt.verifyToken, authJwt.hasRole("referente")],
-  userReferenteController.referenteBoard,
-);
 
 /** Ruta solo para ASESOR INTERNO */
 router.get(
@@ -51,8 +47,12 @@ router.get(
 /** Ruta solo para GERENTE DE VENTAS */
 router.get(
   "/gerente",
-  [authJwt.verifyToken, authJwt.hasRole("gerente")],
-  userAdminController.gerenteBoard,
+  [authJwt.verifyToken, authJwt.hasRole("gerente"), authJwt.isAliveToken],
+  userGerenteController.gerenteBoardAllStats
 );
-
+router.get(
+  "/gerente/analisisVentas",
+  [authJwt.verifyToken, authJwt.hasRole("gerente"), authJwt.isAliveToken],
+  userGerenteController.getTotalAnaliticas
+)
 export default router;
