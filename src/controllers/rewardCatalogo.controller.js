@@ -3,24 +3,18 @@ import catalogoService from "../services/catalogo.service.js";
 
 /**
  * @swagger
- * /api/catalogo/nivel:
- *   put:
- *     summary: Actualiza una categoría de gamificación
+ * /catalogo/listarCatalogo:
+ *   get:
+ *     summary: lista el catalogo (planes y niveles)
  *     tags:
  *       - Catalogo
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/NivelesUpdate'
  *     responses:
  *       200:
  *         description: Categoría actualizada correctamente
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/nivel'
+ *               $ref: "#/components/schemas/NivelesYPlanesResponse"
  *       400:
  *         description: Datos inválidos
  *       404:
@@ -28,7 +22,6 @@ import catalogoService from "../services/catalogo.service.js";
  *       500:
  *         description: Error interno del servidor
  */
-
 const getCatalogo = async (req, res) => {
     try {
         const niveles = await referenteService.getInformationNivelesTodos()
@@ -46,47 +39,107 @@ const getCatalogo = async (req, res) => {
     }
 };
 
-
 /**
  * @swagger
- * components:
- *   schemas:
- *     NivelesUpdate:
- *       type: object
- *       properties:
- *         id_nivel:
- *           type: integer
- *           description: ID de la categoría a actualizar
- *           example: 1
- *         nombre_nivel:
- *           type: string
- *           description: Nuevo nombre de la categoría
- *           example: "Oro"
- *         orden:
- *           type: integer
- *           description: Nuevo orden de la categoría
- *           example: 2
- *         puntos_minimos:
- *           type: integer
- *           description: Puntos mínimos requeridos
- *           example: 100
- *         puntos_maximos:
- *           type: integer
- *           description: Puntos máximos permitidos
- *           example: 200
- *         porcentaje_beneficio_adicional:
- *           type: number
- *           format: float
- *           description: Porcentaje de beneficio adicional
- *           example: 5.5
- *         descripcion:
- *           type: string
- *           description: Descripción de la categoría
- *           example: "Nivel oro para usuarios destacados"
- *         esta_activa:
- *           type: boolean
- *           description: Si la categoría está activa
- *           example: true
+ * /catalogo/nivel:
+ *   patch:
+ *     summary: Actualiza parcialmente (PATCH) los detalles de un nivel de recompensa.
+ *     tags:
+ *       - Catalogo
+ *     description: Permite a un usuario con rol 'gerente' modificar uno o más campos de un nivel de recompensa existente. id_nivel es el único campo obligatorio para identificar el recurso a actualizar.
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             description: Datos a actualizar del nivel. Solo se incluyen los campos a modificar.
+ *             properties:
+ *               id_nivel:
+ *                 type: integer
+ *                 format: int32
+ *                 description: ID del nivel a actualizar (Obligatorio).
+ *                 example: 2
+ *               nombre_nivel:
+ *                 type: string
+ *                 description: Nuevo nombre del nivel.
+ *                 example: "Plata Premium"
+ *               orden:
+ *                 type: integer
+ *                 format: int32
+ *                 description: Nueva posición de orden del nivel.
+ *                 example: 2
+ *               puntos_minimos:
+ *                 type: integer
+ *                 format: int32
+ *                 description: Nueva puntuación mínima para el nivel.
+ *                 example: 25
+ *               porcentaje_beneficio_adicional:
+ *                 type: integer
+ *                 format: int32
+ *                 description: Nuevo porcentaje de beneficio adicional.
+ *                 example: 7
+ *               puntos_maximos:
+ *                 type: integer
+ *                 format: int32
+ *                 description: Nueva puntuación máxima para el nivel (0 si es ilimitado).
+ *                 example: 60
+ *               descripcion:
+ *                 type: string
+ *                 nullable: true
+ *                 description: Nueva descripción del nivel.
+ *                 example: "Nivel mejorado para usuarios con más puntos."
+ *               esta_activa:
+ *                 type: boolean
+ *                 description: Indica si el nivel debe estar activo (true/false).
+ *                 example: true
+ *             required:
+ *               - id_nivel
+ *     responses:
+ *       200:
+ *         description: Nivel actualizado exitosamente. Retorna el objeto del nivel actualizado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/nivel'
+ *             example:
+ *               id_nivel: 2
+ *               nombre_nivel: "Plata Premium"
+ *               porcentaje_beneficio_adicional: 7
+ *               descripcion: "Nivel mejorado para usuarios con más puntos."
+ *               puntos_minimos: 25
+ *               puntos_maximos: 60
+ *               orden: 2
+ *               activo: true
+ *               updateAt: "2025-11-02T15:30:00.000Z"
+ *       400:
+ *         description: Solicitud inválida. Falta el id_nivel en el cuerpo de la solicitud.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "id_nivel es requerido"
+ *       401:
+ *         description: No autorizado (Token inválido o expirado).
+ *       403:
+ *         description: Prohibido (El usuario no tiene el rol 'gerente').
+ *       404:
+ *         description: Nivel no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Categoría no encontrada"
+ *       500:
+ *         description: Error interno del servidor.
  */
 const actualizarNivel = async (req, res) => {
     try {
@@ -140,4 +193,3 @@ export default {
     getCatalogo,
     actualizarNivel
 };
-

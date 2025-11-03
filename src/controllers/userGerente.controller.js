@@ -48,6 +48,51 @@ const gerenteBoardAllStats = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+/**
+ * 
+ * @swagger
+ * /user/gerente/analisisVentas:
+ *   get:
+ *     summary: Obtiene análisis de ventas para el gerente de ventas
+ *     description: Proporciona análisis detallados como el total de referidos por mes y por estado.
+ *     tags:
+ *       - Gerente de Ventas
+ *     responses:
+ *       200:
+ *         description: Análisis de ventas del gerente de ventas.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statsReferidosPorMes:
+ *                   type: array
+ *                   description: Total de referidos agrupados por mes.
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       mes:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Mes del año.
+ *                       total_referidos:
+ *                         type: integer
+ *                         description: Total de referidos en ese mes.
+ *                 statsReferidosPorEstado:
+ *                   type: array
+ *                   description: Total de referidos agrupados por estado.
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       estado:
+ *                         type: string
+ *                         description: Estado del referido.
+ *                       total_referidos:
+ *                         type: integer
+ *                         description: Total de referidos en ese estado.
+ *       500:
+ *         description: Error interno del servidor. 
+ */
 const getTotalAnaliticas = async (req, res) => {
   try {
     const statsReferidosPorMes = await userGerenteService.getReferidosPorMes();

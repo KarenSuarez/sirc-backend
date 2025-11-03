@@ -1,7 +1,26 @@
 import db from "../models/index.js";
 const Nivel = db.nivel;
 
-// GET /api/niveles
+
+
+/** 
+ * @swagger
+ * /niveles:
+ *   get:
+ *     summary: Obtener la lista de niveles
+ *     tags: [Niveles]
+ *     responses:
+ *       200:
+ *         description: Lista de niveles obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/nivel'
+ *       500:
+ *         description: Error al listar niveles 
+*/
 const listarNiveles = async (req, res) => {
   try {
     const niveles = await Nivel.findAll();

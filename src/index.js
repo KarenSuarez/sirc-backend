@@ -6,6 +6,7 @@ import mainRouter from "./routes/index.routes.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import initializeData from "./utils/initializeData.js";
+import bulkStoreReferidos from "./utils/dataStoreReferidos.js";
 
 // --- Inicialización de Express ---
 const app = express();
@@ -54,6 +55,7 @@ const swaggerOptions = {
   apis: [
     path.join(process.cwd(), "src/controllers/*.js"), // tus controladores
     path.join(process.cwd(), "src/routes/*.js"), // tus rutas
+    path.join(process.cwd(), "src/config/swaggerSchemas.js"), // tus modelos
   ],
 };
 
@@ -66,7 +68,14 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get("/", (req, res) => {
   res.json({ message: "Bienvenido al API de Referidos y Fidelización." });
 });
-
+app.get("/storeReferidos", async (req, res) => {
+  try {
+    const result = await bulkStoreReferidos(db);
+    res.json({ message: result });
+  } catch (error) {
+    res.status(500).json({ message: "Error al almacenar los referidos.", error });
+  }
+})
 //ruta principal para gestión de los servicios
 app.use("/api", mainRouter);
 

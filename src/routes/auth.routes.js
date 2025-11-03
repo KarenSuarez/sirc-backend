@@ -89,27 +89,16 @@ router.post("/login", authController.login);
 
 /**
  * @swagger
- * /auth/logoutById:
+ * /auth/logoutByID:
  *   post:
- *     summary: Login de usuario
+ *     summary: logout con el id del usuario
  *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/LogoutByIDRequest'
- *     responses:
- *       200:
- *         description: Login exitoso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/LoginResponse'
- *       401:
- *         description: Usuario o contraseña incorrectos
- *       500:
- *         description: Error del servidor
+ *             $ref: "#/components/schemas/LogoutByIDRequest"
  */
 router.post("/logoutbyid", authController.logoutByID);
 

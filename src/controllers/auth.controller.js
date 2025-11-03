@@ -202,19 +202,23 @@ const logout = async (req, res) => {
 };
 
 /**
-@swagger
-/auth/logoutByID:
-  post:
-    summary: Cierra todas las sesiones activas de un usuario por su ID
-    tags:
-      - Auth
-    requestBody:
-      required: true
-    responses:
-      200:
-        description: Logout exitoso
-      500:
-        description: Error al cerrar las sesiones
+ * @swagger
+ * /auth/logoutByID:
+ *   post:
+ *     summary: Cierra todas las sesiones activas de un usuario por su ID
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/LogoutByIDRequest"
+ *     responses:
+ *       200:
+ *         description: Logout exitoso
+ *       500:
+ *         description: Error al cerrar las sesiones
  */
 const logoutByID = async (req, res) => {
   const numero_documento_identidad = req.body.numero_documento_identidad; 
