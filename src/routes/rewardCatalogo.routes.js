@@ -21,4 +21,12 @@ router.patch('/nivel',
   [authJwt.verifyToken, authJwt.hasRole('gerente'), authJwt.isAliveToken],
   rewardCatalogoController.actualizarNivel
 );
+router.patch('/plan',
+  [authJwt.verifyToken, authJwt.hasRole('gerente'), authJwt.isAliveToken],
+  rewardCatalogoController.actualizarPlan
+);
+router.put('/plan',
+  [authJwt.verifyToken, authJwt.hasRole('gerente'), authJwt.isAliveToken],
+  rewardCatalogoController.crearPlan
+);
 export default router;

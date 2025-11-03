@@ -34,6 +34,8 @@
  *           type: string
  *           format: date-time
  *           example: "2024-06-01T12:00:00Z"
+ *     plan:
+ *       $ref: '#/components/schemas/Plan'
  *     NivelesUpdate:
  *       type: object
  *       properties:
@@ -120,4 +122,67 @@
  *             estado: "activo"
  *             creado_en: "2025-11-01T01:04:03.000Z"
  *             actualizado_en: "2025-11-01T01:04:03.000Z"
+ *     Usuario:
+ *       type: object
+ *       description: Representa un usuario del sistema.
+ *       properties:
+ *         numero_documento_identidad:
+ *           type: string
+ *           description: Número de documento de identidad del usuario.
+ *           example: "12"
+ *         correo_electronico:
+ *           type: string
+ *           description: Correo electrónico del usuario.
+ *           example: "john.doe@example.com"
+ *         contrasena_hash:
+ *           type: string
+ *           description: Hash de la contraseña del usuario.
+ *           example: "$2a$08$N9qo8uLOickgx2ZMRZo5i.U..."
+ *         nombre:
+ *           type: string
+ *           description: Nombre del usuario.
+ *           example: "John"
+ *         apellido:
+ *           type: string
+ *           description: Apellido del usuario.
+ *           example: "Doe"
+ *         telefono:
+ *           type: string
+ *           description: Teléfono del usuario (opcional).
+ *           example: "1234567890"
+ *         fecha_registro:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de registro del usuario.
+ *           example: "2025-09-29T20:00:00Z"
+ *         id_tipo_documento:
+ *           type: integer
+ *           description: ID del tipo de documento asociado al usuario.
+ *           example: 1
+ *       required:
+ *         - correo_electronico
+ *         - contrasena_hash
+ *         - nombre
+ *         - apellido
+ *         - numero_documento_identidad
+ *     UsuarioUpdate:
+ *       type: object
+ *       description: Campos opcionales para actualizar un usuario.
+ *       properties:
+ *         correo_electronico:
+ *           type: string
+ *           description: Nuevo correo electrónico.
+ *           example: "new.email@example.com"
+ *         nombre:
+ *           type: string
+ *           description: Nuevo nombre.
+ *           example: "Jane"
+ *         apellido:
+ *           type: string
+ *           description: Nuevo apellido.
+ *           example: "Smith"
+ *         telefono:
+ *           type: string
+ *           description: Nuevo teléfono.
+ *           example: "9876543210"
  */

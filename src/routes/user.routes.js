@@ -3,15 +3,21 @@ import authJwt from "../middlewares/authJwt.js";
 import userAdminController from "../controllers/userAdmin.controller.js";
 import userReferenteController from "../controllers/userReferente.controller.js";
 import userGerenteController from "../controllers/userGerente.controller.js";
+import userController from "../controllers/user.controller.js"
 
 const router = Router();
 
 /** Ruta protegida: solo necesita estar autenticado Se revisa el token */
 router.get(
-  "/profile",
+  "/miperfil",
   [authJwt.verifyToken, authJwt.isAliveToken],
-  userAdminController.getProfile,
+  userController.getProfile,
 );
+router.put(
+  "/miperfil",
+  [authJwt.verifyToken, authJwt.isAliveToken],
+  userController.updateUserData
+)
 /** Ruta solo para REFERENTE */
 router.get(
   "/referente/info",

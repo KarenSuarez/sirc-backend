@@ -1,4 +1,4 @@
-import userGerenteService from '../services/userGerente.service.js'
+import userGerenteService from "../services/userGerente.service.js";
 
 /**
  * @swagger
@@ -32,24 +32,23 @@ import userGerenteService from '../services/userGerente.service.js'
  *                   type: number
  *                   description: Total de comisiones pagadas.
  *       500:
- *         description: Error interno del servidor. 
+ *         description: Error interno del servidor.
  */
 const gerenteBoardAllStats = async (req, res) => {
   const data = await userGerenteService.getInfo();
   try {
-  res.status(200).send({
-    message: " Contenido solo para Gerentes de Ventas.",
-    referentesActivos: data.referentesActivos,
-    totalReferidos: data.totalReferidos,
-    planesActivos: data.planesActivos,
-    comisionesPagadas: data.comisionesPagadas
-  });  
+    return res.status(200).send({
+      message: " Contenido solo para Gerentes de Ventas.",
+      referentesActivos: data.referentesActivos,
+      totalReferidos: data.totalReferidos,
+      planesActivos: data.planesActivos,
+      comisionesPagadas: data.comisionesPagadas,
+    });
   } catch (error) {
-    res.status(500).send({ message: error.message });
+    return res.status(500).send({ message: error.message });
   }
 };
 /**
- * 
  * @swagger
  * /user/gerente/analisisVentas:
  *   get:
@@ -90,19 +89,54 @@ const gerenteBoardAllStats = async (req, res) => {
  *                       total_referidos:
  *                         type: integer
  *                         description: Total de referidos en ese estado.
+ *                 statsTotalDePlanesAdquiridos:
+ *                   type: array
+ *                   description: Total de planes adquiridos por referido.
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_plan:
+ *                         type: integer
+ *                         description: ID del plan adquirido.
+ *                       total_referidos:
+ *                         type: integer
+ *                         description: Total de referidos que adquirieron ese plan.
+ *                 statsTazaDeConversion:
+ *                   type: array
+ *                   description: Tasa de conversión de referidos agrupados por mes.
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       mes:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Mes del año.
+ *                       tasa_conversion:
+ *                         type: number
+ *                         format: float
+ *                         description: Tasa de conversión en ese mes.
  *       500:
- *         description: Error interno del servidor. 
+ *         description: Error interno del servidor.
  */
 const getTotalAnaliticas = async (req, res) => {
   try {
     const statsReferidosPorMes = await userGerenteService.getReferidosPorMes();
     const statsReferidosPorEstado = await userGerenteService.getReferidosPorEstado();
-    res.status(200).send({statsReferidosPorMes, statsReferidosPorEstado});
+    const statsTotalDePlanesAdquiridos = await userGerenteService.getPlanesAdquiridosPorReferido();
+    const statsTazaDeConversion = await userGerenteService.getTazaConversionReferidosAgrupadosPorMes();
+    return res
+      .status(200)
+      .send({
+        statsReferidosPorMes,
+        statsReferidosPorEstado,
+        statsTotalDePlanesAdquiridos,
+        statsTazaDeConversion
+      });
   } catch (error) {
-    res.status(500).send({ message: error.message });
+    return res.status(500).send({ message: error.message });
   }
 };
 export default {
-    gerenteBoardAllStats,
-    getTotalAnaliticas
-}
+  gerenteBoardAllStats,
+  getTotalAnaliticas,
+};

@@ -1,10 +1,5 @@
 import userServices from "../services/user.service.js";
-const getProfile = (req, res) => {
-  res.status(200).send({
-    message: " Perfil de usuario autenticado.",
-    userId: req.userId,
-  });
-};
+
 
 const adminBoard = (req, res) => {
   res.status(200).send({
@@ -110,7 +105,6 @@ const asesorBoard = (req, res) => {
   });
 };
 export default {
-  getProfile,
   adminBoard,
   asesorBoard,
   showLiveSessions,

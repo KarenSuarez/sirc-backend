@@ -23,20 +23,20 @@ import catalogoService from "../services/catalogo.service.js";
  *         description: Error interno del servidor
  */
 const getCatalogo = async (req, res) => {
-    try {
-        const niveles = await referenteService.getInformationNivelesTodos()
-        const planes = await catalogoService.getTodosLosPlanes()
-        //insignias
-        if (!niveles) {
-            return res.status(404).json({ message: "niveles vacios" });
-        }
-        res.status(200).send({
-            todasLosniveles:niveles,
-            todosLosPlanes:planes
-        });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+  try {
+    const niveles = await referenteService.getInformationNivelesTodos();
+    const planes = await catalogoService.getTodosLosPlanes();
+    //insignias
+    if (!niveles) {
+      return res.status(404).json({ message: "niveles vacios" });
     }
+    res.status(200).send({
+      todasLosniveles: niveles,
+      todosLosPlanes: planes,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 /**
@@ -142,54 +142,236 @@ const getCatalogo = async (req, res) => {
  *         description: Error interno del servidor.
  */
 const actualizarNivel = async (req, res) => {
-    try {
-        const {
-            id_nivel,
-            nombre_nivel,
-            orden,
-            puntos_minimos,
-            porcentaje_beneficio_adicional,
-            puntos_maximos,
-            descripcion,
-            esta_activa
-        } = req.body;
+  try {
+    const {
+      id_nivel,
+      nombre_nivel,
+      orden,
+      puntos_minimos,
+      porcentaje_beneficio_adicional,
+      puntos_maximos,
+      descripcion,
+      esta_activa,
+    } = req.body;
 
-        if (!id_nivel) {
-            return res.status(400).json({ message: "id_nivel es requerido" });
-        }
-
-        // Construir objeto de actualización
-        const datosNivel = {
-            nombre_nivel,
-            orden,
-            puntos_minimos,
-            porcentaje_beneficio_adicional,
-            puntos_maximos,
-            descripcion,
-            esta_activa,
-            updateAt: new Date()
-        };
-
-        // Elimina campos undefined
-        Object.keys(datosNivel).forEach(
-            key => datosNivel[key] === undefined && delete datosNivel[key]
-        );
-
-        // Actualizar usando el servicio correspondiente
-        const updated = await catalogoService.actualizarNivel(id_nivel, datosNivel);
-
-        if (!updated) {
-            return res.status(404).json({ message: "Categoría no encontrada" });
-        }
-
-        res.status(200).json(updated);
-    } catch (error) {
-        console.log(req.body);
-        res.status(500).send({ message: error.message });
+    if (!id_nivel) {
+      return res.status(400).json({ message: "id_nivel es requerido" });
     }
+
+    // Construir objeto de actualización
+    const datosNivel = {
+      nombre_nivel,
+      orden,
+      puntos_minimos,
+      porcentaje_beneficio_adicional,
+      puntos_maximos,
+      descripcion,
+      esta_activa,
+      updateAt: new Date(),
+    };
+
+    // Elimina campos undefined
+    Object.keys(datosNivel).forEach(
+      (key) => datosNivel[key] === undefined && delete datosNivel[key],
+    );
+
+    // Actualizar usando el servicio correspondiente
+    const updated = await catalogoService.actualizarNivel(id_nivel, datosNivel);
+
+    if (!updated) {
+      return res.status(404).json({ message: "Categoría no encontrada" });
+    }
+
+    res.status(200).json(updated);
+  } catch (error) {
+    console.log(req.body);
+    res.status(500).send({ message: error.message });
+  }
+};
+/**
+ * @swagger
+ * /catalogo/plan:
+ *   patch:
+ *     summary: Actualiza parcialmente (PATCH) los detalles de un plan.
+ *     tags:
+ *       - Catalogo
+ *     description: Permite a un usuario con rol 'gerente' modificar uno o más campos de un plan existente. id_plan es el único campo obligatorio para identificar el recurso a actualizar.
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id_plan:
+ *                 type: integer
+ *                 description: ID del plan a actualizar (Obligatorio).
+ *                 example: 1
+ *               nombre_plan:
+ *                 type: string
+ *               precio_actual:
+ *                 type: number
+ *               porcentaje_recompensa:
+ *                 type: number
+ *               puntos_otorgados:
+ *                 type: integer
+ *               descripcion:
+ *                 type: string
+ *               estado:
+ *                 type: string
+ *             required:
+ *               - id_plan
+ *     responses:
+ *       200:
+ *         description: Plan actualizado exitosamente. Retorna el objeto del plan actualizado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/plan'
+ *       400:
+ *         description: Solicitud inválida. Falta el id_plan en el cuerpo de la solicitud.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "id_plan es requerido"
+ *       401:
+ *         description: No autorizado (Token inválido o expirado).
+ *       403:
+ *         description: Prohibido (El usuario no tiene el rol 'gerente').
+ *       404:
+ *         description: Plan no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Plan no encontrado"
+ *       500:
+ *         description: Error interno del servidor.
+ */
+const actualizarPlan = async (req, res) => {
+  try {
+    const {
+      id_plan,
+      nombre_plan,
+      precio_actual,
+      porcentaje_recompensa,
+      puntos_otorgados,
+      descripcion,
+      estado,
+    } = req.body;
+
+    if (!id_plan) {
+      return res.status(400).json({ message: "id_plan es requerido" });
+    }
+
+    // Construir objeto de actualización
+    const datosPlan = {
+      nombre_plan,
+      precio_actual,
+      porcentaje_recompensa,
+      puntos_otorgados,
+      descripcion,
+      estado,
+      actualizado_en: new Date(),
+    };
+
+    // Elimina campos undefined
+    Object.keys(datosPlan).forEach(
+      (key) => datosPlan[key] === undefined && delete datosPlan[key],
+    );
+
+    // Actualizar usando el servicio correspondiente
+    const updated = await catalogoService.actualizarPlan(id_plan, datosPlan);
+
+    if (!updated) {
+      return res.status(404).json({ message: "Plan no encontrado" });
+    }
+
+    res.status(200).json(updated);
+  } catch (error) {
+    console.log(req.body);
+    res.status(500).send({ message: error.message });
+  }
 };
 
+/**
+ * @swagger
+ * /catalogo/plan:
+ *   put:
+ *     summary: Crea un nuevo plan.
+ *     tags:
+ *       - Catalogo
+ *     description: Permite a un usuario con rol 'gerente' crear un nuevo plan en el catálogo.
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/PlanInput'
+ *     responses:
+ *       201:
+ *        description: Plan creado exitosamente. Retorna el objeto del plan creado.
+ *        content:
+ *         application/json:
+ *          schema:
+ *          $ref: '#/components/schemas/plan'
+ *      400:
+ *        description: Solicitud inválida.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: "Datos del plan son requeridos"
+ */
+const crearPlan = async (req, res) => {
+  try {
+    const {
+      nombre_plan,
+      precio_actual,
+      porcentaje_recompensa,
+      puntos_otorgados,
+      descripcion,
+      estado,
+    } = req.body;
+
+    // Construir objeto de creación
+    const datosPlan = {
+      nombre_plan,
+      precio_actual,
+      porcentaje_recompensa,
+      puntos_otorgados,
+      descripcion,
+      estado,
+      creado_en: new Date(),
+      actualizado_en: new Date(),
+    };
+
+    // Crear usando el servicio correspondiente
+    const created = await catalogoService.crearPlan(datosPlan);
+
+    res.status(201).json(created);
+  } catch (error) {
+    console.log(req.body);
+    res.status(500).send({ message: error.message });
+  }
+};
 export default {
-    getCatalogo,
-    actualizarNivel
+  getCatalogo,
+  actualizarNivel,
+  actualizarPlan,
+  crearPlan,
 };
