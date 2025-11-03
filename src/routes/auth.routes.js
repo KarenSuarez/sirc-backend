@@ -87,6 +87,19 @@ router.post("/logout", [authJwt.verifyToken], authController.logout);
  */
 router.post("/login", authController.login);
 
+/**
+ * @swagger
+ * /auth/logoutByID:
+ *   post:
+ *     summary: logout con el id del usuario
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/LogoutByIDRequest"
+ */
 router.post("/logoutbyid", authController.logoutByID);
 
 export default router;

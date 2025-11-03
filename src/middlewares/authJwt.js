@@ -62,7 +62,7 @@ const hasRole = (roleName) => {
       // Decodificar el token JWT
       const decoded = jwt.verify(token, config.secret);
       const documentoIdentidad = decoded.documento_id; // Extraer el documento_identidad del token
-
+      
       // Buscar el usuario en la base de datos
       const usuario = await Usuario.findOne({
         where: { numero_documento_identidad: documentoIdentidad },
@@ -130,10 +130,9 @@ const isAliveToken = async (req, res, next) => {
     return res.status(500).send({ message: error.message });
   }
 };
-
 export default {
   verifyToken,
   isReferente,
   hasRole,
-  isAliveToken,
+  isAliveToken
 };

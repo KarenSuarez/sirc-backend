@@ -63,6 +63,13 @@ import authService from "../services/auth.service.js";
  *           type: string
  *           description: Token JWT para autenticación
  *           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1X2lkIjoiMTIzNDU2IiwicmxzX2lkIjpbMSwyXSwiaWF0IjoxNjY2NjY2NjY2LCJleHAiOjE2NjY2NzAyNjZ9.abc123def456ghi789jkl"
+ *     LogoutByIDRequest:
+ *       type: object
+ *       properties:
+ *         numero_documento_identidad:
+ *           type: string
+ *           description: Número de documento de identidad del usuario
+ *           example: "1"
  */
 
 /**
@@ -180,7 +187,7 @@ const login = async (req, res) => {
  *         description: Error del servidor
  */
 const logout = async (req, res) => {
-  //console.log(req.headers["x-access-token"]);
+  console.log(`[LOGOUT] TOKEN: ${req.headers["x-access-token"]}`);
   const token = req.headers["x-access-token"];
   const tokenDecoded = jwt.decode(token);
   const numero_documento_identidad = tokenDecoded.documento_id;
@@ -206,12 +213,7 @@ const logout = async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               numero_documento_identidad:
- *                 type: string
- *                 description: Número de documento de identidad del usuario
- *                 example: "123456789"
+ *             $ref: "#/components/schemas/LogoutByIDRequest"
  *     responses:
  *       200:
  *         description: Logout exitoso

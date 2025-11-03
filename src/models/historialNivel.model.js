@@ -2,9 +2,9 @@
  * @swagger
  * components:
  *   schemas:
- *     HistorialCategoria:
+ *     HistorialNivel:
  *       type: object
- *       description: en momentos que el usuario sufra un cambio o actialización de categoria
+ *       description: en momentos que el usuario sufra un cambio o actialización de Nivel
  *       properties:
  *         id_cambio:
  *           type: integer
@@ -12,15 +12,15 @@
  *           example: 1
  *         id_referente:
  *           type: string
- *           description: documento identidad del referente que sufrio de un cambio de categoria
+ *           description: documento identidad del referente que sufrio de un cambio de Nivel
  *           example: 11
- *         categoria_anterior:
+ *         Nivel_anterior:
  *           type: integer
- *           description: categoria anterior
+ *           description: Nivel anterior
  *           example: 1
- *         categoria_nueva:
+ *         Nivel_nueva:
  *           type: integer
- *           description: nueva categoria
+ *           description: nueva Nivel
  *           example: 1
  *         puntos_al_momento:
  *           type: double
@@ -33,7 +33,7 @@
  *           example: "2025-10-28 17:03:00"
  */
 export default (sequelize, Sequelize) => {
-  const HistorialCategoria = sequelize.define("Historial_categoria", {
+  const HistorialNivel = sequelize.define("Historial_nivel", {
     id_cambio: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -44,24 +44,22 @@ export default (sequelize, Sequelize) => {
       type: Sequelize.STRING(20),
       allowNull: false,
       references: {
-        model: "Referente",
+        model: "Referente", // Asegúrate de que este nombre coincida con el nombre de la tabla
         key: "numero_documento_identidad",
       },
     },
-    categoria_anterior: {
+    nivel_anterior: {
       type: Sequelize.INTEGER,
-      allowNull: false,
       references: {
-        model: "Categoria_gamificacion",
-        key: "id_categoria",
+        model: "niveles",
+        key: "id_nivel",
       },
     },
-    categoria_nueva: {
+    nivel_nuevo: {
       type: Sequelize.INTEGER,
-      allowNull: false,
       references: {
-        model: "Categoria_gamificacion",
-        key: "id_categoria",
+        model: "niveles",
+        key: "id_nivel",
       },
     },
     puntos_al_momento: {
@@ -72,6 +70,10 @@ export default (sequelize, Sequelize) => {
       type: Sequelize.DATE,
       defaultValue: Sequelize.NOW,
     },
-  });
-  return HistorialCategoria;
+  },{
+    tableName:"Historial_nivel",
+    timestamps: false
+  }
+  );
+  return HistorialNivel;
 };

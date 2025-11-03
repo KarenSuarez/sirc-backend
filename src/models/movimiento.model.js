@@ -58,20 +58,18 @@ export default (sequelize, Sequelize) => {
         defaultValue: Sequelize.NOW,
         allowNull: false,
       },
-      numero_documento_identidad_referente: {
+    numero_documento_identidad: {
         type: Sequelize.STRING(20),
         allowNull: false,
         references: {
           model: "Referente",
           key: "numero_documento_identidad",
         },
-      },
-    },
-    {
+      }
+    }, {
       tableName: "Movimiento",
-      timestamps: false,
-    },
-  );
+      timestamps: false
+    });
 
   return Movimiento;
 };

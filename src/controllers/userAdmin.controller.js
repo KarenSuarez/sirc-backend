@@ -1,10 +1,5 @@
-import userServices from "../services/user.services.js";
-const getProfile = (req, res) => {
-  res.status(200).send({
-    message: " Perfil de usuario autenticado.",
-    userId: req.userId,
-  });
-};
+import userServices from "../services/user.service.js";
+
 
 const adminBoard = (req, res) => {
   res.status(200).send({
@@ -109,18 +104,9 @@ const asesorBoard = (req, res) => {
     message: " Contenido solo para Asesores Internos.",
   });
 };
-
-const gerenteBoard = (req, res) => {
-  res.status(200).send({
-    message: " Contenido solo para Gerentes de Ventas.",
-  });
-};
-
 export default {
-  getProfile,
   adminBoard,
   asesorBoard,
-  gerenteBoard,
   showLiveSessions,
   showAllSessions
 };

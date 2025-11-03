@@ -23,11 +23,6 @@
  *           type: integer
  *           description: Puntos acumulados por el referente.
  *           example: 0
- *         categoria_actual:
- *           type: string
- *           enum: [basico]
- *           description: Categoría actual del referente.
- *           example: "basico"
  *         recompensa_monetaria_actual:
  *           type: number
  *           format: float
@@ -66,10 +61,6 @@ export default (sequelize, Sequelize) => {
       puntos_acumulados: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
-      },
-      categoria_actual: {
-        type: Sequelize.ENUM("basico"),
-        defaultValue: "basico",
       },
       recompensa_monetaria_actual: {
         type: Sequelize.DECIMAL(10, 2),
