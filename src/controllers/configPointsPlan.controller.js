@@ -1,5 +1,6 @@
 import ConfigPointsPlan from "../models/configPuntosPlan.model.js";
 import { recalcularPuntosReferentes } from "../services/recalculoPuntos.service.js";
+
 // GET /api/config-puntos-plan
 export const listarConfigPlanes = async (req, res) => {
   try {

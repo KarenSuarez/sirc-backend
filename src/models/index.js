@@ -10,6 +10,7 @@ import referedModel from './referido.model.js';
 import solicitudRecompensaModel from './solicitudRecompensa.model.js';
 import movimientoModel from "./movimiento.model.js";
 import historialRecompensaModel from './historialRecompensa.model.js';
+import historialCategoriaModel from './historialCategoria.model.js';
 import historialNivelModel from "./historialNivel.model.js";
 import sessionHistoryModel from './sessionHistory.model.js'
 import nivelModel from "./nivel.model.js";
@@ -59,11 +60,12 @@ db.rol = roleModel(sequelize, Sequelize);
 db.tipoDocumento = documentTypeModel(sequelize, Sequelize);
 db.rolUsuario = userRoleModel(sequelize, Sequelize);
 db.referente = referenteModel(sequelize, Sequelize);
-db.plan = planModel(sequelize, Sequelize);
+db.plan = planModel(sequelize, Sequelize); 
 db.refered = referedModel(sequelize, Sequelize);
 db.solicitudRecompensa = solicitudRecompensaModel(sequelize, Sequelize);
 db.movimiento = movimientoModel(sequelize, Sequelize);
 db.historialRecompensa = historialRecompensaModel(sequelize, Sequelize);
+db.historialCategoria = historialCategoriaModel(sequelize, Sequelize);
 db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
 db.nivel = nivelModel(sequelize, Sequelize);
 db.historialNivel = historialNivelModel(sequelize,Sequelize);
@@ -159,6 +161,21 @@ db.historialRecompensa.belongsTo(db.referente, {
   targetKey: "numero_documento_identidad",
   as: "referente"
 });
+
+db.referente.hasMany(db.historialCategoria, {
+  foreignKey: "id_referente",
+  as: "historialCategorias"
+});
+
+db.historialCategoria.belongsTo(db.referente, {
+  foreignKey: "id_referente",
+  as: "referente"
+});
+
+
+
+
+db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
 db.historialSesion.belongsTo(db.usuario, {
   foreignKey: "usuario_id",
 });

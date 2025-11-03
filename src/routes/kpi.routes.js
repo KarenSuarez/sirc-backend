@@ -1,5 +1,5 @@
 import express from "express";
-import { exportarRankingCSV } from "../controllers/kpiController.js";
+import { exportarRankingCSV } from "../controllers/kpi.controller.js";
 
 const router = express.Router();
 
