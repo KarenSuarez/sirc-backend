@@ -76,13 +76,27 @@ const actualizarEstadoSolicitud = async (id, nuevoEstado, observaciones = null, 
   const solicitud = await SolicitudRecompensa.findByPk(id);
   if (!solicitud) throw new Error("Solicitud no encontrada");
 
+
   solicitud.estado_solicitud = nuevoEstado;
   solicitud.observaciones = observaciones || solicitud.observaciones;
   solicitud.comprobante_pago = comprobante || solicitud.comprobante_pago;
+
+
+  if (id_usuario_procesador) {
+    solicitud.id_usuario_procesador = id_usuario_procesador;
+  }
+
   solicitud.fecha_actualizacion = new Date();
-  solicitud.numero_documento_identidad = id_usuario_procesador;
 
   await solicitud.save();
+  if (nuevoEstado === "completada") {
+    const referente = await Referente.findByPk(solicitud.documento_referente);
+    if (referente) {
+      referente.recompensa_monetaria_actual -= solicitud.valor_retirar;
+      if (referente.recompensa_monetaria_actual < 0) referente.recompensa_monetaria_actual = 0;
+      await referente.save();
+    }
+  }
 
   return solicitud;
 };

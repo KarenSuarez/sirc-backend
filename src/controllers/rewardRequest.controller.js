@@ -230,7 +230,8 @@ const actualizarEstado = async (req, res) => {
         id_solicitud,
         estado_solicitud,
         observaciones,
-        pdfPath
+        pdfPath,
+        id_usuario_procesador
       );
     }
 

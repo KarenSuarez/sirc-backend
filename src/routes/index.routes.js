@@ -17,14 +17,11 @@ const router = Router();
 router.use('/auth', authRoutes);
 router.use('/refereds', referedRoutes);
 router.use("/solicitudes", solicitudRoutes);
-//router.use('/rewardRequests', rewardRequestRoutes);
 router.use('/points', pointsRoutes);
 router.use("/niveles", nivelesRoutes);
 router.use("/beneficios", beneficiosRoutes);
-
 router.use("/ranking", rankingRoutes);
 router.use("/kpis", kpiRoutes);
-
 router.use("/historial-recompensas", historialRecompensaRoutes);
 router.use("/historial-categorias", historialCategoriaRoutes);
 router.use('/catalogo', rewardCatalogoRoutes);

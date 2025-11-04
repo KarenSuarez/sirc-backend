@@ -1,6 +1,6 @@
 import referenteService from "../services/referente.service.js";
 import catalogoService from "../services/catalogo.service.js";
-
+import pointsService from "../services/points.service.js";
 /**
  * @swagger
  * /catalogo/listarCatalogo:
