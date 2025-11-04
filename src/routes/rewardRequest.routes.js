@@ -1,5 +1,6 @@
 import { Router } from "express";
 import rewardRequestController from "../controllers/rewardRequest.controller.js";
+import { generarCuentaCobro } from "../controllers/comprobantePago.controller.js";
 import authJwt from "../middlewares/authJwt.js";
 
 const router = Router();
@@ -22,10 +23,8 @@ router.get(
   rewardRequestController.obtenerTodasLasSolicitudes,
 );
 
-router.patch(
-  "/:id_solicitud",
-  [authJwt.verifyToken, authJwt.hasRole("contador")],
-  rewardRequestController.actualizarEstado,
-);
+
+router.get("/cuenta-cobro/:id", generarCuentaCobro);
+
 
 export default router;
