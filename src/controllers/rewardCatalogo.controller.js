@@ -308,9 +308,9 @@ const actualizarPlan = async (req, res) => {
  * /catalogo/plan:
  *   put:
  *     summary: Crea un nuevo plan.
+ *     description: Permite a un usuario con rol 'gerente' crear un nuevo plan en el catálogo.
  *     tags:
  *       - Catalogo
- *     description: Permite a un usuario con rol 'gerente' crear un nuevo plan en el catálogo.
  *     security:
  *       - BearerAuth: []
  *     requestBody:
@@ -318,24 +318,24 @@ const actualizarPlan = async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/PlanInput'
+ *             $ref: "#/components/schemas/PlanInput"
  *     responses:
  *       201:
- *        description: Plan creado exitosamente. Retorna el objeto del plan creado.
- *        content:
- *         application/json:
- *          schema:
- *          $ref: '#/components/schemas/plan'
- *      400:
- *        description: Solicitud inválida.
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                message:
- *                  type: string
- *                  example: "Datos del plan son requeridos"
+ *         description: Plan creado exitosamente. Retorna el objeto del plan creado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *             $ref: "#/components/schemas/plan"
+ *       400:
+ *         description: Solicitud inválida.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Datos del plan son requeridos"
  */
 const crearPlan = async (req, res) => {
   try {

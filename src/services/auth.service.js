@@ -122,20 +122,36 @@ async function crearReferente(numero_documento_identidad) {
  * @throws {Error} Si el usuario no se encuentra o la contraseña es incorrecta.
  */
 const loginUser = async (numero_documento_identidad, password, datosLogin) => {
+  const attemptKey = `${numero_documento_identidad}_${datosLogin.ipAddress}`;
+  
+  // Verificar si la cuenta está bloqueada
+  const attempts = loginAttempts.get(attemptKey);
+  if (attempts && attempts.locked && Date.now() < attempts.lockUntil) {
+    const remainingTime = Math.ceil((attempts.lockUntil - Date.now()) / 60000);
+    throw new Error(`Cuenta temporalmente bloqueada. Intente nuevamente en ${remainingTime} minutos.`);
+  }
+
   const usuario = await Usuario.findOne({
     where: { numero_documento_identidad },
     include: [{ model: Rol, as: "roles" }],
   });
 
   if (!usuario) {
+    // Registrar intento fallido
+    recordFailedAttempt(attemptKey);
     throw new Error("Usuario no encontrado");
   }
 
   // Validar contraseña
   const passwordIsValid = bcrypt.compareSync(password, usuario.contrasena_hash);
   if (!passwordIsValid) {
+    // Registrar intento fallido
+    recordFailedAttempt(attemptKey);
     throw new Error("Contraseña incorrecta");
   }
+
+  // Limpiar intentos fallidos en login exitoso
+  loginAttempts.delete(attemptKey);
 
   // Generar token JWT
   const token = jwt.sign(
@@ -267,6 +283,36 @@ function lastValueToken(token) {
   let tempSplitedToken = token.split(".");
   return tempSplitedToken[tempSplitedToken.length - 1];
 }
+
+// Almacenamiento en memoria para intentos fallidos (mejor usar Redis en producción)
+const loginAttempts = new Map();
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCK_TIME = 15 * 60 * 1000; // 15 minutos
+
+// Función auxiliar para registrar intentos fallidos
+const recordFailedAttempt = (attemptKey) => {
+  const attempts = loginAttempts.get(attemptKey) || { count: 0, locked: false };
+  attempts.count += 1;
+
+  if (attempts.count >= MAX_LOGIN_ATTEMPTS) {
+    attempts.locked = true;
+    attempts.lockUntil = Date.now() + LOCK_TIME;
+    console.warn(`[SECURITY] Cuenta bloqueada temporalmente: ${attemptKey}`);
+  }
+
+  loginAttempts.set(attemptKey, attempts);
+
+  // Limpiar intentos antiguos cada hora
+  setTimeout(() => {
+    if (loginAttempts.has(attemptKey)) {
+      const current = loginAttempts.get(attemptKey);
+      if (!current.locked || Date.now() >= current.lockUntil) {
+        loginAttempts.delete(attemptKey);
+      }
+    }
+  }, 60 * 60 * 1000);
+};
+
 export default {
   registerUser,
   loginUser,

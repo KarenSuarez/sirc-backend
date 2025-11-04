@@ -73,11 +73,35 @@ const actualizarEstado = async (id_solicitud, estado_solicitud, comprobante_pago
   await solicitud.save();
   return solicitud;
 };
+const rechazarSolicitud = async (id_solicitud, observaciones) => {
+  const solicitud = await SolicitudRecompensa.findByPk(id_solicitud);
+  if (!solicitud) throw new Error("Solicitud no encontrada");
+
+  solicitud.estado_solicitud = "rechazada";
+  solicitud.observaciones = observaciones || solicitud.observaciones;
+  solicitud.fecha_actualizacion = new Date();
+
+  await solicitud.save();
+  return solicitud;
+}
+const aprovarSolicitud = async (id_solicitud, comprobante_pago) => {
+  const solicitud = await SolicitudRecompensa.findByPk(id_solicitud);
+  if (!solicitud) throw new Error("Solicitud no encontrada");
+
+  solicitud.estado_solicitud = "completada";
+  solicitud.comprobante_pago = comprobante_pago || solicitud.comprobante_pago;
+  solicitud.fecha_actualizacion = new Date();
+  console.log("solicitud aprobada:", solicitud);
+  await solicitud.save();
+  return solicitud;
+};
 
 
 export default {
   crearSolicitud,
   obtenerSolicitudes,
   obtenerSolicitudesPorReferente,
-  actualizarEstado
+  actualizarEstado,
+  rechazarSolicitud,
+  aprovarSolicitud
 };

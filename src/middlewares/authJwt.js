@@ -2,13 +2,37 @@ import jwt from "jsonwebtoken";
 import config from "../config/auth.config.js";
 import db from "../models/index.js";
 import authService from "../services/auth.service.js";
+import rateLimit from 'express-rate-limit';
 
 const Usuario = db.usuario;
 const Rol = db.rol;
 const HistorialSesion = db.historialSesion;
 
+// Rate limiter para intentos de verificación de token
+const tokenVerificationLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  max: 100, // 100 verificaciones por minuto
+  message: {
+    message: 'Demasiadas solicitudes de verificación. Por favor espere un momento.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => {
+    // No aplicar rate limiting si el token es válido
+    const token = req.headers["x-access-token"];
+    if (!token) return false;
+    
+    try {
+      jwt.verify(token, config.secret);
+      return true; // Skip rate limiting para tokens válidos
+    } catch (error) {
+      return false; // Aplicar rate limiting para tokens inválidos
+    }
+  }
+});
+
 /** Middleware para verificar el token JWT */
-const verifyToken = (req, res, next) => {
+const verifyToken = [tokenVerificationLimiter, (req, res, next) => {
   let token = req.headers["x-access-token"];
 
   if (!token) {
@@ -24,7 +48,7 @@ const verifyToken = (req, res, next) => {
     req.numero_documento_identidad = decoded.documento_id;
     next();
   });
-};
+}];
 
 /** Middleware para verificar si el usuario es 'referente' */
 const isReferente = async (req, res, next) => {
