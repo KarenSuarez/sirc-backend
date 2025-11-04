@@ -181,3 +181,11 @@ router.post("/",
 ```
 este es el payload del jwt 
 el documento y los rls_id que es un arreglo de los id de los roles
+
+Los rate limiters ahora están configurados para proteger:
+
+Login: 5 intentos cada 15 minutos por IP
+Registro: 3 registros por hora por IP
+Logout: 10 intentos cada 5 minutos
+Verificación de token: 100 verificaciones por minuto (solo para tokens inválidos)
+Intentos fallidos: Bloqueo temporal después de 5 intentos fallidos consecutivos

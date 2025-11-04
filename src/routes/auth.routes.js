@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authController from "../controllers/auth.controller.js";
 import authJwt from "../middlewares/authJwt.js";
+import { loginLimiter, registerLimiter, logoutLimiter } from "../config/rateLimiter.config.js";
 
 const router = Router();
 
@@ -41,6 +42,7 @@ router.use(function (req, res, next) {
  */
 router.post(
   "/register",
+  registerLimiter,
   [authController.checkDuplicateEmailOrDocument],
   authController.register,
 );
@@ -59,7 +61,12 @@ router.post(
  *       500:
  *         description: Error del servidor
  */
-router.post("/logout", [authJwt.verifyToken], authController.logout);
+router.post(
+  "/logout",
+  logoutLimiter,
+  [authJwt.verifyToken],
+  authController.logout,
+);
 
 /**
  * @swagger
@@ -85,7 +92,11 @@ router.post("/logout", [authJwt.verifyToken], authController.logout);
  *       500:
  *         description: Error del servidor
  */
-router.post("/login", authController.login);
+router.post(
+  "/login",
+  loginLimiter,
+  authController.login,
+);
 
 /**
  * @swagger
@@ -100,6 +111,10 @@ router.post("/login", authController.login);
  *           schema:
  *             $ref: "#/components/schemas/LogoutByIDRequest"
  */
-router.post("/logoutbyid", authController.logoutByID);
+router.post(
+  "/logoutbyid",
+  logoutLimiter,
+  authController.logoutByID,
+);
 
 export default router;

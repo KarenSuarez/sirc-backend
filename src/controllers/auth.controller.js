@@ -77,6 +77,7 @@ import authService from "../services/auth.service.js";
  * /auth/register:
  *   post:
  *     summary: Registra un nuevo usuario
+ *     description: Registra un nuevo usuario en el sistema. Limitado a 3 registros por hora por IP.
  *     tags:
  *       - Auth
  *     requestBody:
@@ -90,6 +91,8 @@ import authService from "../services/auth.service.js";
  *         description: Usuario registrado exitosamente
  *       400:
  *         description: Correo o documento duplicado
+ *       429:
+ *         description: Demasiados intentos de registro
  *       500:
  *         description: Error del servidor
  */
@@ -129,6 +132,7 @@ const checkDuplicateEmailOrDocument = async (req, res, next) => {
  * /auth/login:
  *   post:
  *     summary: Login de usuario
+ *     description: Inicia sesión de usuario. Limitado a 5 intentos cada 15 minutos por IP.
  *     tags:
  *       - Auth
  *     requestBody:
@@ -146,6 +150,8 @@ const checkDuplicateEmailOrDocument = async (req, res, next) => {
  *               $ref: '#/components/schemas/LoginResponse'
  *       401:
  *         description: Usuario o contraseña incorrectos
+ *       429:
+ *         description: Demasiados intentos de login
  *       500:
  *         description: Error del servidor
  */
@@ -166,6 +172,8 @@ const login = async (req, res) => {
     );
     res.status(200).json(data);
   } catch (error) {
+    // Log del intento fallido para análisis de seguridad
+    console.warn(`[AUTH] Login fallido desde IP: ${req.ip} - ${error.message}`);
     res.status(401).json({ message: error.message });
   }
 };
@@ -174,6 +182,7 @@ const login = async (req, res) => {
  * /auth/logout:
  *   post:
  *     summary: Cierra la sesión activa del usuario
+ *     description: Cierra la sesión del usuario autenticado. Limitado a 10 intentos cada 5 minutos.
  *     tags:
  *       - Auth
  *     security:
@@ -183,6 +192,8 @@ const login = async (req, res) => {
  *         description: Logout exitoso
  *       401:
  *         description: Token inválido o sesión no encontrada
+ *       429:
+ *         description: Demasiadas solicitudes de logout
  *       500:
  *         description: Error del servidor
  */
@@ -206,6 +217,7 @@ const logout = async (req, res) => {
  * /auth/logoutByID:
  *   post:
  *     summary: Cierra todas las sesiones activas de un usuario por su ID
+ *     description: Cierra todas las sesiones del usuario especificado. Limitado a 10 intentos cada 5 minutos.
  *     tags:
  *       - Auth
  *     requestBody:
@@ -217,6 +229,8 @@ const logout = async (req, res) => {
  *     responses:
  *       200:
  *         description: Logout exitoso
+ *       429:
+ *         description: Demasiadas solicitudes
  *       500:
  *         description: Error al cerrar las sesiones
  */

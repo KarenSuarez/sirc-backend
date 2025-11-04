@@ -27,5 +27,14 @@ router.patch(
   [authJwt.verifyToken, authJwt.hasRole("contador")],
   rewardRequestController.actualizarEstado,
 );
-
+router.patch(
+  "/aprobar/:id_solicitud",
+  [authJwt.verifyToken, authJwt.hasRole("contador")],
+  rewardRequestController.aprovarSolicitudYGenerarComprobante,
+);
+router.patch(
+  "/rechazar/:id_solicitud",
+  [authJwt.verifyToken, authJwt.hasRole("contador")],
+  rewardRequestController.rechazarSolicitud,
+);
 export default router;
