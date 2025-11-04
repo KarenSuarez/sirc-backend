@@ -280,7 +280,7 @@ const actualizarEstado = async (req, res) => {
 
 /**
  * @swagger
- * /rewardRequests/aprobar/{id_solicitud}:
+ * /rewardRequests/aprobarPdfComprobante/{id_solicitud}:
  *   patch:
  *     summary: Aprobar solicitud y generar comprobante PDF
  *     tags:
@@ -409,6 +409,38 @@ const aprobarSolicitudYGenerarComprobante = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
+/**
+ * @swagger
+ * /rewardRequests/aprobar/{id_solicitud}:
+ *   patch:
+ *     summary: Aprobar una solicitud de recompensa
+ *     tags:
+ *       - Solicitudes de Recompensa
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id_solicitud
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la solicitud a aprobar
+ *     responses:
+ *       200:
+ *         description: Solicitud aprobada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SolicitudRecompensaResponse'
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Acceso denegado - se requiere rol de contador
+ *       404:
+ *         description: Solicitud no encontrada
+ *       500:
+ *         description: Error del servidor  
+ */
 const aprobarSolicitud = async (req, res) => {
   try {
     const { id_solicitud } = req.params;
