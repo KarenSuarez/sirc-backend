@@ -6,11 +6,11 @@ export default (sequelize, Sequelize) => {
       autoIncrement: true
     },
     id_referente: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING(20),
       allowNull: false,
       references: {
         model: "Referente",
-        key: "id_referente"
+        key: "numero_documento_identidad"
       }
     },
     categoria_anterior: {

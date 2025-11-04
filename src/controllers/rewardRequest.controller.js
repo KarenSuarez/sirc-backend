@@ -1,5 +1,7 @@
 import rewardRequestService from "../services/rewardRequest.service.js";
-
+import PDFDocument from "pdfkit";
+import fs from "fs";
+import path from "path";
 /**
  * @swagger
  * components:
@@ -312,15 +314,47 @@ const actualizarEstado = async (req, res) => {
  */
 const aprovarSolicitudYGenerarComprobante = async (req, res) => {
   try {
+    console.log("Inicio de aprobación y generación de comprobante");
     const { id_solicitud } = req.params;
+    console.log("ID de solicitud recibido:", id_solicitud);
 
     const solicitud = await rewardRequestService.aprovarSolicitud(id_solicitud);
+    console.log("Solicitud obtenida:", solicitud);
 
     // Generar PDF de cuenta de cobro
     const doc = new PDFDocument();
     const filename = `Cuenta_de_Cobro_Solicitud_${solicitud.id_solicitud}.pdf`;
-    const filepath = path.join(__dirname, "..", "temp", filename);
-    doc.pipe(fs.createWriteStream(filepath));
+    const __dirname = path.resolve();
+    const tempDir = path.join(__dirname, "..", "temp");
+    if (!fs.existsSync(tempDir)) {
+      console.log("Directorio temp no existe, creando:", tempDir);
+      fs.mkdirSync(tempDir, { recursive: true });
+    } else {
+      console.log("Directorio temp existe:", tempDir);
+    }
+    const filepath = path.join(tempDir, filename);
+    console.log("Ruta del archivo PDF:", filepath);
+
+    const writeStream = fs.createWriteStream(filepath);
+    writeStream.on("error", (err) => {
+      console.error("Error en writeStream:", err);
+    });
+
+    // Nuevo: manejar evento 'close' del writeStream
+    writeStream.on("close", () => {
+      console.log("WriteStream cerrado, intentando descargar archivo...");
+      res.download(filepath, filename, (err) => {
+        if (err) {
+          console.error("Error al descargar el archivo:", err);
+          res.status(500).json({ message: "Error al descargar el archivo" });
+        } else {
+          console.log("Archivo descargado correctamente, eliminando archivo temporal...");
+          fs.unlinkSync(filepath);
+        }
+      });
+    });
+
+    doc.pipe(writeStream);
 
     // =======================
     // ENCABEZADO
@@ -368,22 +402,11 @@ const aprovarSolicitudYGenerarComprobante = async (req, res) => {
       .text(`Estado de la Solicitud: ${solicitud.estado_solicitud}`, startX, startY)
       .moveDown();
 
-    // Finalizar PDF
     doc.end();
-
-    // Esperar a que el archivo se guarde completamente
-    doc.on("finish", () => {
-      res.download(filepath, filename, (err) => {
-        if (err) {
-          console.error("Error al descargar el archivo:", err);
-          res.status(500).json({ message: "Error al descargar el archivo" });
-        }
-
-        // Eliminar el archivo temporal después de la descarga
-        fs.unlinkSync(filepath);
-      });
-    });
+    console.log("PDF finalizado, esperando evento close del writeStream...");
+    // Ya no usar doc.on("finish")
   } catch (error) {
+    console.error("Error en aprovarSolicitudYGenerarComprobante:", error);
     res.status(500).json({ message: error.message });
   }
 }
