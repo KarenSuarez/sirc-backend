@@ -1,4 +1,5 @@
 import rewardRequestService from "../services/rewardRequest.service.js";
+import { generarCuentaCobro } from "../utils/generarCuentaCobro.js";
 
 
 
@@ -184,6 +185,9 @@ const actualizarEstado = async (req, res) => {
   try {
     const { id_solicitud } = req.params;
     const { estado_solicitud, observaciones } = req.body;
+    const id_usuario_procesador = req.numero_documento_identidad;
+
+
 
 
     const solicitud = await rewardRequestService.obtenerSolicitudPorId(id_solicitud);
@@ -212,7 +216,9 @@ const actualizarEstado = async (req, res) => {
     let solicitudActualizada = await rewardRequestService.actualizarEstadoSolicitud(
       id_solicitud,
       estado_solicitud,
-      observaciones
+      observaciones,
+      null,
+      id_usuario_procesador
     );
 
 

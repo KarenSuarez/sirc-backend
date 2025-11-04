@@ -157,6 +157,8 @@ const loginUser = async (numero_documento_identidad, password, datosLogin) => {
   const token = jwt.sign(
     {
       documento_id: usuario.numero_documento_identidad,
+      nombre: usuario.nombre,
+    apellido: usuario.apellido,
       rls_id: usuario.roles.map((r) => r.id_rol),
     },
     config.secret,
@@ -192,7 +194,7 @@ const loginUser = async (numero_documento_identidad, password, datosLogin) => {
 async function requestForLogout(numero_documento_identidad) {
   try {
     await axios.post(
-      "http:localhost:5000/api/auth/logoutbyid",
+      "http://localhost:5000/api/auth/logoutbyid",
       {
         numero_documento_identidad: numero_documento_identidad,
       }

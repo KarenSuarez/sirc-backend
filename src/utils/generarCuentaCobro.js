@@ -5,7 +5,6 @@ import db from "../models/index.js";
 
 export const generarCuentaCobro = async (solicitud) => {
     try {
-
         const carpeta = path.join("uploads", "comprobantes");
         if (!fs.existsSync(carpeta)) fs.mkdirSync(carpeta, { recursive: true });
 
@@ -14,162 +13,191 @@ export const generarCuentaCobro = async (solicitud) => {
         const doc = new PDFDocument({ margin: 50 });
         doc.pipe(fs.createWriteStream(filepath));
 
-
-        const logoPath = path.resolve("public/images/logo_clarisa.png");
+        const logoPath = path.resolve("../public/images/logo_clarisa.png");
         if (fs.existsSync(logoPath)) {
-            doc.image(logoPath, 50, 40, { width: 80 });
+            doc.image(logoPath, 50, 45, { width: 80 });
         }
 
         doc
             .fontSize(18)
             .fillColor("#1E3A8A")
-            .text("CLARISA CLOUD S.A.S", 150, 50)
-            .fontSize(12)
+            .text("CLARISA CLOUD S.A.S", 150, 50, { width: 400 })
+            .fontSize(11)
             .fillColor("gray")
-            .text("clarisacloud.com", 150, 85);
+            .text("https://clarisa.co", 150, 75, { width: 400 });
 
-        doc.moveDown(2);
+   
+        doc.y = 130;
+        doc.x = 50;
+
+
         doc
             .fontSize(16)
             .fillColor("#1E3A8A")
-            .text("CUENTA DE COBRO", { align: "center" })
-            .moveDown();
+            .text("COMPROBANTE DE PAGO", 50, doc.y, { align: "center", width: 500 })
+            .moveDown(1);
 
-        doc.moveTo(50, 130).lineTo(550, 130).stroke("#1E3A8A").moveDown(1.5);
-
+   
+        const lineY = doc.y;
+        doc.moveTo(50, lineY).lineTo(550, lineY).stroke("#1E3A8A");
+        doc.moveDown(1.5);
 
         const ref = solicitud.Referente?.Usuario || {};
         const fecha = new Date(solicitud.fecha_solicitud).toLocaleDateString("es-CO");
 
+        doc.x = 50;
         doc
-            .fontSize(12)
+            .fontSize(11)
             .fillColor("black")
-            .text(`Número de Cuenta de Cobro: ${solicitud.id_solicitud}`)
-            .text(`Fecha de Emisión: ${fecha}`)
-            .moveDown(1);
+            .text(`Número de Cuenta de Cobro: ${solicitud.id_solicitud}`, 50)
+            .text(`Fecha de Emisión: ${fecha}`, 50)
+            .moveDown(1.5);
 
+        doc.x = 50;
         doc
             .fontSize(12)
             .fillColor("#1E3A8A")
-            .text("DATOS DEL REFERENTE:", { underline: true })
+            .text("DATOS DEL REFERENTE:", 50, doc.y, { underline: true })
             .moveDown(0.5);
 
+        doc.x = 50;
         doc
+            .fontSize(11)
             .fillColor("black")
-            .text(`Nombre: ${ref.nombre || ""} ${ref.apellido || ""}`)
-            .text(`Correo: ${ref.correo_electronico || ""}`)
-            .moveDown(1);
+            .text(`Nombre: ${ref.nombre || "N/A"} ${ref.apellido || ""}`, 50)
+            .text(`Correo: ${ref.correo_electronico || "N/A"}`, 50)
+            .moveDown(1.5);
 
 
+        doc.x = 50;
         doc
             .fontSize(12)
             .fillColor("#1E3A8A")
-            .text("DETALLES DEL COBRO:", { underline: true })
-            .moveDown(0.5);
+            .text("DETALLES DEL COBRO:", 50, doc.y, { underline: true })
+            .moveDown(1);
 
-        const startX = 70;
-        const startY = doc.y + 10;
 
-        const tableHeaders = ["Descripción", "Monto", "Estado"];
-        const colWidths = [300, 100, 100];
-
+        const startX = 50;
+        const startY = doc.y;
+        const tableWidth = 500;
+        const rowHeight = 25;
 
         doc
             .font("Helvetica-Bold")
             .fontSize(11)
-            .fillColor("white")
-            .rect(startX - 20, startY - 5, 500, 20)
-            .fill("#1E3A8A");
+            .fillColor("white");
+
+        doc.rect(startX, startY, tableWidth, rowHeight).fill("#1E3A8A");
 
         doc
             .fillColor("white")
-            .text(tableHeaders[0], startX - 10, startY - 2, { width: colWidths[0] })
-            .text(tableHeaders[1], startX + 300, startY - 2, { width: colWidths[1], align: "right" })
-            .text(tableHeaders[2], startX + 400, startY - 2, { width: colWidths[2], align: "center" });
+            .text("Descripción", startX + 10, startY + 7, { width: 280, continued: false })
+            .text("Monto", startX + 300, startY + 7, { width: 100, align: "right", continued: false })
+            .text("Estado", startX + 410, startY + 7, { width: 80, align: "center" });
 
-
-        doc
-            .font("Helvetica")
-            .fillColor("black")
-            .rect(startX - 20, startY + 15, 500, 25)
-            .stroke("#B0BEC5");
+        doc.font("Helvetica").fillColor("black");
+        
+        const dataY = startY + rowHeight;
+        doc.rect(startX, dataY, tableWidth, rowHeight).stroke("#B0BEC5");
 
         doc
-            .text("Pago de comisión por referido aprobado", startX - 10, startY + 20, { width: colWidths[0] })
-            .text(`$${solicitud.valor_retirar.toFixed(2)}`, startX + 300, startY + 20, {
-                width: colWidths[1],
-                align: "right",
+            .text("Pago de comisión por referido aprobado", startX + 10, dataY + 7, { 
+                width: 280, 
+                continued: false 
             })
-            .text(solicitud.estado_solicitud, startX + 400, startY + 20, {
-                width: colWidths[2],
-                align: "center",
+            .text(`$${solicitud.valor_retirar.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, startX + 300, dataY + 7, { 
+                width: 100, 
+                align: "right",
+                continued: false 
+            })
+            .text(solicitud.estado_solicitud, startX + 410, dataY + 7, { 
+                width: 80, 
+                align: "center" 
             });
 
-        doc.moveDown(3);
-
+        doc.y = dataY + rowHeight + 20;
+        doc.x = 50;
 
         doc
             .fontSize(12)
             .fillColor("#1E3A8A")
-            .text("OBSERVACIONES:", { underline: true })
+            .text("OBSERVACIONES:", 50, doc.y, { underline: true })
             .moveDown(0.5);
 
+        doc.x = 50;
         doc
             .fontSize(11)
             .fillColor("black")
-            .text(solicitud.observaciones || "Ninguna observación.")
+            .text(solicitud.observaciones || "Ninguna observación.", 50, doc.y, { width: 500 })
             .moveDown(3);
 
-
-        doc.moveDown(3);
-
+        doc.x = 50;
         
         try {
             const contadora = await db.usuario.findOne({
-                include: [
-                    {
-                        model: db.rolUsuario,
-                        include: [
-                            {
-                                model: db.rol,
-                                where: { nombre_rol: "Contadora" },
-                            },
-                        ],
-                    },
-                ],
-                attributes: ["nombre", "apellido", "correo_electronico"],
+                where: { numero_documento_identidad: solicitud.numero_documento_identidad },
+                attributes: ["nombre", "apellido", "correo_electronico", "numero_documento_identidad"]
             });
 
             if (contadora) {
                 const firmaPath = path.resolve("public/images/firma_contadora.png");
                 if (fs.existsSync(firmaPath)) {
-                    doc.image(firmaPath, 220, doc.y, { width: 150 });
-                    doc.moveDown(2);
+                    const firmaY = doc.y + 20;
+                    doc.image(firmaPath, 225, firmaY, { width: 150 });
+                    doc.y = firmaY + 80;
+                } else {
+                    doc.moveDown(3);
                 }
 
+                doc.x = 50;
                 doc
-                    .fontSize(12)
+                    .fontSize(11)
                     .fillColor("black")
-                    .text(`${contadora.nombre} ${contadora.apellido}`, { align: "center" })
-                    .text("Contadora Pública - CLARISA CLOUD S.A.S", { align: "center" });
+                    .text(`${contadora.nombre} ${contadora.apellido}`, 50, doc.y, { 
+                        align: "center", 
+                        width: 500 
+                    })
+                    .fontSize(10)
+                    .fillColor("gray")
+                    .text(`CC: ${contadora.numero_documento_identidad}`, 50, doc.y, { 
+                        align: "center", 
+                        width: 500 
+                    })
+                    .text("Contadora Pública - CLARISA CLOUD S.A.S", 50, doc.y, { 
+                        align: "center", 
+                        width: 500 
+                    });
             } else {
                 doc
-                    .fontSize(12)
-                    .fillColor("black")
-                    .text("Contadora no registrada", { align: "center" });
+                    .fontSize(11)
+                    .fillColor("gray")
+                    .text("Contadora no registrada", 50, doc.y, { 
+                        align: "center", 
+                        width: 500 
+                    });
             }
         } catch (err) {
             console.error("Error obteniendo la contadora:", err);
+            doc
+                .fontSize(11)
+                .fillColor("gray")
+                .text("Error al cargar información de la contadora", 50, doc.y, { 
+                    align: "center", 
+                    width: 500 
+                });
         }
 
         doc.moveDown(2);
+        doc.x = 50;
         doc
-            .fontSize(10)
+            .fontSize(9)
             .fillColor("gray")
-            .text("Gracias por ser parte de Clarisa Cloud.", { align: "center" });
+            .text("Gracias por ser parte de Clarisa Cloud.", 50, doc.y, { 
+                align: "center", 
+                width: 500 
+            });
 
         doc.end();
-
 
         await new Promise((resolve) => doc.on("finish", resolve));
 

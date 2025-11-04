@@ -47,7 +47,7 @@ const obtenerSolicitudesPorReferente = async (documento_referente) => {
 
 };
 
-const obtenerPorId = async (id) => {
+const obtenerSolicitudPorId = async (id) => {
   const solicitud = await SolicitudRecompensa.findByPk(id);
   if (!solicitud) {
     throw new Error("Solicitud no encontrada");
@@ -58,16 +58,15 @@ const obtenerPorId = async (id) => {
 
 const actualizarEstadoSolicitud = async (id, nuevoEstado, observaciones = null, comprobante = null) => {
   const solicitud = await SolicitudRecompensa.findByPk(id);
-  if (!solicitud) throw new Error("Solicitud no encontrada");
-
+  if (!solicitud)
+    throw new Error("Solicitud no encontrada");
   solicitud.estado_solicitud = nuevoEstado;
   solicitud.observaciones = observaciones || solicitud.observaciones;
   solicitud.comprobante_pago = comprobante || solicitud.comprobante_pago;
-  solicitud.fecha_actualizacion = new Date();
-
-  await solicitud.save();
+  solicitud.fecha_actualizacion = new Date(); await solicitud.save();
   return solicitud;
 };
+
 
 
 
@@ -75,6 +74,6 @@ export default {
   crearSolicitud,
   obtenerSolicitudes,
   obtenerSolicitudesPorReferente,
-  obtenerPorId,
+  obtenerSolicitudPorId,
   actualizarEstadoSolicitud
 };
