@@ -1,4 +1,4 @@
-/*import dotenv from "dotenv";
+import dotenv from "dotenv";
 
 // Carga las variables de entorno desde el archivo .env correspondiente
 // En producción/Docker, estas variables serán proporcionadas por el entorno de ejecución
@@ -16,17 +16,6 @@ export const pool = {
   min: 0,
   acquire: 30000,
   idle: 10000,
-};*/
-
-export const DB = "referidos_clarisa_cloud";
-export const USER = "root";                   
-export const PASSWORD = "root123";       
-export const HOST = "127.0.0.1";              
-export const dialect = "mariadb";             
-export const PORTDB = 3307;                      
-export const pool = {
-  max: 5,
-  min: 0,
-  acquire: 30000,
-  idle: 10000
 };
+
+
