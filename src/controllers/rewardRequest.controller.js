@@ -312,7 +312,7 @@ const actualizarEstado = async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-const aprovarSolicitudYGenerarComprobante = async (req, res) => {
+const aprobarSolicitudYGenerarComprobante = async (req, res) => {
   try {
     console.log("Inicio de aprobación y generación de comprobante");
     const { id_solicitud } = req.params;
@@ -404,13 +404,22 @@ const aprovarSolicitudYGenerarComprobante = async (req, res) => {
 
     doc.end();
     console.log("PDF finalizado, esperando evento close del writeStream...");
-    // Ya no usar doc.on("finish")
   } catch (error) {
     console.error("Error en aprovarSolicitudYGenerarComprobante:", error);
     res.status(500).json({ message: error.message });
   }
 }
+const aprobarSolicitud = async (req, res) => {
+  try {
+    const { id_solicitud } = req.params;
 
+    const solicitud = await rewardRequestService.aprovarSolicitud(id_solicitud);
+
+    res.status(200).json(solicitud);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 /**
  * @swagger
  * /rewardRequests/rechazar/{id_solicitud}:
@@ -469,6 +478,7 @@ export default {
   obtenerTodasLasSolicitudes,
   obtenerSolicitudesReferente,
   actualizarEstado,
-  aprovarSolicitudYGenerarComprobante,
-  rechazarSolicitud
+  aprobarSolicitudYGenerarComprobante,
+  rechazarSolicitud,
+  aprobarSolicitud
 };

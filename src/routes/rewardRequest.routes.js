@@ -28,13 +28,18 @@ router.patch(
   rewardRequestController.actualizarEstado,
 );
 router.patch(
-  "/aprobar/:id_solicitud",
+  "/aprobarPdfComprobante/:id_solicitud",
   [authJwt.verifyToken, authJwt.hasRole("contador")],
-  rewardRequestController.aprovarSolicitudYGenerarComprobante,
+  rewardRequestController.aprobarSolicitudYGenerarComprobante,
 );
 router.patch(
   "/rechazar/:id_solicitud",
   [authJwt.verifyToken, authJwt.hasRole("contador")],
   rewardRequestController.rechazarSolicitud,
+);
+router.patch(
+  "/aprobar/:id_solicitud",
+  [authJwt.verifyToken, authJwt.hasRole("contador")],
+  rewardRequestController.aprobarSolicitud,
 );
 export default router;
