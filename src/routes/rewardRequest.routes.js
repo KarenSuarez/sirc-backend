@@ -1,5 +1,6 @@
 import { Router } from "express";
 import rewardRequestController from "../controllers/rewardRequest.controller.js";
+import { generarCuentaCobro } from "../controllers/comprobantePago.controller.js";
 import authJwt from "../middlewares/authJwt.js";
 
 const router = Router();
@@ -23,23 +24,9 @@ router.get(
 );
 
 router.patch(
-  "/:id_solicitud",
+  "/:id_solicitud/estado",
   [authJwt.verifyToken, authJwt.hasRole("contador")],
   rewardRequestController.actualizarEstado,
 );
-router.patch(
-  "/aprobarPdfComprobante/:id_solicitud",
-  [authJwt.verifyToken, authJwt.hasRole("contador")],
-  rewardRequestController.aprobarSolicitudYGenerarComprobante,
-);
-router.patch(
-  "/rechazar/:id_solicitud",
-  [authJwt.verifyToken, authJwt.hasRole("contador")],
-  rewardRequestController.rechazarSolicitud,
-);
-router.patch(
-  "/aprobar/:id_solicitud",
-  [authJwt.verifyToken, authJwt.hasRole("contador")],
-  rewardRequestController.aprobarSolicitud,
-);
+
 export default router;

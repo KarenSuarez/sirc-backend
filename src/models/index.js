@@ -14,7 +14,6 @@ import historialCategoriaModel from './historialCategoria.model.js';
 import historialNivelModel from "./historialNivel.model.js";
 import sessionHistoryModel from './sessionHistory.model.js'
 import nivelModel from "./nivel.model.js";
-import configPuntosPlanModel from "./configPuntosPlan.model.js";
 import beneficioModel from "./beneficio.model.js";
 
 
@@ -69,7 +68,7 @@ db.historialCategoria = historialCategoriaModel(sequelize, Sequelize);
 db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
 db.nivel = nivelModel(sequelize, Sequelize);
 db.historialNivel = historialNivelModel(sequelize,Sequelize);
-db.configPuntosPlan = configPuntosPlanModel(sequelize, Sequelize);
+
 db.Beneficio = beneficioModel(sequelize, Sequelize);
 // --- Definición de Asociaciones ---
 
@@ -220,4 +219,3 @@ db.Beneficio.belongsTo(db.nivel, {
   });
 
 export default db;
-
