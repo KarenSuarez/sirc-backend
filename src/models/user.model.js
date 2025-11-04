@@ -81,7 +81,6 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.STRING(20),
         allowNull: true,
       },
-      // id_tipo_documento es generado por la asociación
     },
     {
       tableName: "Usuario",

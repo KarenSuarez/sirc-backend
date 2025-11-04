@@ -73,6 +73,8 @@ const createRefered = async (req, res) => {
       nombre_referido,
       correo_referido,
       telefono_referido,
+      empresa_referido,
+      cargo_referido,
     } = req.body;
 
     const datosReferido = {
@@ -80,6 +82,8 @@ const createRefered = async (req, res) => {
       nombre_referido,
       correo_referido,
       telefono_referido,
+      empresa_referido,
+      cargo_referido,
     };
     const documentoReferente = req.numero_documento_identidad;
     const newRefered = await referidoService.createRefered(

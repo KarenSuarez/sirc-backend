@@ -102,7 +102,7 @@ const register = async (req, res) => {
   }
 };
 
-/** Middleware para verificar duplicados */
+
 const checkDuplicateEmailOrDocument = async (req, res, next) => {
   const { correo_electronico, numero_documento_identidad } = req.body;
   try {
