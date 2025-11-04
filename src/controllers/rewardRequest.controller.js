@@ -1,5 +1,5 @@
 import rewardRequestService from "../services/rewardRequest.service.js";
-import { generarCuentaCobro } from "../controllers/comprobantePago.controller.js";
+
 
 
 /**

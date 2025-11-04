@@ -1,6 +1,5 @@
 import { Router } from "express";
 import rewardRequestController from "../controllers/rewardRequest.controller.js";
-import { generarCuentaCobro } from "../controllers/comprobantePago.controller.js";
 import authJwt from "../middlewares/authJwt.js";
 
 const router = Router();
