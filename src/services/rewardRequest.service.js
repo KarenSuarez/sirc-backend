@@ -1,6 +1,7 @@
 import db from "../models/index.js";
 const SolicitudRecompensa = db.solicitudRecompensa;
 const Referente = db.referente;
+const Usuario = db.usuario;
 
 const crearSolicitud = async (data) => {
   const { documento_referente, valor_retirar, tipo_solicitud, tipo_banco, numero_cuenta } = data;
@@ -47,23 +48,42 @@ const obtenerSolicitudesPorReferente = async (documento_referente) => {
 
 };
 
-const obtenerSolicitudPorId = async (id) => {
-  const solicitud = await SolicitudRecompensa.findByPk(id);
-  if (!solicitud) {
-    throw new Error("Solicitud no encontrada");
-  }
-  return solicitud;
+const obtenerSolicitudPorId = async (id_solicitud) => {
+  return await SolicitudRecompensa.findOne({
+    where: { id_solicitud },
+    include: [
+      {
+        model: Referente,
+        as: "referente",
+        include: [
+          {
+            model: Usuario,
+            as: "usuario",
+            attributes: ["nombre", "apellido", "correo_electronico"],
+          },
+        ],
+      },
+      {
+        model: Usuario,
+        as: "procesado_por",
+        attributes: ["nombre", "apellido", "correo_electronico", "numero_documento_identidad"],
+      },
+    ],
+  });
 };
 
-
-const actualizarEstadoSolicitud = async (id, nuevoEstado, observaciones = null, comprobante = null) => {
+const actualizarEstadoSolicitud = async (id, nuevoEstado, observaciones = null, comprobante = null, id_usuario_procesador = null) => {
   const solicitud = await SolicitudRecompensa.findByPk(id);
-  if (!solicitud)
-    throw new Error("Solicitud no encontrada");
+  if (!solicitud) throw new Error("Solicitud no encontrada");
+
   solicitud.estado_solicitud = nuevoEstado;
   solicitud.observaciones = observaciones || solicitud.observaciones;
   solicitud.comprobante_pago = comprobante || solicitud.comprobante_pago;
-  solicitud.fecha_actualizacion = new Date(); await solicitud.save();
+  solicitud.fecha_actualizacion = new Date();
+  solicitud.numero_documento_identidad = id_usuario_procesador;
+
+  await solicitud.save();
+
   return solicitud;
 };
 

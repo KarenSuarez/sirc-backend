@@ -188,15 +188,14 @@ const actualizarEstado = async (req, res) => {
     const id_usuario_procesador = req.numero_documento_identidad;
 
 
-
-
     const solicitud = await rewardRequestService.obtenerSolicitudPorId(id_solicitud);
+
+
     if (!solicitud) {
       return res.status(404).json({ message: "Solicitud no encontrada" });
     }
 
     const estadoActual = solicitud.estado_solicitud;
-
 
     const transicionesValidas = {
       pendiente: ["en proceso", "rechazada"],
@@ -205,13 +204,11 @@ const actualizarEstado = async (req, res) => {
       rechazada: [],
     };
 
-    
     if (!transicionesValidas[estadoActual].includes(estado_solicitud)) {
       return res.status(400).json({
         message: `No se puede cambiar el estado de '${estadoActual}' a '${estado_solicitud}'.`,
       });
     }
-
 
     let solicitudActualizada = await rewardRequestService.actualizarEstadoSolicitud(
       id_solicitud,
@@ -223,9 +220,12 @@ const actualizarEstado = async (req, res) => {
 
 
     if (estado_solicitud === "completada") {
-      const pdfPath = await generarCuentaCobro(solicitudActualizada);
+      const solicitudConRelaciones = await rewardRequestService.obtenerSolicitudPorId(id_solicitud);
 
- 
+
+      const pdfPath = await generarCuentaCobro(solicitudConRelaciones);
+
+
       solicitudActualizada = await rewardRequestService.actualizarEstadoSolicitud(
         id_solicitud,
         estado_solicitud,
@@ -239,10 +239,10 @@ const actualizarEstado = async (req, res) => {
       solicitud: solicitudActualizada,
     });
   } catch (error) {
-    console.error("Error en actualizarEstado:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 
