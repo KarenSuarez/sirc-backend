@@ -14,7 +14,7 @@ import historialCategoriaModel from './historialCategoria.model.js';
 import historialNivelModel from "./historialNivel.model.js";
 import sessionHistoryModel from './sessionHistory.model.js'
 import nivelModel from "./nivel.model.js";
-import beneficioModel from "./beneficio.model.js";
+
 
 
 const sequelize = new Sequelize(
@@ -69,7 +69,6 @@ db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
 db.nivel = nivelModel(sequelize, Sequelize);
 db.historialNivel = historialNivelModel(sequelize,Sequelize);
 
-db.Beneficio = beneficioModel(sequelize, Sequelize);
 // --- Definición de Asociaciones ---
 
 // 1. Usuario <--> Tipo_documento (Uno a Muchos)
@@ -207,15 +206,6 @@ db.nivel.hasMany(db.historialNivel, {
   as: 'historialComoNuevo'
 });
 
-db.nivel.hasOne(db.Beneficio, { 
-  foreignKey: 'id_nivel',
-   sourceKey : 'id_nivel',
-   as: 'beneficioANivel'
-});
-db.Beneficio.belongsTo(db.nivel, { 
-  foreignKey: 'id_nivel',
-  sourceKey : 'id_nivel',
-  as: 'nivelAbeneficio'
-  });
+
 
 export default db;

@@ -11,11 +11,11 @@ const getReferenteByDocumento = async (numero_documento_identidad) => {
 const getNivelActualByDocumento = async (numero_documento_identidad) => {
   const historial = await Historial_nivel.findOne({
     where: { id_referente: numero_documento_identidad },
-    order: [['actualizado_en', 'DESC']], // Ordenar por fecha de actualización
+    order: [['actualizado_en', 'DESC']], 
     include: [
       {
         model: nivel,
-        as: 'nivelAnterior', // Asegúrate de que este alias coincida con tu definición de asociación
+        as: 'nivelAnterior', 
       },
     ],
   });
