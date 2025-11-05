@@ -5,7 +5,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/ranking:
+ * /ranking:
  *   get:
  *     summary: Obtiene el ranking de referentes activos
  *     description: >
