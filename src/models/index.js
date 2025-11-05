@@ -44,7 +44,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// Probar conexión
+
 sequelize.authenticate()
   .then(() => {
     console.log("[OK] Conexión a la base de datos establecida correctamente.");
@@ -53,7 +53,7 @@ sequelize.authenticate()
     console.error("[ERROR] No se pudo conectar a la base de datos:", err);
   });
 
-// Importación de los modelos
+
 db.usuario = userModel(sequelize, Sequelize);
 db.rol = roleModel(sequelize, Sequelize);
 db.tipoDocumento = documentTypeModel(sequelize, Sequelize);
@@ -69,9 +69,7 @@ db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
 db.nivel = nivelModel(sequelize, Sequelize);
 db.historialNivel = historialNivelModel(sequelize,Sequelize);
 
-// --- Definición de Asociaciones ---
 
-// 1. Usuario <--> Tipo_documento (Uno a Muchos)
 db.tipoDocumento.hasMany(db.usuario, {
   foreignKey: 'id_tipo_documento',
   as: 'tipoDocumentoUsuario'
@@ -87,7 +85,7 @@ db.refered.belongsTo(db.tipoDocumento, {
   foreignKey: 'id_tipo_documento'
 });
 
-// 2. Usuario <--> Rol (Muchos a Muchos a través de rol_usuario)
+
 db.usuario.belongsToMany(db.rol, {
   through: db.rolUsuario,
   foreignKey: "numero_documento_identidad",
@@ -101,7 +99,7 @@ db.rol.belongsToMany(db.usuario, {
   as: "usuarios"
 });
 
-// 3. Usuario (referente) <--> Referido (Uno a Muchos)
+
 db.usuario.hasMany(db.refered, {
   foreignKey: 'documento_referente',
   as: 'referidos'
@@ -112,7 +110,7 @@ db.refered.belongsTo(db.usuario, {
   as: 'referente'
 });
 
-// 4. Usuario <--> Referente (Uno a Uno)
+
 db.usuario.hasOne(db.referente, {
   foreignKey: 'numero_documento_identidad', 
   as: 'referente'
@@ -123,7 +121,7 @@ db.referente.belongsTo(db.usuario, {
 });
 
 
-// 5. Solicitud_Recompensa <--> Referente (Muchos a Uno)
+
 db.referente.hasMany(db.solicitudRecompensa, {
   foreignKey: "documento_referente",
   sourceKey: "numero_documento_identidad",
@@ -136,7 +134,7 @@ db.solicitudRecompensa.belongsTo(db.referente, {
   as: "referente"
 });
 
-// 6. Solicitud_Recompensa <--> Usuario (Contador que procesa la solicitud)
+
 db.usuario.hasMany(db.solicitudRecompensa, {
   foreignKey: "numero_documento_identidad",
   as: "solicitudes_procesadas"
@@ -147,7 +145,6 @@ db.solicitudRecompensa.belongsTo(db.usuario, {
   as: "procesado_por"
 });
 
-// 7. Historial_Recompensa <--> Referente (Muchos a Uno)
 db.referente.hasMany(db.historialRecompensa, {
   foreignKey: "numero_documento_identidad",
   sourceKey: "numero_documento_identidad",
@@ -171,8 +168,6 @@ db.historialCategoria.belongsTo(db.referente, {
 });
 
 
-
-
 db.ROLES = ["administrador", "referente", "asesor ventas", "gerente ventas", "contador"];
 db.historialSesion.belongsTo(db.usuario, {
   foreignKey: "usuario_id",
@@ -184,16 +179,16 @@ db.usuario.hasMany(db.historialSesion, {
 db.historialNivel.belongsTo(db.nivel, {
   foreignKey: 'nivel_anterior',
   targetKey: 'id_nivel',
-  as: 'nivelAnterior' // alias único
+  as: 'nivelAnterior'
 });
 
 db.historialNivel.belongsTo(db.nivel, {
   foreignKey: 'nivel_nuevo',
   targetKey: 'id_nivel',
-  as: 'nivelNuevo' // alias único
+  as: 'nivelNuevo' 
 });
 
-// Relación inversa (opcional, pero recomendable)
+
 db.nivel.hasMany(db.historialNivel, {
   foreignKey: 'nivel_anterior',
   sourceKey: 'id_nivel',

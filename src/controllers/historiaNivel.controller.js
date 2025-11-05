@@ -1,43 +1,43 @@
 import db from "../models/index.js";
 
-const HistorialCategoria = db.historialCategoria;
+const HistorialNivel = db.historialNivel;
 const Referente = db.referente;
 
 /**
  * @swagger
- * /historial/categorias:
+ * /historial/niveles:
  *   get:
- *     summary: Obtener historial de cambios de categoría
- *     tags: [Historial - Categorías]
+ *     summary: Obtener el historial de cambios de nivel de todos los referentes
+ *     tags: [Historial - Niveles]
  *     responses:
  *       200:
- *         description: Lista de cambios de categoría
+ *         description: Lista de cambios de nivel
  */
-export const listarHistorialCategorias = async (req, res) => {
+export const listarHistorialNiveles = async (req, res) => {
   try {
-    const historial = await HistorialCategoria.findAll({
+    const historial = await HistorialNivel.findAll({
       include: [
         {
           model: Referente,
           attributes: ["numero_documento_identidad", "categoria_actual"],
         },
       ],
-      order: [["fecha_cambio", "DESC"]],
+      order: [["actualizado_en", "DESC"]],
     });
 
     res.status(200).json(historial);
   } catch (error) {
-    console.error(" Error al listar historial de categorías:", error);
+    console.error(" Error al listar historial de niveles:", error);
     res.status(500).json({ message: "Error al obtener historial", error: error.message });
   }
 };
 
 /**
  * @swagger
- * /api/historial/categorias/{documento}:
+ * /api/historial/niveles/{documento}:
  *   get:
- *     summary: Obtener historial de categorías de un referente específico
- *     tags: [Historial - Categorías]
+ *     summary: Obtener historial de niveles de un referente específico
+ *     tags: [Historial - Niveles]
  *     parameters:
  *       - name: documento
  *         in: path
@@ -49,17 +49,17 @@ export const listarHistorialCategorias = async (req, res) => {
  *       200:
  *         description: Historial del referente encontrado
  */
-export const historialCategoriaPorReferente = async (req, res) => {
+export const historialNivelPorReferente = async (req, res) => {
   try {
     const { documento } = req.params;
-    const historial = await HistorialCategoria.findAll({
+    const historial = await HistorialNivel.findAll({
       where: { id_referente: documento },
-      order: [["fecha_cambio", "DESC"]],
+      order: [["actualizado_en", "DESC"]],
     });
 
     res.status(200).json(historial);
   } catch (error) {
-    console.error(" Error al obtener historial de categoría:", error);
+    console.error(" Error al obtener historial de nivel:", error);
     res.status(500).json({ message: "Error al obtener historial", error: error.message });
   }
 };

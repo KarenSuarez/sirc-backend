@@ -7,7 +7,7 @@ import nivelesRoutes from "./niveles.routes.js";
 import rankingRoutes from "./ranking.routes.js";
 import kpiRoutes from "./kpi.routes.js";
 import historialRecompensaRoutes from "./historialRecompensa.routes.js";
-import historialCategoriaRoutes from "./historialCategorias.routes.js";
+import historialRoutes from "./historial.routes.js";
 import userRoutes from "./user.routes.js";
 import rewardCatalogoRoutes from './rewardCatalogo.routes.js';
 import planRoutes from './plan.routes.js';
@@ -22,8 +22,7 @@ router.use("/niveles", nivelesRoutes);
 router.use("/plan", planRoutes);
 router.use("/ranking", rankingRoutes);
 router.use("/kpis", kpiRoutes);
-router.use("/historial-recompensas", historialRecompensaRoutes);
-router.use("/historial-categorias", historialCategoriaRoutes);
+router.use("/historial", historialRoutes);
 router.use('/catalogo', rewardCatalogoRoutes);
 router.use("/users", userRoutes);
 
