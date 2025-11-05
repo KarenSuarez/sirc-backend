@@ -9,7 +9,6 @@ import planModel from './plan.model.js';
 import referedModel from './referido.model.js';
 import solicitudRecompensaModel from './solicitudRecompensa.model.js';
 import movimientoModel from "./movimiento.model.js";
-import historialCategoriaModel from './historialCategoria.model.js';
 import historialNivelModel from "./historialNivel.model.js";
 import sessionHistoryModel from './sessionHistory.model.js'
 import nivelModel from "./nivel.model.js";
@@ -62,7 +61,6 @@ db.plan = planModel(sequelize, Sequelize);
 db.refered = referedModel(sequelize, Sequelize);
 db.solicitudRecompensa = solicitudRecompensaModel(sequelize, Sequelize);
 db.movimiento = movimientoModel(sequelize, Sequelize);
-db.historialCategoria = historialCategoriaModel(sequelize, Sequelize);
 db.historialSesion = sessionHistoryModel(sequelize, Sequelize);
 db.nivel = nivelModel(sequelize, Sequelize);
 db.historialNivel = historialNivelModel(sequelize,Sequelize);
@@ -152,16 +150,6 @@ db.referente.hasMany(db.movimiento, {
 db.movimiento.belongsTo(db.referente, {
   foreignKey: "numero_documento_identidad",
   targetKey: "numero_documento_identidad",
-  as: "referente"
-});
-
-db.referente.hasMany(db.historialCategoria, {
-  foreignKey: "id_referente",
-  as: "historialCategorias"
-});
-
-db.historialCategoria.belongsTo(db.referente, {
-  foreignKey: "id_referente",
   as: "referente"
 });
 
