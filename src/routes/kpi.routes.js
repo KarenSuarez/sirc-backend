@@ -1,8 +1,10 @@
 import express from "express";
-import { exportarRankingCSV } from "../controllers/kpi.controller.js";
+import kpiController from "../controllers/kpi.controller.js";
+import authJwt from "../middlewares/authJwt.js";
 
 const router = express.Router();
 
-router.get("/ranking/export-csv", exportarRankingCSV);
+router.get("/ranking/export-csv", [authJwt.verifyToken, authJwt.hasRole('gerente')],
+  kpiController.exportarRankingCSV);
 
 export default router;

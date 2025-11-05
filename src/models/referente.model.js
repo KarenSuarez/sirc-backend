@@ -22,24 +22,30 @@
  *         puntos_acumulados:
  *           type: integer
  *           description: Puntos acumulados por el referente.
- *           example: 0
+ *           example: 1200
+ *         categoria_actual:
+ *           type: string
+ *           description: Categoría actual del referente (por ejemplo, Bronce, Plata, Oro).
+ *           example: "Oro"
  *         recompensa_monetaria_actual:
  *           type: number
  *           format: float
- *           description: Recompensa monetaria acumulada.
- *           example: 0.00
+ *           description: Recompensa monetaria acumulada por el referente.
+ *           example: 250000.00
  *         fecha_ultima_categoria:
  *           type: string
  *           format: date-time
- *           description: Fecha de la última actualización de categoría.
+ *           description: Fecha de la última actualización de la categoría del referente.
  *           example: "2025-09-29T20:00:00Z"
  *         estado_referente:
  *           type: string
  *           enum: [activo, en pausa]
- *           description: Estado actual del referente.
+ *           description: Estado actual del referente dentro del programa.
  *           example: "activo"
- *         required:
- *         - numero_documento
+ *       required:
+ *         - numero_documento_identidad
+ *         - tipo_referente
+ *         - puntos_acumulados
  */
 
 export default (sequelize, Sequelize) => {
@@ -61,6 +67,10 @@ export default (sequelize, Sequelize) => {
       puntos_acumulados: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
+      },
+      categoria_actual: {
+        type: Sequelize.STRING(50),
+        allowNull: true,
       },
       recompensa_monetaria_actual: {
         type: Sequelize.DECIMAL(10, 2),
