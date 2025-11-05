@@ -6,7 +6,6 @@ import pointsRoutes from './points.routes.js';
 import nivelesRoutes from "./niveles.routes.js";
 import rankingRoutes from "./ranking.routes.js";
 import kpiRoutes from "./kpi.routes.js";
-import historialRecompensaRoutes from "./historialRecompensa.routes.js";
 import historialRoutes from "./historial.routes.js";
 import userRoutes from "./user.routes.js";
 import rewardCatalogoRoutes from './rewardCatalogo.routes.js';
