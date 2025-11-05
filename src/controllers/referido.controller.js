@@ -177,11 +177,14 @@ const getEstadoPendiente = async (req, res) => {
 const updateEstado = async (req, res) => {
   try {
     const { documento_identidad_referido } = req.params;
-    const { estado_referido } = req.body;
+    const { estado_referido, id_plan_adquirido  } = req.body;
     const referido = await referidoService.updateEstadoReferido(
       documento_identidad_referido,
       estado_referido,
+      id_plan_adquirido
     );
+
+  
     res.status(200).json(referido);
   } catch (error) {
     res.status(400).json({ message: error.message });

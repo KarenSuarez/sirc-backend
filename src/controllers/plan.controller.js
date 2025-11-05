@@ -1,5 +1,6 @@
 import db from "../models/index.js";
 const Plan = db.plan;
+import pointsService from "../services/points.service.js";
 
 /**
  * @swagger
@@ -124,76 +125,80 @@ const Plan = db.plan;
 
 
 export const crearPlan = async (req, res) => {
-  try {
-    const { nombre_plan, precio_actual, porcentaje_recompensa, puntos_otorgados, descripcion } = req.body;
+    try {
+        const { nombre_plan, precio_actual, porcentaje_recompensa, puntos_otorgados, descripcion } = req.body;
 
-    const nuevoPlan = await Plan.create({
-      nombre_plan,
-      precio_actual,
-      porcentaje_recompensa,
-      puntos_otorgados,
-      descripcion,
-      estado: 'activo',
-      creado_en: new Date(),
-      actualizado_en: new Date()
-    });
+        const nuevoPlan = await Plan.create({
+            nombre_plan,
+            precio_actual,
+            porcentaje_recompensa,
+            puntos_otorgados,
+            descripcion,
+            estado: 'activo',
+            creado_en: new Date(),
+            actualizado_en: new Date()
+        });
 
-    return res.status(201).json(nuevoPlan);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ mensaje: "Error al crear el plan", error });
-  }
+        return res.status(201).json(nuevoPlan);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensaje: "Error al crear el plan", error });
+    }
 };
 
 export const actualizarPlan = async (req, res) => {
-  try {
-    const { id_plan } = req.params;
-    const { nombre_plan, precio_actual, porcentaje_recompensa, puntos_otorgados, descripcion, estado } = req.body;
+    try {
+        const { id_plan } = req.params;
+        const { nombre_plan, precio_actual, porcentaje_recompensa, puntos_otorgados, descripcion, estado } = req.body;
 
-    const plan = await Plan.findByPk(id_plan);
+        const plan = await Plan.findByPk(id_plan);
 
-    if (!plan) {
-      return res.status(404).json({ mensaje: "Plan no encontrado" });
+        if (!plan) {
+            return res.status(404).json({ mensaje: "Plan no encontrado" });
+        }
+
+        await plan.update({
+            nombre_plan,
+            precio_actual,
+            porcentaje_recompensa,
+            puntos_otorgados,
+            descripcion,
+            estado,
+            actualizado_en: new Date()
+        });
+
+        if (req.body.puntos_otorgados !== undefined) {
+            await pointsService.recalcularPuntosReferentes();
+        }
+
+        return res.status(200).json(plan);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensaje: "Error al actualizar el plan", error });
     }
-
-    await plan.update({
-      nombre_plan,
-      precio_actual,
-      porcentaje_recompensa,
-      puntos_otorgados,
-      descripcion,
-      estado,
-      actualizado_en: new Date()
-    });
-
-    return res.status(200).json(plan);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ mensaje: "Error al actualizar el plan", error });
-  }
 };
 
 
 const eliminarPlan = async (req, res) => {
-  try {
-    const { id_plan } = req.params;
+    try {
+        const { id_plan } = req.params;
 
-    const plan = await Plan.findByPk(id_plan);
+        const plan = await Plan.findByPk(id_plan);
 
-    if (!plan) {
-      return res.status(404).json({ mensaje: "Plan no encontrado" });
+        if (!plan) {
+            return res.status(404).json({ mensaje: "Plan no encontrado" });
+        }
+
+        await plan.update({
+            estado: 'inactivo',
+            actualizado_en: new Date()
+        });
+
+        return res.status(200).json({ mensaje: "Plan desactivado correctamente" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensaje: "Error al eliminar el plan", error });
     }
-
-    await plan.update({
-      estado: 'inactivo',
-      actualizado_en: new Date()
-    });
-
-    return res.status(200).json({ mensaje: "Plan desactivado correctamente" });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ mensaje: "Error al eliminar el plan", error });
-  }
 };
 
 
