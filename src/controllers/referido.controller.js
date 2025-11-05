@@ -153,16 +153,17 @@ const getEstadoPendiente = async (req, res) => {
 
 /**
  * @swagger
- * /referidos/{id}/estado:
+ * /referidos/{documento_identidad_referido}/estado:
  *   patch:
- *     summary: Actualiza el estado de un referido
+ *     summary: Actualiza el estado de un referido y, si pasa a "activo", asigna el plan adquirido.
  *     tags: [Referidos]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: documento_identidad_referido
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *         description: Documento de identidad del referido
  *     requestBody:
  *       required: true
  *       content:
@@ -170,10 +171,27 @@ const getEstadoPendiente = async (req, res) => {
  *           schema:
  *             type: object
  *             properties:
- *               estado:
+ *               estado_referido:
  *                 type: string
  *                 enum: ["pendiente", "contactado", "activo", "inactivo"]
+ *                 description: Nuevo estado del referido
+ *               id_plan_adquirido:
+ *                 type: integer
+ *                 description: ID del plan adquirido (solo se requiere si el estado es "activo")
+ *             example:
+ *               estado_referido: "activo"
+ *               id_plan_adquirido: 2
+ *     responses:
+ *       200:
+ *         description: Estado del referido actualizado correctamente.
+ *       400:
+ *         description: Error en la solicitud o estado inválido.
+ *       404:
+ *         description: Referido no encontrado.
+ *       500:
+ *         description: Error interno del servidor.
  */
+
 const updateEstado = async (req, res) => {
   try {
     const { documento_identidad_referido } = req.params;
