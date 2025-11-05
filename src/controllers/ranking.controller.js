@@ -6,12 +6,11 @@ export const obtenerRankingReferentes = async (req, res) => {
   try {
     const { tipo = "puntos", limite = 10 } = req.query;
 
-    // Validar tipo de ranking
+ 
     if (!["puntos", "referidos"].includes(tipo)) {
       return res.status(400).json({ message: "Tipo de ranking inválido (use 'puntos' o 'referidos')" });
     }
 
-    // Traemos los referentes activos
     const referentes = await Referente.findAll({
       where: { estado_referente: "activo" },
       attributes: [
@@ -24,7 +23,6 @@ export const obtenerRankingReferentes = async (req, res) => {
       raw: true
     });
 
-    // Contamos cuántos referidos tiene cada referente
     const referidos = await Referido.findAll({
       attributes: [
         "documento_referente",
@@ -34,7 +32,6 @@ export const obtenerRankingReferentes = async (req, res) => {
       raw: true
     });
 
-    // Combinamos la info
     const ranking = referentes.map(ref => {
       const refInfo = referidos.find(r => r.documento_referente === ref.numero_documento_identidad);
       return {
@@ -43,13 +40,13 @@ export const obtenerRankingReferentes = async (req, res) => {
       };
     });
 
-    // Ordenamos según el tipo de ranking
+
     ranking.sort((a, b) => {
       if (tipo === "puntos") return b.puntos_acumulados - a.puntos_acumulados;
       else return b.total_referidos - a.total_referidos;
     });
 
-    // Respondemos
+
     res.json({
       message: "Ranking obtenido correctamente",
       total: ranking.length,
