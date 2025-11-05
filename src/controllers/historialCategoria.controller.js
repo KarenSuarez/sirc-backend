@@ -34,7 +34,7 @@ export const listarHistorialCategorias = async (req, res) => {
 
 /**
  * @swagger
- * /api/historial/categorias/{documento}:
+ * /historial/categorias/{documento}:
  *   get:
  *     summary: Obtener historial de categorías de un referente específico
  *     tags: [Historial - Categorías]

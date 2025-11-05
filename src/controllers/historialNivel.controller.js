@@ -34,7 +34,7 @@ export const listarHistorialNiveles = async (req, res) => {
 
 /**
  * @swagger
- * /api/historial/niveles/{documento}:
+ * /historial/niveles/{documento}:
  *   get:
  *     summary: Obtener historial de niveles de un referente específico
  *     tags: [Historial - Niveles]

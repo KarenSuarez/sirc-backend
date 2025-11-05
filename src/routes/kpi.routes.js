@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /kpis/ranking/export-csv
+ * /kpis/ranking/export-csv:
  *   get:
  *     summary: Exporta el ranking de referentes a un archivo CSV
  *     description: >
