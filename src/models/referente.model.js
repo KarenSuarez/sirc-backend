@@ -1,95 +1,60 @@
-/**
- * @swagger
- * components:
- *   schemas:
- *     Referente:
- *       type: object
- *       description: Representa el perfil de un referente en el sistema.
- *       properties:
- *         numero_documento_identidad:
- *           type: string
- *           description: Número de documento del usuario que actúa como referente.
- *           example: "123456789"
- *         codigo_referente:
- *           type: string
- *           description: Código de referente, usualmente el número de documento de identidad del usuario.
- *           example: "123456789"
- *         tipo_referente:
- *           type: string
- *           enum: [cliente externo, cliente interno]
- *           description: Tipo de referente.
- *           example: "cliente externo"
- *         puntos_acumulados:
- *           type: integer
- *           description: Puntos acumulados por el referente.
- *           example: 1200
- *         categoria_actual:
- *           type: string
- *           description: Categoría actual del referente (por ejemplo, Bronce, Plata, Oro).
- *           example: "Oro"
- *         recompensa_monetaria_actual:
- *           type: number
- *           format: float
- *           description: Recompensa monetaria acumulada por el referente.
- *           example: 250000.00
- *         fecha_ultima_categoria:
- *           type: string
- *           format: date-time
- *           description: Fecha de la última actualización de la categoría del referente.
- *           example: "2025-09-29T20:00:00Z"
- *         estado_referente:
- *           type: string
- *           enum: [activo, en pausa]
- *           description: Estado actual del referente dentro del programa.
- *           example: "activo"
- *       required:
- *         - numero_documento_identidad
- *         - tipo_referente
- *         - puntos_acumulados
- */
-
 export default (sequelize, Sequelize) => {
   const Referente = sequelize.define(
     "Referente",
     {
-      numero_documento_identidad: {
-        type: Sequelize.STRING(20),
+      id_usuario: {
+        type: Sequelize.INTEGER,
         primaryKey: true,
         references: {
           model: "Usuario",
-          key: "numero_documento_identidad",
+          key: "id_usuario",
+        },
+      },
+      codigo_referente: {
+        type: Sequelize.STRING(20),
+        allowNull: false,
+        unique: {
+          name: "unique_codigo_referente",
+          msg: "El código de referente ya existe",
         },
       },
       tipo_referente: {
-        type: Sequelize.ENUM("cliente externo", "cliente interno"),
-        defaultValue: "cliente externo",
+        type: Sequelize.ENUM("cliente_interno", "cliente_externo"),
+        defaultValue: "cliente_externo",
       },
-      puntos_acumulados: {
+      puntos_actuales: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
-      categoria_actual: {
-        type: Sequelize.STRING(50),
-        allowNull: true,
+      puntos_totales_historico: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
       },
-      recompensa_monetaria_actual: {
+      saldo_disponible: {
         type: Sequelize.DECIMAL(10, 2),
-        allowNull: true,
         defaultValue: 0.0,
       },
-      fecha_ultima_categoria: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
+      total_comisiones_historico: {
+        type: Sequelize.DECIMAL(10, 2),
+        defaultValue: 0.0,
+      },
+      total_retirado: {
+        type: Sequelize.DECIMAL(10, 2),
+        defaultValue: 0.0,
       },
       estado_referente: {
-        type: Sequelize.ENUM("activo", "en pausa"),
+        type: Sequelize.ENUM("activo", "inactivo", "suspendido"),
         defaultValue: "activo",
+      },
+      fecha_ultima_actividad: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
       },
     },
     {
       tableName: "Referente",
       timestamps: false,
-    },
+    }
   );
 
   return Referente;
