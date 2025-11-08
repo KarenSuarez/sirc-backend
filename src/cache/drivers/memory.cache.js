@@ -1,5 +1,3 @@
-// src/cache/drivers/memory.cache.js
-// Usamos un Map simple para simular el caché
 export default class MemoryCache {
   constructor() {
     this.cache = new Map();

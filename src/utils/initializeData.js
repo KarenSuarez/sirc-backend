@@ -1,173 +1,253 @@
-// Archivo: initial_data.js
+import createLogger from "./logger.js";
 
-// 1. Exportaciones con Nombre (Named Exports) para las constantes de datos
-// Usamos 'export const' para hacer estos arrays disponibles a otros módulos.
-export const niveles = [
-  {
-    id_nivel: 1,
-    nombre_nivel: "Bronce",
-    porcentaje_beneficio_adicional: 0.0,
-    puntos_minimos:20,
-    puntos_maximos:0,
-    orden: 1,
-  },
-  {
-    id_nivel: 2,
-    nombre_nivel: "Plata",
-    porcentaje_beneficio_adicional: 5.0,
-    puntos_minimos:21,
-    puntos_maximos:50,
-    orden: 2,
-  },
-  {
-    id_nivel: 3,
-    nombre_nivel: "Oro",
-    porcentaje_beneficio_adicional: 10.0,
-    puntos_minimos:51,
-    puntos_maximos:100,
-    orden: 3,
-  },
-  {
-    id_nivel: 4,
-    nombre_nivel: "Platino",
-    porcentaje_beneficio_adicional: 15.0,
-    puntos_minimos:101,
-    puntos_maximos:200,
-    orden: 4,
-  },
-];
+const logger = createLogger('initializeData.js');
 
-export const roles = [
-  { id_rol: 1, nombre_rol: "admin" },
-  { id_rol: 2, nombre_rol: "referente" },
-  { id_rol: 3, nombre_rol: "gerente" },
-  { id_rol: 4, nombre_rol: "asesor" },
-  { id_rol: 5, nombre_rol: "contador" }
-];
-
-export const tipoDocumento = [
-  { id_tipo_documento: 1, nombre: "Cedula de ciudadanía" },
-  { id_tipo_documento: 2, nombre: "Pasaporte" },
-  { id_tipo_documento: 3, nombre: "Cedula de Extranjería" },
-  { id_tipo_documento: 4, nombre: "RUT" },
-];
-
-export const planes = [
-  {
-    id_plan: "1",
-    nombre_plan: "Plan Básico",
-    precio_actual: 80000,
-    estado: "activo",
-    descripcion: "Perfecto para emprendedores y pequeños negocios",
-    porcentaje_recompensa: 10,
-    puntos_otorgados: 100,
-  },
-  {
-    id_plan: "2",
-    nombre_plan: "Plan Profesional",
-    precio_actual: 150000,
-    estado: "activo",
-    descripcion: "Ideal para empresas en crecimiento",
-    porcentaje_recompensa: 12,
-    puntos_otorgados: 150,
-  },
-  {
-    id_plan: "3",
-    nombre_plan: "Plan Empresarial",
-    estado: "activo",
-    descripcion: "Solución completa para grandes empresas",
-    precio_actual: 300000,
-    porcentaje_recompensa: 15,
-    puntos_otorgados: 200,
-  },
-];
-
-// Funciones internas para insertar la data (No necesitan ser exportadas)
-const initialNiveles = (db) => db.nivel.bulkCreate(niveles);
-const initialTipoDocumentos = (db) => db.tipoDocumento.bulkCreate(tipoDocumento);
-const initialRoles = (db) => db.rol.bulkCreate(roles);
-const initialPlanes = (db) => db.plan.bulkCreate(planes);
-
-const red = "\x1b[31m";
-const green = "\x1b[32m";
-/**
- * Verifica si las colecciones están vacías e inserta la data inicial si es
- * necesario.
- *
- * @param {object} db - Instancia de la base de datos (por ejemplo, Sequelize o
- *   Mongoose).
- * @param {number} countDocs - Conteo de documentos de tipoDocumento.
- * @param {number} countRoles - Conteo de roles.
- * @param {number} countNiveles - Conteo de niveles.
- * @param {number} countPlan - Conteo de planes.
- */
-async function checkInitialCounts(
-  db,
-  countDocs,
-  countRoles,
-  countNiveles,
-  countPlan,
-) {
-  if (countDocs === 0) {
-    console.log("LOADING Insertando tipos de documento iniciales...");
-    await initialTipoDocumentos(db); // Llamada directa a la función interna
-  } else {
-    console.log(
-      green + "OK. Tipos de documento ya existen, no se insertan nuevamente.",
-    );
-  }
-  if (countRoles === 0) {
-    console.log("...LOADING Insertando roles iniciales...");
-    await initialRoles(db); // Llamada directa a la función interna
-  } else {
-    console.log(green + "OK. Roles ya existen, no se insertan nuevamente.");
-  }
-  if (countNiveles === 0) {
-    console.log("DONE Insertando niveles iniciales...");
-    await initialNiveles(db); // Llamada directa a la función interna
-  } else {
-    console.log(
-      green + "OK. Categorías ya inicializadas, no se insertan nuevamente.",
-    );
-  }
-  if (countPlan === 0) {
-    console.log("DONE Insertando planes iniciales...");
-    await initialPlanes(db); // Llamada directa a la función interna
-  } else {
-    console.log(
-      green + "OK. Planes ya inicializados, no se insertan nuevamente.",
-    );
-  }
-}
-
-/**
- * Función principal para la inicialización de la data.
- *
- * @param {object} db - Instancia de la base de datos.
- */
 const initializeData = async (db) => {
-  try {
-    // Es mejor llamar a las funciones de conteo una por una o usar Promise.all
-    // si son llamadas a la base de datos que pueden ejecutarse en paralelo.
-    const countDocs = await db.tipoDocumento.count();
-    const countRoles = await db.rol.count();
-    const countNiveles = await db.nivel.count();
-    const countPlan = await db.plan.count();
+  logger.info("Iniciando la verificación de datos maestros...");
 
-    await checkInitialCounts(
-      db,
-      countDocs,
-      countRoles,
-      countNiveles,
-      countPlan,
-    );
-    console.log("--- Inicialización de data completa ---" );
+  try {
+    // --- Tipos de Documento ---
+    const tipoDocumentoCount = await db.tipoDocumento.count();
+
+    if (tipoDocumentoCount === 0) {
+      await db.tipoDocumento.bulkCreate([
+        {
+          codigo_tipo: "CC",
+          nombre_tipo: "Cédula de Ciudadanía",
+        },
+        {
+          codigo_tipo: "NIT",
+          nombre_tipo: "Número de Identificación Tributaria",
+        },
+        {
+          codigo_tipo: "CE",
+          nombre_tipo: "Cédula de Extranjería",
+        },
+        {
+          codigo_tipo: "COD",
+          nombre_tipo: "Código de Empleado",
+        },
+      ]);
+      logger.info("Tipos de documento cargados (4)");
+    } else {
+      logger.info("Tipos de documento ya existen");
+    }
+
+    // --- Roles ---
+    const rolesCount = await db.rol.count();
+
+    if (rolesCount === 0) {
+      await db.rol.bulkCreate([
+        {
+          codigo_rol: "ADMIN",
+          nombre_rol: "administrador",
+          descripcion: "Administrador del sistema con acceso completo",
+        },
+        {
+          codigo_rol: "REF",
+          nombre_rol: "referente",
+          descripcion: "Usuario referente que genera referencias",
+        },
+        {
+          codigo_rol: "ASESOR",
+          nombre_rol: "asesor_ventas",
+          descripcion: "Asesor de ventas que gestiona referidos",
+        },
+        {
+          codigo_rol: "GERENTE",
+          nombre_rol: "gerente_ventas",
+          descripcion: "Gerente de ventas con permisos de supervisión",
+        },
+        {
+          codigo_rol: "CONTADOR",
+          nombre_rol: "contador",
+          descripcion: "Contador con acceso a información financiera",
+        },
+      ]);
+      logger.info("Roles cargados (5)");
+    } else {
+      logger.info("Roles ya existen");
+    }
+
+    // --- Niveles ---
+    const nivelesCount = await db.nivel.count();
+
+    if (nivelesCount === 0) {
+      await db.nivel.bulkCreate([
+        {
+          nombre_nivel: "Bronce",
+          orden_nivel: 1,
+          puntos_minimos: 0,
+          puntos_maximos: 99,
+          porcentaje_comision_extra: 0.0,
+          icono_nivel: "bronze-medal",
+          color_nivel: "#CD7F32",
+          beneficios_nivel: "Nivel inicial - Sin beneficios adicionales",
+          descripcion: "Nivel básico para nuevos referentes",
+        },
+        {
+          nombre_nivel: "Plata",
+          orden_nivel: 2,
+          puntos_minimos: 100,
+          puntos_maximos: 299,
+          porcentaje_comision_extra: 2.5,
+          icono_nivel: "silver-medal",
+          color_nivel: "#C0C0C0",
+          beneficios_nivel: "2.5% adicional en comisiones",
+          descripcion: "Nivel intermedio con bonificación extra",
+        },
+        {
+          nombre_nivel: "Oro",
+          orden_nivel: 3,
+          puntos_minimos: 300,
+          puntos_maximos: 599,
+          porcentaje_comision_extra: 5.0,
+          icono_nivel: "gold-medal",
+          color_nivel: "#FFD700",
+          beneficios_nivel: "5% adicional en comisiones + Soporte prioritario",
+          descripcion: "Nivel avanzado con múltiples beneficios",
+        },
+        {
+          nombre_nivel: "Diamante",
+          orden_nivel: 4,
+          puntos_minimos: 600,
+          puntos_maximos: 999999,
+          porcentaje_comision_extra: 10.0,
+          icono_nivel: "diamond",
+          color_nivel: "#B9F2FF",
+          beneficios_nivel:
+            "10% adicional en comisiones + Soporte VIP + Acceso exclusivo",
+          descripcion: "Nivel élite con máximos beneficios",
+        },
+      ]);
+      logger.info("Niveles cargados (4)");
+    } else {
+      logger.info("Niveles ya existen");
+    }
+
+    // --- Planes ---
+    const planesCount = await db.plan.count();
+
+    if (planesCount === 0) {
+      await db.plan.bulkCreate([
+        {
+          nombre_plan: "Plan Basic",
+          descripcion: "Plan ideal para pequeñas empresas",
+          precio_actual: 290000.0,
+          porcentaje_comision_base: 10.0,
+          puntos_otorgados: 50,
+          estado_plan: "activo",
+          icono_plan: "package-basic",
+          color_plan: "#4A90E2",
+        },
+        {
+          nombre_plan: "Plan Pro",
+          descripcion: "Plan completo para empresas en crecimiento",
+          precio_actual: 490000.0,
+          porcentaje_comision_base: 15.0,
+          puntos_otorgados: 100,
+          estado_plan: "activo",
+          icono_plan: "package-premium",
+          color_plan: "#F5A623",
+        },
+        {
+          nombre_plan: "Plan Plus",
+          descripcion: "Plan avanzado para grandes empresas",
+          precio_actual: 880000.0,
+          porcentaje_comision_base: 20.0,
+          puntos_otorgados: 200,
+          estado_plan: "activo",
+          icono_plan: "package-enterprise",
+          color_plan: "#7B68EE",
+        },
+        {
+          nombre_plan: "Plan Empresarial",
+          descripcion: "Plan avanzado para grandes empresas",
+          precio_actual: 1500000.0,
+          porcentaje_comision_base: 20.0,
+          puntos_otorgados: 200,
+          estado_plan: "activo",
+          icono_plan: "package-enterprise",
+          color_plan: "#7B68EE",
+        },
+      ]);
+      logger.info("Planes cargados (4)");
+    } else {
+      logger.info("Planes ya existen");
+    }
+
+    // --- Insignias ---
+    const insigniasCount = await db.insignia.count();
+
+    if (insigniasCount === 0) {
+      await db.insignia.bulkCreate([
+        {
+          nombre_insignia: "Primera Venta",
+          descripcion:
+            "¡Felicitaciones! Realizaste tu primera conversión exitosa",
+          icono_insignia: "first-sale",
+          color_insignia: "#FFD700",
+          criterio_obtencion: "Convertir 1 referido",
+          rareza: "comun",
+          estado: "activa",
+        },
+        {
+          nombre_insignia: "Vendedor Estrella",
+          descripcion: "Has convertido 10 referidos exitosamente",
+          icono_insignia: "star-seller",
+          color_insignia: "#FFA500",
+          criterio_obtencion: "Convertir 10 referidos",
+          rareza: "rara",
+          estado: "activa",
+        },
+        {
+          nombre_insignia: "Maestro de Referencias",
+          descripcion: "Has convertido 50 referidos. ¡Eres un experto!",
+          icono_insignia: "master-seller",
+          color_insignia: "#9370DB",
+          criterio_obtencion: "Convertir 50 referidos",
+          rareza: "epica",
+          estado: "activa",
+        },
+        {
+          nombre_insignia: "Leyenda del Sistema",
+          descripcion: "Has convertido 100 referidos. ¡Eres una leyenda!",
+          icono_insignia: "legend-seller",
+          color_insignia: "#FF4500",
+          criterio_obtencion: "Convertir 100 referidos",
+          rareza: "legendaria",
+          estado: "activa",
+        },
+        {
+          nombre_insignia: "Nivel Diamante",
+          descripcion: "Alcanzaste el nivel más alto de fidelización",
+          icono_insignia: "diamond-level",
+          color_insignia: "#B9F2FF",
+          criterio_obtencion: "Alcanzar nivel Diamante (600+ puntos)",
+          rareza: "epica",
+          estado: "activa",
+        },
+        {
+          nombre_insignia: "Millonario en Comisiones",
+          descripcion: "Has generado más de $1,000,000 en comisiones",
+          icono_insignia: "millionaire",
+          color_insignia: "#32CD32",
+          criterio_obtencion: "Generar $1,000,000 en comisiones totales",
+          rareza: "legendaria",
+          estado: "activa",
+        },
+      ]);
+      logger.info("Insignias cargadas (6)");
+    } else {
+      logger.info("Insignias ya existen");
+    }
+
+    logger.info("Inicialización de datos completada exitosamente");
   } catch (error) {
-    // Lanza el error para que pueda ser manejado por quien llama a initializeData
-    throw new Error(`Error al inicializar la data: ${error.message}`);
+    // 3. Reemplazamos console.error por logger.error
+    logger.error("Error al inicializar datos:", error);
+    throw error;
   }
 };
 
-// 2. Exportación por Defecto (Default Export)
-// Solo se usa una vez, para la función principal del módulo.
 export default initializeData;

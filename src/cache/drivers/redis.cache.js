@@ -1,4 +1,3 @@
-// src/cache/drivers/redis.cache.js
 import { createClient } from "redis";
 
 export default class RedisCache {

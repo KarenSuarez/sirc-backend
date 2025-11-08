@@ -1,7 +1,4 @@
 import dotenv from "dotenv";
-
-// Carga las variables de entorno desde el archivo .env correspondiente
-// En producción/Docker, estas variables serán proporcionadas por el entorno de ejecución
 dotenv.config();
 
 export const HOST = process.env.DB_HOST || "127.0.0.1";
