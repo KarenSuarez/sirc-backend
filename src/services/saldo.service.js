@@ -4,11 +4,7 @@ import createLogger from "../utils/logger.js";
 const logger = createLogger("saldo.service.js");
 
 class SaldoService {
-  /**
-   * Registra un ingreso de comisión
-   * @param {Object} params - Parámetros del ingreso
-   * @returns {Promise<Object>} Movimiento de saldo creado
-   */
+
   async registrarIngresoComision(params) {
     const transaction = await db.sequelize.transaction();
 
@@ -75,11 +71,6 @@ class SaldoService {
     }
   }
 
-  /**
-   * Registra un ajuste negativo (cancelación de comisión)
-   * @param {Object} params - Parámetros del ajuste
-   * @returns {Promise<Object>} Movimiento de saldo creado
-   */
   async registrarAjusteNegativo(params) {
     const transaction = await db.sequelize.transaction();
 
@@ -146,11 +137,6 @@ class SaldoService {
     }
   }
 
-  /**
-   * Registra un retiro de saldo
-   * @param {Object} params - Parámetros del retiro
-   * @returns {Promise<Object>} Movimiento de saldo creado
-   */
   async registrarRetiro(params) {
     const transaction = await db.sequelize.transaction();
 
@@ -202,6 +188,7 @@ class SaldoService {
       await referente.update(
         {
           saldo_disponible: saldo_nuevo,
+          total_retirado: referente.total_retirado + montoRetiro,
         },
         { transaction }
       );
@@ -219,11 +206,146 @@ class SaldoService {
     }
   }
 
-  /**
-   * Obtiene el historial de movimientos de saldo
-   * @param {number} id_referente - ID del referente
-   * @returns {Promise<Array>} Historial de movimientos
-   */
+  async registrarEgresoRetiro(params) {
+  const transaction = await db.sequelize.transaction();
+
+  try {
+    const {
+      id_referente,
+      monto,
+      id_solicitud_recompensa,
+      descripcion = "Retiro de saldo",
+      creado_por = null,
+    } = params;
+
+    const referente = await db.referente.findByPk(id_referente, {
+      transaction,
+      lock: transaction.LOCK.UPDATE,
+    });
+
+    if (!referente) {
+      throw new Error("Referente no encontrado");
+    }
+
+    const saldo_anterior = parseFloat(referente.saldo_disponible);
+    const montoRetiro = parseFloat(monto);
+
+    if (saldo_anterior < montoRetiro) {
+      throw new Error("Saldo insuficiente");
+    }
+
+    const saldo_nuevo = saldo_anterior - montoRetiro;
+
+    const movimientoSaldo = await db.movimientoSaldo.create(
+      {
+        id_referente,
+        tipo_movimiento: "egreso_retiro",
+        monto: -montoRetiro,
+        saldo_anterior,
+        saldo_nuevo,
+        puntos_otorgados: 0,
+        puntos_anteriores: referente.puntos_actuales,
+        puntos_nuevos: referente.puntos_actuales,
+        descripcion,
+        id_solicitud_recompensa,
+        creado_por,
+        fecha_movimiento: new Date(),
+      },
+      { transaction }
+    );
+
+    await referente.update(
+      {
+        saldo_disponible: saldo_nuevo,
+        total_retirado: referente.total_retirado + montoRetiro,
+      },
+      { transaction }
+    );
+
+    await transaction.commit();
+
+    const referenteActualizado = await db.referente.findByPk(id_referente);
+
+    logger.info(
+      `Egreso retiro de ${montoRetiro} registrado para referente ${id_referente}`
+    );
+    return movimientoSaldo;
+  } catch (error) {
+    await transaction.rollback();
+    logger.error("Error al registrar egreso retiro:", error);
+    throw error;
+  }
+}
+
+  async registrarEgresoBono(params) {
+    const transaction = await db.sequelize.transaction();
+
+    try {
+      const {
+        id_referente,
+        monto,
+        id_solicitud_recompensa,
+        descripcion = "Bono de descuento aplicado",
+        creado_por = null,
+      } = params;
+
+      const referente = await db.referente.findByPk(id_referente, {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+
+      if (!referente) {
+        throw new Error("Referente no encontrado");
+      }
+
+      const saldo_anterior = parseFloat(referente.saldo_disponible);
+      const montoBono = parseFloat(monto);
+
+      if (saldo_anterior < montoBono) {
+        throw new Error("Saldo insuficiente");
+      }
+
+      const saldo_nuevo = saldo_anterior - montoBono;
+
+      const movimientoSaldo = await db.movimientoSaldo.create(
+        {
+          id_referente,
+          tipo_movimiento: "egreso_bono",
+          monto: -montoBono,
+          saldo_anterior,
+          saldo_nuevo,
+          puntos_otorgados: 0,
+          puntos_anteriores: referente.puntos_actuales,
+          puntos_nuevos: referente.puntos_actuales,
+          descripcion,
+          id_solicitud_recompensa, 
+          creado_por,
+          fecha_movimiento: new Date(),
+        },
+        { transaction }
+      );
+
+      await referente.update(
+        {
+          saldo_disponible: saldo_nuevo,
+          total_retirado: referente.total_retirado + montoBono,
+        },
+        { transaction }
+      );
+
+      await transaction.commit();
+
+      logger.info(
+        `Egreso bono de ${montoBono} registrado para referente ${id_referente}`
+      );
+      return movimientoSaldo;
+    } catch (error) {
+      await transaction.rollback();
+      logger.error("Error al registrar egreso bono:", error);
+      throw error;
+    }
+  }
+
   async obtenerHistorialSaldo(id_referente) {
     try {
       const historial = await db.movimientoSaldo.findAll({
@@ -237,12 +359,6 @@ class SaldoService {
     }
   }
 
-  /**
-   * Valida si el referente tiene saldo suficiente
-   * @param {number} id_referente - ID del referente
-   * @param {number} monto - Monto a validar
-   * @returns {Promise<boolean>} True si tiene saldo suficiente
-   */
   async validarSaldoDisponible(id_referente, monto) {
     try {
       const referente = await db.referente.findByPk(id_referente);
@@ -259,11 +375,6 @@ class SaldoService {
     }
   }
 
-  /**
-   * Obtiene el saldo actual de un referente
-   * @param {number} id_referente - ID del referente
-   * @returns {Promise<Object>} Información del saldo
-   */
   async obtenerSaldoActual(id_referente) {
     try {
       const referente = await db.referente.findByPk(id_referente);
@@ -279,6 +390,7 @@ class SaldoService {
         total_comisiones_historico: parseFloat(
           referente.total_comisiones_historico
         ),
+        total_retirado: parseFloat(referente.total_retirado),
       };
     } catch (error) {
       logger.error("Error al obtener saldo actual:", error);

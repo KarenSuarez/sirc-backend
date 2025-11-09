@@ -94,4 +94,47 @@ router.post("/logout", [authJwt.verifyToken], authController.logout);
  */
 router.get("/me", [authJwt.verifyToken], authController.getMe);
 
+/**
+ * @swagger
+ * /auth/me:
+ *   put:
+ *     summary: Actualizar perfil del usuario autenticado
+ *     description: Permite actualizar nombre, apellido, correo y teléfono
+ *     tags:
+ *       - Auth
+ *     security:
+ *       - tokenAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *                 example: Juan
+ *               apellido:
+ *                 type: string
+ *                 example: Pérez
+ *               correo_electronico:
+ *                 type: string
+ *                 example: juan.perez@example.com
+ *               telefono:
+ *                 type: string
+ *                 example: "3001234567"
+ *     responses:
+ *       200:
+ *         description: Perfil actualizado exitosamente
+ *       400:
+ *         description: Correo ya está en uso
+ *       401:
+ *         description: No autenticado
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error al actualizar perfil
+ */
+router.put("/me", [authJwt.verifyToken], authController.updateMe);
+
 export default router;

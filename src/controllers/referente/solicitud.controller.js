@@ -68,7 +68,6 @@ export const aprobarSolicitud = async (req, res) => {
     const { id } = req.params;
     const id_usuario = req.userId;
     const { comprobante_pago_url, observaciones } = req.body;
-
     const solicitud = await db.solicitudRecompensa.findByPk(id, {
       transaction,
     });
@@ -87,26 +86,41 @@ export const aprobarSolicitud = async (req, res) => {
       });
     }
 
+  
     if (solicitud.metodo_retiro === "retiro") {
-      await SaldoService.registrarEgresoRetiro({
-        id_referente: solicitud.id_referente,
-        monto: parseFloat(solicitud.monto_solicitado),
-        id_solicitud_recompensa: solicitud.id_solicitud,
-        descripcion:
-          observaciones ||
-          `Retiro aprobado - Solicitud #${solicitud.id_solicitud}`,
-        creado_por: id_usuario,
-      });
+      try {
+        const movimiento = await SaldoService.registrarEgresoRetiro({
+          id_referente: solicitud.id_referente,
+          monto: parseFloat(solicitud.monto_solicitado),
+          id_solicitud_recompensa: solicitud.id_solicitud,
+          descripcion:
+            observaciones ||
+            `Retiro aprobado - Solicitud #${solicitud.id_solicitud}`,
+          creado_por: id_usuario,
+        });
+        
+      } catch (errorRetiro) {
+        logger.error('Error en registrarEgresoRetiro:', errorRetiro);
+        throw errorRetiro;
+      }
     } else if (solicitud.metodo_retiro === "bono_pago") {
-      await SaldoService.registrarEgresoBono({
-        id_referente: solicitud.id_referente,
-        monto: parseFloat(solicitud.monto_solicitado),
-        id_solicitud_recompensa: solicitud.id_solicitud,
-        descripcion:
-          observaciones ||
-          `Bono aplicado - Solicitud #${solicitud.id_solicitud}`,
-        creado_por: id_usuario,
-      });
+      try {
+        const movimiento = await SaldoService.registrarEgresoBono({
+          id_referente: solicitud.id_referente,
+          monto: parseFloat(solicitud.monto_solicitado),
+          id_solicitud_recompensa: solicitud.id_solicitud,
+          descripcion:
+            observaciones ||
+            `Bono aplicado - Solicitud #${solicitud.id_solicitud}`,
+          creado_por: id_usuario,
+        });
+        
+      } catch (errorBono) {
+        logger.error('Error en registrarEgresoBono:', errorBono);
+        throw errorBono;
+      }
+    } else {
+      logger.warn('Método de retiro NO reconocido:', solicitud.metodo_retiro);
     }
 
     await solicitud.update(
@@ -119,6 +133,7 @@ export const aprobarSolicitud = async (req, res) => {
       },
       { transaction }
     );
+
 
     await transaction.commit();
 

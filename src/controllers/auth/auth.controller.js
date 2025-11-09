@@ -16,6 +16,7 @@ export const register = async (req, res) => {
       id_tipo_documento,
       telefono,
       roles,
+      tipo_referente,
     } = req.body;
 
     if (
@@ -121,7 +122,7 @@ export const register = async (req, res) => {
       await db.referente.create({
         id_usuario: nuevoUsuario.id_usuario,
         codigo_referente,
-        tipo_referente: "cliente_externo",
+        tipo_referente: tipo_referente || "cliente_externo",
         puntos_actuales: 0,
         puntos_totales_historico: 0,
         saldo_disponible: 0.0,
@@ -131,7 +132,7 @@ export const register = async (req, res) => {
         fecha_ultima_actividad: new Date(),
       });
 
-      logger.info(`Perfil de referente creado: ${codigo_referente}`);
+      logger.info(`Perfil de referente creado: ${codigo_referente} (${tipo_referente || 'cliente_externo'})`);
 
       const NivelService = (await import("../../services/nivel.service.js"))
         .default;
@@ -230,6 +231,7 @@ export const login = async (req, res) => {
         apellido: usuario.apellido,
         correo_electronico: usuario.correo_electronico,
         numero_documento: usuario.numero_documento,
+        telefono: usuario.telefono,
         roles: roles_nombres,
       },
     });
@@ -282,6 +284,7 @@ export const getMe = async (req, res) => {
       attributes: [
         "id_usuario",
         "numero_documento",
+        "id_tipo_documento",
         "nombre",
         "apellido",
         "correo_electronico",
@@ -309,6 +312,11 @@ export const getMe = async (req, res) => {
             "estado_referente",
           ],
         },
+        {
+          model: db.tipoDocumento, // ⭐ AGREGADO
+          as: "tipoDocumento",
+          attributes: ["id_tipo_documento", "codigo_tipo", "nombre_tipo"],
+        },
       ],
     });
 
@@ -328,9 +336,102 @@ export const getMe = async (req, res) => {
   }
 };
 
+export const updateMe = async (req, res) => {
+  try {
+    const id_usuario = req.userId;
+    const { nombre, apellido, correo_electronico, telefono } = req.body;
+
+    const usuario = await db.usuario.findByPk(id_usuario);
+
+    if (!usuario) {
+      return res.status(404).json({
+        message: "Usuario no encontrado",
+      });
+    }
+
+    if (correo_electronico && correo_electronico !== usuario.correo_electronico) {
+      const correoExistente = await db.usuario.findOne({
+        where: {
+          correo_electronico,
+          id_usuario: { [db.Sequelize.Op.ne]: id_usuario },
+        },
+      });
+
+      if (correoExistente) {
+        return res.status(400).json({
+          message: "El correo electrónico ya está en uso",
+        });
+      }
+    }
+
+    const camposActualizables = {};
+    if (nombre !== undefined) camposActualizables.nombre = nombre;
+    if (apellido !== undefined) camposActualizables.apellido = apellido;
+    if (correo_electronico !== undefined) camposActualizables.correo_electronico = correo_electronico;
+    if (telefono !== undefined) camposActualizables.telefono = telefono;
+    camposActualizables.actualizado_en = new Date();
+
+    await usuario.update(camposActualizables);
+
+    logger.info(`Perfil actualizado: Usuario ${id_usuario}`);
+
+    const usuarioActualizado = await db.usuario.findByPk(id_usuario, {
+      attributes: [
+        "id_usuario",
+        "numero_documento",
+        "id_tipo_documento",
+        "nombre",
+        "apellido",
+        "correo_electronico",
+        "telefono",
+        "fecha_registro",
+      ],
+      include: [
+        {
+          model: db.rol,
+          as: "roles",
+          attributes: ["id_rol", "nombre_rol", "codigo_rol"],
+          through: { attributes: [] },
+        },
+        {
+          model: db.referente,
+          as: "referente",
+          attributes: [
+            "codigo_referente",
+            "tipo_referente",
+            "puntos_actuales",
+            "puntos_totales_historico",
+            "saldo_disponible",
+            "total_comisiones_historico",
+            "total_retirado",
+            "estado_referente",
+          ],
+        },
+        {
+          model: db.tipoDocumento,
+          as: "tipoDocumento",
+          attributes: ["id_tipo_documento", "codigo_tipo", "nombre_tipo"],
+        },
+      ],
+    });
+
+    return res.status(200).json({
+      message: "Perfil actualizado exitosamente",
+      usuario: usuarioActualizado,
+    });
+  } catch (error) {
+    logger.error("Error en updateMe:", error);
+    return res.status(500).json({
+      message: "Error al actualizar perfil",
+      error: error.message,
+    });
+  }
+};
+
 export default {
   register,
   login,
   logout,
   getMe,
+  updateMe,
 };

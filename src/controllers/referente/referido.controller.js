@@ -1,5 +1,4 @@
 import db from "../../models/index.js";
-import ComisionService from "../../services/comision.service.js";
 import createLogger from "../../utils/logger.js";
 
 const logger = createLogger("referido.controller");
@@ -89,99 +88,6 @@ export const crearReferido = async (req, res) => {
   }
 };
 
-export const convertirReferido = async (req, res) => {
-  let transaction;
-
-  try {
-    const { id } = req.params;
-    const id_usuario = req.userId;
-    const { id_plan_adquirido } = req.body;
-
-    if (!id_plan_adquirido) {
-      return res.status(400).json({
-        message: "El ID del plan es requerido",
-      });
-    }
-
-    transaction = await db.sequelize.transaction();
-
-    const referido = await db.referido.findByPk(id, { transaction });
-
-    if (!referido) {
-      await transaction.rollback();
-      return res.status(404).json({
-        message: "Referido no encontrado",
-      });
-    }
-
-    if (referido.id_referente !== id_usuario) {
-      await transaction.rollback();
-      return res.status(403).json({
-        message: "No tienes permiso para modificar este referido",
-      });
-    }
-
-    if (referido.estado_referido === "activo") {
-      await transaction.rollback();
-      return res.status(400).json({
-        message: "El referido ya fue convertido anteriormente",
-      });
-    }
-
-    const plan = await db.plan.findByPk(id_plan_adquirido, { transaction });
-
-    if (!plan) {
-      await transaction.rollback();
-      return res.status(404).json({
-        message: "Plan no encontrado",
-      });
-    }
-
-    await referido.update(
-      {
-        estado_referido: "activo",
-        id_plan_adquirido,
-        fecha_conversion: new Date(),
-        actualizado_en: new Date(),
-      },
-      { transaction }
-    );
-
-    await transaction.commit();
-    logger.info("Transacción de referido completada");
-
-    const resultadoComision = await ComisionService.procesarComisionCompleta({
-      id_referente: referido.id_referente,
-      id_referido: referido.id_referido,
-      id_plan: id_plan_adquirido,
-      id_usuario_procesa: id_usuario,
-    });
-
-    logger.info(`Referido convertido: ID ${id}`);
-
-    return res.status(200).json({
-      message: "Referido convertido y comisión procesada exitosamente",
-      referido,
-      comision: resultadoComision.comision,
-    });
-  } catch (error) {
-    if (transaction && !transaction.finished) {
-      try {
-        await transaction.rollback();
-        logger.warn("Rollback ejecutado");
-      } catch (rollbackError) {
-        logger.error("Error en rollback:", rollbackError);
-      }
-    }
-
-    logger.error("Error en convertirReferido:", error);
-    return res.status(500).json({
-      message: "Error al convertir referido",
-      error: error.message,
-    });
-  }
-};
-
 export const getReferido = async (req, res) => {
   try {
     const { id } = req.params;
@@ -248,7 +154,6 @@ export const actualizarReferido = async (req, res) => {
       telefono_referido,
       empresa_referido,
       cargo_referido,
-      estado_referido,
       observaciones,
     } = req.body;
 
@@ -259,7 +164,6 @@ export const actualizarReferido = async (req, res) => {
       telefono_referido: telefono_referido || referido.telefono_referido,
       empresa_referido: empresa_referido || referido.empresa_referido,
       cargo_referido: cargo_referido || referido.cargo_referido,
-      estado_referido: estado_referido || referido.estado_referido,
       observaciones: observaciones || referido.observaciones,
       actualizado_en: new Date(),
     });
@@ -294,6 +198,12 @@ export const listarReferidos = async (req, res) => {
           model: db.tipoDocumento,
           as: "tipoDocumento",
         },
+        {
+          model: db.usuario,
+          as: "asesorVendedor",
+          attributes: ["nombre", "apellido"],
+          required: false,
+        },
       ],
       order: [["creado_en", "DESC"]],
     });
@@ -310,7 +220,6 @@ export const listarReferidos = async (req, res) => {
 
 export default {
   crearReferido,
-  convertirReferido,
   getReferido,
   actualizarReferido,
   listarReferidos,

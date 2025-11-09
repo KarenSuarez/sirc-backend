@@ -1,6 +1,6 @@
 import createLogger from "./logger.js";
 
-const logger = createLogger('initializeData.js');
+const logger = createLogger("initializeData.js");
 
 const initializeData = async (db) => {
   logger.info("Iniciando la verificación de datos maestros...");
@@ -81,7 +81,7 @@ const initializeData = async (db) => {
           puntos_maximos: 99,
           porcentaje_comision_extra: 0.0,
           icono_nivel: "bronze-medal",
-          color_nivel: "#CD7F32",
+          color_nivel: "#D4785B",
           beneficios_nivel: "Nivel inicial - Sin beneficios adicionales",
           descripcion: "Nivel básico para nuevos referentes",
         },
@@ -92,7 +92,7 @@ const initializeData = async (db) => {
           puntos_maximos: 299,
           porcentaje_comision_extra: 2.5,
           icono_nivel: "silver-medal",
-          color_nivel: "#C0C0C0",
+          color_nivel: "#A8B8C8",
           beneficios_nivel: "2.5% adicional en comisiones",
           descripcion: "Nivel intermedio con bonificación extra",
         },
@@ -103,21 +103,34 @@ const initializeData = async (db) => {
           puntos_maximos: 599,
           porcentaje_comision_extra: 5.0,
           icono_nivel: "gold-medal",
-          color_nivel: "#FFD700",
+          color_nivel: "#F4B942",
           beneficios_nivel: "5% adicional en comisiones + Soporte prioritario",
           descripcion: "Nivel avanzado con múltiples beneficios",
         },
         {
-          nombre_nivel: "Diamante",
+          nombre_nivel: "Platino",
           orden_nivel: 4,
           puntos_minimos: 600,
+          puntos_maximos: 899,
+          porcentaje_comision_extra: 7.5,
+          icono_nivel: "platinum-medal",
+          color_nivel: "#B8A9C9",
+          beneficios_nivel: "7.5% adicional en comisiones + Soporte VIP",
+          descripcion:
+            "Nivel premium con beneficios avanzados y soporte personalizado",
+        },
+        {
+          nombre_nivel: "Diamante",
+          orden_nivel: 5,
+          puntos_minimos: 900,
           puntos_maximos: 999999,
           porcentaje_comision_extra: 10.0,
           icono_nivel: "diamond",
-          color_nivel: "#B9F2FF",
+          color_nivel: "#4ECDE6",
           beneficios_nivel:
             "10% adicional en comisiones + Soporte VIP + Acceso exclusivo",
-          descripcion: "Nivel élite con máximos beneficios",
+          descripcion:
+            "Nivel élite con máximos beneficios y reconocimiento especial",
         },
       ]);
       logger.info("Niveles cargados (4)");
@@ -185,7 +198,7 @@ const initializeData = async (db) => {
           nombre_insignia: "Primera Venta",
           descripcion:
             "¡Felicitaciones! Realizaste tu primera conversión exitosa",
-          icono_insignia: "first-sale",
+          icono_insignia: "gift", // símbolo de recompensa inicial
           color_insignia: "#FFD700",
           criterio_obtencion: "Convertir 1 referido",
           rareza: "comun",
@@ -194,7 +207,7 @@ const initializeData = async (db) => {
         {
           nombre_insignia: "Vendedor Estrella",
           descripcion: "Has convertido 10 referidos exitosamente",
-          icono_insignia: "star-seller",
+          icono_insignia: "star", // estrella por rendimiento destacado
           color_insignia: "#FFA500",
           criterio_obtencion: "Convertir 10 referidos",
           rareza: "rara",
@@ -203,7 +216,7 @@ const initializeData = async (db) => {
         {
           nombre_insignia: "Maestro de Referencias",
           descripcion: "Has convertido 50 referidos. ¡Eres un experto!",
-          icono_insignia: "master-seller",
+          icono_insignia: "medal", // medalla por maestría
           color_insignia: "#9370DB",
           criterio_obtencion: "Convertir 50 referidos",
           rareza: "epica",
@@ -212,7 +225,7 @@ const initializeData = async (db) => {
         {
           nombre_insignia: "Leyenda del Sistema",
           descripcion: "Has convertido 100 referidos. ¡Eres una leyenda!",
-          icono_insignia: "legend-seller",
+          icono_insignia: "crown", // corona por estatus legendario
           color_insignia: "#FF4500",
           criterio_obtencion: "Convertir 100 referidos",
           rareza: "legendaria",
@@ -221,7 +234,7 @@ const initializeData = async (db) => {
         {
           nombre_insignia: "Nivel Diamante",
           descripcion: "Alcanzaste el nivel más alto de fidelización",
-          icono_insignia: "diamond-level",
+          icono_insignia: "skin", // diamante (skin) por nivel máximo
           color_insignia: "#B9F2FF",
           criterio_obtencion: "Alcanzar nivel Diamante (600+ puntos)",
           rareza: "epica",
@@ -230,7 +243,7 @@ const initializeData = async (db) => {
         {
           nombre_insignia: "Millonario en Comisiones",
           descripcion: "Has generado más de $1,000,000 en comisiones",
-          icono_insignia: "millionaire",
+          icono_insignia: "trophy", // trofeo por logro financiero excepcional
           color_insignia: "#32CD32",
           criterio_obtencion: "Generar $1,000,000 en comisiones totales",
           rareza: "legendaria",

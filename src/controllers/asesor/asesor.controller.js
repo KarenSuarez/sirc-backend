@@ -168,6 +168,7 @@ export const convertirReferidoPorAsesor = async (req, res) => {
       });
     }
 
+    // Actualizar el referido
     await referido.update(
       {
         estado_referido: "activo",
@@ -182,19 +183,53 @@ export const convertirReferidoPorAsesor = async (req, res) => {
     await transaction.commit();
     logger.info("Transacción de referido completada");
 
+    // Procesar comisión DESPUÉS del commit
     const resultadoComision = await ComisionService.procesarComisionCompleta({
       id_referente: referido.id_referente,
       id_referido: referido.id_referido,
       id_plan: id_plan_adquirido,
       id_usuario_procesa: id_asesor,
+      pagar_inmediatamente: true, // ← La comisión se paga inmediatamente
+    });
+
+    // Recargar el referido con todas las relaciones para la respuesta
+    const referidoCompleto = await db.referido.findByPk(id, {
+      include: [
+        {
+          model: db.plan,
+          as: "plan",
+          attributes: ["id_plan", "nombre_plan", "precio_actual", "icono_plan", "color_plan"],
+        },
+        {
+          model: db.referente,
+          as: "referente",
+          attributes: ["codigo_referente"],
+          include: [
+            {
+              model: db.usuario,
+              as: "usuario",
+              attributes: ["nombre", "apellido", "correo_electronico"],
+            },
+          ],
+        },
+        {
+          model: db.usuario,
+          as: "asesorVendedor",
+          attributes: ["nombre", "apellido"],
+        },
+      ],
     });
 
     logger.info(`Referido convertido por asesor ${id_asesor}: ID ${id}`);
 
     return res.status(200).json({
       message: "Referido convertido y comisión procesada exitosamente",
-      referido,
-      comision: resultadoComision.comision,
+      referido: referidoCompleto,
+      comision: {
+        ...resultadoComision.comision,
+        estado: resultadoComision.movimiento_referencia.estado_comision,
+        id_movimiento: resultadoComision.movimiento_referencia.id_movimiento,
+      },
       asesor_vendedor: {
         id_usuario: id_asesor,
         mensaje: "Venta registrada a tu nombre",
