@@ -36,7 +36,7 @@ export default (sequelize, Sequelize) => {
         defaultValue: 0.0,
       },
       icono_nivel: {
-        type: Sequelize.STRING(50),
+        type: Sequelize.ENUM("trophy", "crown", "star", "fire", "thunderbolt", "rocket", "skin"),
         allowNull: true,
       },
       color_nivel: {

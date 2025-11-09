@@ -56,6 +56,7 @@ class ComisionService {
   /**
    * Registra un movimiento de referencia (comisión)
    * @param {Object} params - Datos del movimiento
+   * @param {boolean} params.pagar_inmediatamente - Si true, marca la comisión como pagada
    * @returns {Promise<Object>} Movimiento creado
    */
   async registrarMovimientoReferencia(params) {
@@ -70,6 +71,7 @@ class ComisionService {
         monto_comision,
         puntos_otorgados,
         dias_vencimiento = null,
+        pagar_inmediatamente = true,
       } = params;
 
       let fecha_vencimiento = null;
@@ -80,6 +82,8 @@ class ComisionService {
         );
       }
 
+      const estado_comision = pagar_inmediatamente ? "pagada" : "pendiente";
+
       const movimiento = await db.movimientoReferencia.create({
         id_referente,
         id_referido,
@@ -89,13 +93,13 @@ class ComisionService {
         porcentaje_comision_total,
         monto_comision,
         puntos_otorgados,
-        estado_comision: "pendiente",
+        estado_comision,
         fecha_movimiento: new Date(),
         fecha_vencimiento,
       });
 
       logger.info(
-        `Movimiento de referencia registrado: ID ${movimiento.id_movimiento}`
+        `Movimiento de referencia registrado: ID ${movimiento.id_movimiento}, Estado: ${estado_comision}`
       );
       return movimiento;
     } catch (error) {
@@ -115,6 +119,7 @@ class ComisionService {
     id_plan,
     dias_vencimiento = null,
     id_usuario_procesa = null,
+    pagar_inmediatamente = true,
   }) {
     const transaction = await db.sequelize.transaction();
 
@@ -134,21 +139,24 @@ class ComisionService {
         id_referido,
         ...comisionCalculada,
         dias_vencimiento,
+        pagar_inmediatamente,
       });
 
-      const saldoService = (await import("./saldo.service.js")).default;
+      let movimientoSaldo = null;
+      if (pagar_inmediatamente) {
+        const saldoService = (await import("./saldo.service.js")).default;
 
-      const movimientoSaldo = await saldoService.registrarIngresoComision({
-        id_referente,
-        monto: comisionCalculada.monto_comision,
-        puntos: comisionCalculada.puntos_otorgados,
-        id_movimiento_referencia: movimientoRef.id_movimiento,
-        descripcion: `Comisión por referido ID ${id_referido}`,
-        creado_por: id_usuario_procesa,
-      });
+        movimientoSaldo = await saldoService.registrarIngresoComision({
+          id_referente,
+          monto: comisionCalculada.monto_comision,
+          puntos: comisionCalculada.puntos_otorgados,
+          id_movimiento_referencia: movimientoRef.id_movimiento,
+          descripcion: `Comisión por referido ID ${id_referido}`,
+          creado_por: id_usuario_procesa,
+        });
+      }
 
       const nivelService = (await import("./nivel.service.js")).default;
-
       const referente = await db.referente.findByPk(id_referente);
       await nivelService.verificarYActualizarNivel(
         id_referente,
@@ -158,7 +166,7 @@ class ComisionService {
       await transaction.commit();
 
       logger.info(
-        `Comisión completa procesada para referido ID: ${id_referido}`
+        `Comisión completa procesada para referido ID: ${id_referido}, Estado: ${movimientoRef.estado_comision}`
       );
 
       return {
@@ -190,6 +198,11 @@ class ComisionService {
         throw new Error("Movimiento de referencia no encontrado");
       }
 
+      if (movimiento.estado_comision === "pagada") {
+        logger.warn(`Comisión ${id_movimiento} ya está pagada`);
+        return movimiento;
+      }
+
       await movimiento.update({
         estado_comision: "pagada",
       });
@@ -212,7 +225,9 @@ class ComisionService {
     const transaction = await db.sequelize.transaction();
 
     try {
-      const movimiento = await db.movimientoReferencia.findByPk(id_movimiento);
+      const movimiento = await db.movimientoReferencia.findByPk(id_movimiento, {
+        transaction,
+      });
 
       if (!movimiento) {
         throw new Error("Movimiento de referencia no encontrado");
@@ -222,9 +237,12 @@ class ComisionService {
         throw new Error("No se puede cancelar una comisión ya pagada");
       }
 
-      await movimiento.update({
-        estado_comision: "cancelada",
-      });
+      await movimiento.update(
+        {
+          estado_comision: "cancelada",
+        },
+        { transaction }
+      );
 
       const saldoService = (await import("./saldo.service.js")).default;
 
@@ -307,6 +325,13 @@ class ComisionService {
               "apellido_referido",
               "empresa_referido",
             ],
+            include: [
+              {
+                model: db.plan,
+                as: "plan",
+                attributes: ["id_plan", "nombre_plan", "precio_actual"],
+              },
+            ],
           },
         ],
         order: [["fecha_movimiento", "DESC"]],
@@ -342,11 +367,11 @@ class ComisionService {
       ]);
 
       return {
-        total_pendientes: pendientes || 0,
-        total_pagadas: pagadas || 0,
-        total_vencidas: vencidas || 0,
-        total_canceladas: canceladas || 0,
-        total_general: (pendientes || 0) + (pagadas || 0),
+        total_pendientes: parseFloat(pendientes || 0),
+        total_pagadas: parseFloat(pagadas || 0),
+        total_vencidas: parseFloat(vencidas || 0),
+        total_canceladas: parseFloat(canceladas || 0),
+        total_general: parseFloat(pendientes || 0) + parseFloat(pagadas || 0),
       };
     } catch (error) {
       logger.error("Error al obtener resumen de comisiones:", error);

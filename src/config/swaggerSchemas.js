@@ -177,7 +177,7 @@ const referenteSchemas = {
       },
       tipo_referente: {
         type: "string",
-        enum: ["cliente_externo", "empleado", "aliado"],
+        enum: ["cliente_interno", "cliente_externo"],
         example: "cliente_externo",
       },
       puntos_actuales: {

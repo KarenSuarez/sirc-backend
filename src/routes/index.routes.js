@@ -12,6 +12,7 @@ import rankingRoutes from "./analytics/ranking.routes.js";
 import asesorReferidoRoutes from "./asesor/referido.routes.js";
 import asesorReferenteRoutes from "./asesor/referente.routes.js";
 import insigniaRoutes from "./admin/insignia.routes.js";
+import tipoDocumentoRoutes from "./api/tipoDocumento.routes.js";
 
 const router = Router();
 
@@ -92,6 +93,12 @@ router.use("/puntos", puntosRoutes);
  * @desc    Rutas de ranking de referentes
  */
 router.use("/ranking", rankingRoutes);
+
+/**
+ * @route   /api/tipos-documento/*
+ * @desc    Rutas de tipos de documento
+ */
+router.use("/tipos-documento", tipoDocumentoRoutes);
 
 /**
  * @route   GET /api/health
