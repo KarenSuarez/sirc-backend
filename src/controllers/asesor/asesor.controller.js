@@ -168,7 +168,6 @@ export const convertirReferidoPorAsesor = async (req, res) => {
       });
     }
 
-    // Actualizar el referido
     await referido.update(
       {
         estado_referido: "activo",
@@ -183,16 +182,14 @@ export const convertirReferidoPorAsesor = async (req, res) => {
     await transaction.commit();
     logger.info("Transacción de referido completada");
 
-    // Procesar comisión DESPUÉS del commit
     const resultadoComision = await ComisionService.procesarComisionCompleta({
       id_referente: referido.id_referente,
       id_referido: referido.id_referido,
       id_plan: id_plan_adquirido,
       id_usuario_procesa: id_asesor,
-      pagar_inmediatamente: true, // ← La comisión se paga inmediatamente
+      pagar_inmediatamente: true,
     });
 
-    // Recargar el referido con todas las relaciones para la respuesta
     const referidoCompleto = await db.referido.findByPk(id, {
       include: [
         {
@@ -393,7 +390,8 @@ export const listarReferentes = async (req, res) => {
       ],
       limit: parseInt(limite),
       offset,
-      order: [["creado_en", "DESC"]],
+      // ⭐ ORDENAR POR LA TABLA USUARIO (que sí tiene creado_en)
+      order: [[{ model: db.usuario, as: "usuario" }, "creado_en", "DESC"]],
     });
 
     const referentesConMetricas = await Promise.all(
@@ -477,6 +475,7 @@ export const obtenerDetalleReferente = async (req, res) => {
     });
   }
 };
+
 
 export const listarReferidosPorReferente = async (req, res) => {
   try {
