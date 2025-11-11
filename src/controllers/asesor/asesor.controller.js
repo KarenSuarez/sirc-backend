@@ -37,7 +37,7 @@ export const listarTodosLosReferidos = async (req, res) => {
         {
           model: db.plan,
           as: "plan",
-          attributes: ["nombre_plan", "precio_actual"],
+          attributes: ["nombre_plan", "precio_actual", "color_plan"],
         },
         {
           model: db.tipoDocumento,
@@ -390,7 +390,6 @@ export const listarReferentes = async (req, res) => {
       ],
       limit: parseInt(limite),
       offset,
-      // ⭐ ORDENAR POR LA TABLA USUARIO (que sí tiene creado_en)
       order: [[{ model: db.usuario, as: "usuario" }, "creado_en", "DESC"]],
     });
 
